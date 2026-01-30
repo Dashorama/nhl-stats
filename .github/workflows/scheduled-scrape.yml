@@ -1,0 +1,38 @@
+name: Scheduled Scrape
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC (1 AM EST / 2 AM EDT)
+    - cron: "0 6 * * *"
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  scrape:
+    name: Daily NHL Data Scrape
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install dependencies
+        run: |
+          pip install -e .
+      
+      - name: Run scraper
+        run: |
+          nhl-scraper scrape --all
+        env:
+          # Add any API keys or secrets here
+          NHL_SCRAPER_DB: ${{ secrets.NHL_SCRAPER_DB }}
+      
+      - name: Upload scraped data
+        uses: actions/upload-artifact@v4
+        with:
+          name: nhl-data-${{ github.run_id }}
+          path: data/
+          retention-days: 30
+        if: always()
