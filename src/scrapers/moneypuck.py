@@ -251,6 +251,83 @@ class MoneyPuckScraper(BaseScraper):
             "source": "moneypuck",
         }
 
+    async def scrape_shot_data(self, season: str | None = None) -> list[dict[str, Any]]:
+        """Download shot-level data for a season.
+
+        Each row is an individual shot attempt with ~124 attributes.
+        We extract the most useful fields for analysis.
+
+        Uses the peter-tanner.com mirror which hosts MoneyPuck data as ZIP files.
+        """
+        import zipfile
+
+        if season is None:
+            season = await self.get_current_season()
+
+        # MoneyPuck shot data hosted as ZIP on mirror
+        zip_url = f"https://peter-tanner.com/moneypuck/downloads/shots_{season}.zip"
+
+        try:
+            # Use httpx directly for the external URL (not our base_url)
+            import httpx
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                response = await client.get(zip_url)
+                response.raise_for_status()
+        except Exception as e:
+            self.logger.error("moneypuck_shot_fetch_failed", url=zip_url, error=str(e))
+            return []
+
+        # Extract CSV from ZIP
+        zf = zipfile.ZipFile(io.BytesIO(response.content))
+        csv_names = [n for n in zf.namelist() if n.endswith(".csv")]
+        if not csv_names:
+            self.logger.error("no_csv_in_zip", url=zip_url)
+            return []
+
+        csv_content = zf.read(csv_names[0]).decode("utf-8")
+        reader = csv.DictReader(io.StringIO(csv_content))
+
+        def safe_int(val: str | None) -> int | None:
+            """Parse int from string, handling float-formatted values like '8478178.0'."""
+            if not val:
+                return None
+            try:
+                return int(float(val))
+            except (ValueError, TypeError):
+                return None
+
+        shots = []
+        for row in reader:
+            try:
+                shots.append({
+                    "season": season,
+                    "game_id": safe_int(row.get("game_id")),
+                    "team": row.get("teamCode", ""),
+                    "shooter_id": safe_int(row.get("shooterPlayerId")),
+                    "shooter_name": row.get("shooterName", ""),
+                    "goalie_id": safe_int(row.get("goalieIdForShot")),
+                    "goalie_name": row.get("goalieNameForShot", ""),
+                    "event": row.get("event", ""),
+                    "period": safe_int(row.get("period")),
+                    "time": safe_int(row.get("time")),
+                    "x_coord": float(row.get("xCordAdjusted", 0)) if row.get("xCordAdjusted") else None,
+                    "y_coord": float(row.get("yCordAdjusted", 0)) if row.get("yCordAdjusted") else None,
+                    "shot_type": row.get("shotType", ""),
+                    "x_goal": float(row.get("xGoal", 0)) if row.get("xGoal") else None,
+                    "goal": safe_int(row.get("goal")) or 0,
+                    "shot_angle": float(row.get("shotAngleAdjusted", 0)) if row.get("shotAngleAdjusted") else None,
+                    "shot_distance": float(row.get("shotDistance", 0)) if row.get("shotDistance") else None,
+                    "shot_rebound": safe_int(row.get("shotRebound")) or 0,
+                    "shot_rush": safe_int(row.get("shotRushShot")) or 0,
+                    "situation": row.get("situation", ""),
+                    "is_home": row.get("isHomeTeam") == "1",
+                })
+            except (ValueError, TypeError):
+                continue
+
+        self.logger.info("scraped_shot_data", season=season, count=len(shots))
+        return shots
+
     # Abstract method implementations required by BaseScraper
     async def scrape_players(self, season: str | None = None) -> list[dict[str, Any]]:
         """Scrape all player advanced stats."""

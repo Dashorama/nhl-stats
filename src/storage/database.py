@@ -192,6 +192,180 @@ class RosterRecord(Base):
     __table_args__ = (Index("ix_roster_team_season", "team_abbrev", "season"),)
 
 
+class DraftRecord(Base):
+    """Draft picks/rankings table."""
+
+    __tablename__ = "draft_picks"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    draft_year = Column(Integer, index=True)
+    rank = Column(Integer)
+    first_name = Column(String(100))
+    last_name = Column(String(100))
+    position = Column(String(2))
+    shoots_catches = Column(String(1))
+    height_inches = Column(Integer)
+    weight_pounds = Column(Integer)
+    amateur_club = Column(String(100))
+    amateur_league = Column(String(50))
+    birth_date = Column(String(10))
+    birth_country = Column(String(50))
+    midterm_rank = Column(Integer)
+    final_rank = Column(Integer)
+    raw_data = Column(Text)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (Index("ix_draft_year_rank", "draft_year", "rank"),)
+
+
+class BoxscoreRecord(Base):
+    """Per-player per-game boxscore stats."""
+
+    __tablename__ = "boxscores"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    game_id = Column(Integer, index=True)
+    player_id = Column(Integer, index=True)
+    player_name = Column(String(100))
+    team_abbrev = Column(String(3))
+    position = Column(String(2))
+    is_home = Column(Boolean)
+
+    goals = Column(Integer, default=0)
+    assists = Column(Integer, default=0)
+    points = Column(Integer, default=0)
+    plus_minus = Column(Integer, default=0)
+    pim = Column(Integer, default=0)
+    hits = Column(Integer, default=0)
+    shots = Column(Integer, default=0)
+    blocked_shots = Column(Integer, default=0)
+    faceoff_pct = Column(Float)
+    toi = Column(String(10))
+    shifts = Column(Integer, default=0)
+    giveaways = Column(Integer, default=0)
+    takeaways = Column(Integer, default=0)
+    power_play_goals = Column(Integer, default=0)
+
+    # Goalie fields (null for skaters)
+    saves = Column(Integer)
+    shots_against = Column(Integer)
+    goals_against = Column(Integer)
+
+    raw_data = Column(Text)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_boxscore_game_player", "game_id", "player_id"),
+    )
+
+
+class PlayByPlayRecord(Base):
+    """Individual game events (shots, hits, faceoffs, etc.)."""
+
+    __tablename__ = "play_by_play"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    game_id = Column(Integer, index=True)
+    event_id = Column(Integer)
+    event_type = Column(String(30), index=True)
+    period = Column(Integer)
+    period_type = Column(String(10))
+    time_in_period = Column(String(10))
+    time_remaining = Column(String(10))
+
+    x_coord = Column(Integer)
+    y_coord = Column(Integer)
+    zone_code = Column(String(2))
+
+    # Flexible player references (different events have different players)
+    player1_id = Column(Integer, index=True)  # shooter/hitter/winner
+    player2_id = Column(Integer)  # goalie/hittee/loser/assist1
+    player3_id = Column(Integer)  # assist2
+
+    team_id = Column(Integer)
+    shot_type = Column(String(20))
+    description = Column(String(50))
+
+    raw_data = Column(Text)
+
+    __table_args__ = (
+        Index("ix_pbp_game_event", "game_id", "event_id"),
+    )
+
+
+class GameLogRecord(Base):
+    """Per-player per-game stats from NHL API."""
+    __tablename__ = "game_logs"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    player_id = Column(Integer, index=True)
+    game_id = Column(Integer, index=True)
+    season = Column(String(8))
+    team_abbrev = Column(String(3))
+    opponent_abbrev = Column(String(3))
+    game_date = Column(String(10))
+    home_road = Column(String(1))
+
+    goals = Column(Integer, default=0)
+    assists = Column(Integer, default=0)
+    points = Column(Integer, default=0)
+    plus_minus = Column(Integer, default=0)
+    pim = Column(Integer, default=0)
+    shots = Column(Integer, default=0)
+    shifts = Column(Integer, default=0)
+    toi = Column(String(10))
+    power_play_goals = Column(Integer, default=0)
+    power_play_points = Column(Integer, default=0)
+    shorthanded_goals = Column(Integer, default=0)
+    game_winning_goals = Column(Integer, default=0)
+    ot_goals = Column(Integer, default=0)
+
+    raw_data = Column(Text)
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        Index("ix_gamelog_player_game", "player_id", "game_id"),
+    )
+
+
+class ShotRecord(Base):
+    """Individual shot events from MoneyPuck shot data."""
+    __tablename__ = "shots"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    season = Column(String(8), index=True)
+    game_id = Column(Integer, index=True)
+
+    team = Column(String(3))
+    shooter_id = Column(Integer, index=True)
+    shooter_name = Column(String(100))
+    goalie_id = Column(Integer)
+    goalie_name = Column(String(100))
+
+    event = Column(String(10))  # SHOT, GOAL, MISS
+    period = Column(Integer)
+    time = Column(Integer)  # seconds into period
+
+    x_coord = Column(Float)
+    y_coord = Column(Float)
+    shot_type = Column(String(20))
+
+    x_goal = Column(Float)  # expected goal probability
+    goal = Column(Integer)  # 0 or 1
+
+    shot_angle = Column(Float)
+    shot_distance = Column(Float)
+    shot_rebound = Column(Integer)
+    shot_rush = Column(Integer)
+
+    situation = Column(String(10))  # 5v5, 5v4, etc.
+    is_home = Column(Boolean)
+
+    __table_args__ = (
+        Index("ix_shot_game_shooter", "game_id", "shooter_id"),
+    )
+
+
 class Database:
     """SQLite database wrapper for NHL data."""
 
@@ -320,6 +494,11 @@ class Database:
                 "contracts": session.query(ContractRecord).count(),
                 "advanced_stats": session.query(AdvancedStatsRecord).count(),
                 "rosters": session.query(RosterRecord).count(),
+                "draft_picks": session.query(DraftRecord).count(),
+                "boxscores": session.query(BoxscoreRecord).count(),
+                "play_by_play": session.query(PlayByPlayRecord).count(),
+                "game_logs": session.query(GameLogRecord).count(),
+                "shots": session.query(ShotRecord).count(),
             }
 
     def upsert_contracts(self, contracts: list[dict[str, Any]]) -> int:
@@ -451,6 +630,231 @@ class Database:
 
             session.commit()
             self.logger.info("upserted_advanced_stats", count=count)
+            return count
+
+    def upsert_draft_picks(self, picks: list[dict[str, Any]]) -> int:
+        """Insert or update draft pick records."""
+        with self.get_session() as session:
+            count = 0
+            for p in picks:
+                year = p.get("draft_year")
+                rank = p.get("rank")
+                if not year or not rank:
+                    continue
+
+                existing = (
+                    session.query(DraftRecord)
+                    .filter_by(draft_year=year, rank=rank)
+                    .first()
+                )
+
+                if existing:
+                    existing.first_name = p.get("first_name", existing.first_name)
+                    existing.last_name = p.get("last_name", existing.last_name)
+                    existing.position = p.get("position", existing.position)
+                    existing.raw_data = json.dumps(p)
+                    existing.updated_at = datetime.utcnow()
+                else:
+                    session.add(DraftRecord(
+                        draft_year=year,
+                        rank=rank,
+                        first_name=p.get("first_name"),
+                        last_name=p.get("last_name"),
+                        position=p.get("position"),
+                        shoots_catches=p.get("shoots_catches"),
+                        height_inches=p.get("height_inches"),
+                        weight_pounds=p.get("weight_pounds"),
+                        amateur_club=p.get("amateur_club"),
+                        amateur_league=p.get("amateur_league"),
+                        birth_date=p.get("birth_date"),
+                        birth_country=p.get("birth_country"),
+                        midterm_rank=p.get("midterm_rank"),
+                        final_rank=p.get("final_rank"),
+                        raw_data=json.dumps(p),
+                    ))
+                count += 1
+
+            session.commit()
+            self.logger.info("upserted_draft_picks", count=count)
+            return count
+
+    def upsert_boxscores(self, game_id: int, players: list[dict[str, Any]]) -> int:
+        """Insert or update boxscore records for a game."""
+        with self.get_session() as session:
+            count = 0
+            for p in players:
+                player_id = p.get("player_id")
+                if not player_id:
+                    continue
+
+                existing = (
+                    session.query(BoxscoreRecord)
+                    .filter_by(game_id=game_id, player_id=player_id)
+                    .first()
+                )
+
+                if existing:
+                    for key in ["goals", "assists", "points", "plus_minus", "pim",
+                               "hits", "shots", "blocked_shots", "toi", "shifts",
+                               "giveaways", "takeaways", "saves", "shots_against", "goals_against"]:
+                        if p.get(key) is not None:
+                            setattr(existing, key, p[key])
+                    existing.raw_data = json.dumps(p)
+                    existing.updated_at = datetime.utcnow()
+                else:
+                    session.add(BoxscoreRecord(
+                        game_id=game_id,
+                        player_id=player_id,
+                        player_name=p.get("player_name"),
+                        team_abbrev=p.get("team_abbrev"),
+                        position=p.get("position"),
+                        is_home=p.get("is_home"),
+                        goals=p.get("goals", 0),
+                        assists=p.get("assists", 0),
+                        points=p.get("points", 0),
+                        plus_minus=p.get("plus_minus", 0),
+                        pim=p.get("pim", 0),
+                        hits=p.get("hits", 0),
+                        shots=p.get("shots", 0),
+                        blocked_shots=p.get("blocked_shots", 0),
+                        faceoff_pct=p.get("faceoff_pct"),
+                        toi=p.get("toi"),
+                        shifts=p.get("shifts", 0),
+                        giveaways=p.get("giveaways", 0),
+                        takeaways=p.get("takeaways", 0),
+                        power_play_goals=p.get("power_play_goals", 0),
+                        saves=p.get("saves"),
+                        shots_against=p.get("shots_against"),
+                        goals_against=p.get("goals_against"),
+                        raw_data=json.dumps(p),
+                    ))
+                count += 1
+
+            session.commit()
+            return count
+
+    def insert_play_by_play(self, game_id: int, events: list[dict[str, Any]]) -> int:
+        """Insert play-by-play events for a game. Replaces existing events."""
+        with self.get_session() as session:
+            # Delete existing events for this game (full replace)
+            session.query(PlayByPlayRecord).filter_by(game_id=game_id).delete()
+
+            count = 0
+            for e in events:
+                session.add(PlayByPlayRecord(
+                    game_id=game_id,
+                    event_id=e.get("event_id"),
+                    event_type=e.get("event_type"),
+                    period=e.get("period"),
+                    period_type=e.get("period_type"),
+                    time_in_period=e.get("time_in_period"),
+                    time_remaining=e.get("time_remaining"),
+                    x_coord=e.get("x_coord"),
+                    y_coord=e.get("y_coord"),
+                    zone_code=e.get("zone_code"),
+                    player1_id=e.get("player1_id"),
+                    player2_id=e.get("player2_id"),
+                    player3_id=e.get("player3_id"),
+                    team_id=e.get("team_id"),
+                    shot_type=e.get("shot_type"),
+                    description=e.get("description"),
+                    raw_data=json.dumps(e),
+                ))
+                count += 1
+
+            session.commit()
+            self.logger.info("inserted_play_by_play", game_id=game_id, count=count)
+            return count
+
+    def upsert_game_logs(self, player_id: int, season: str, logs: list[dict[str, Any]]) -> int:
+        """Insert or update player game log records."""
+        with self.get_session() as session:
+            count = 0
+            for log in logs:
+                game_id = log.get("game_id")
+                if not game_id:
+                    continue
+
+                existing = (
+                    session.query(GameLogRecord)
+                    .filter_by(player_id=player_id, game_id=game_id)
+                    .first()
+                )
+
+                if existing:
+                    for key in ["goals", "assists", "points", "plus_minus", "pim",
+                               "shots", "shifts", "toi", "power_play_goals",
+                               "power_play_points", "shorthanded_goals",
+                               "game_winning_goals", "ot_goals"]:
+                        if log.get(key) is not None:
+                            setattr(existing, key, log[key])
+                    existing.raw_data = json.dumps(log)
+                    existing.updated_at = datetime.utcnow()
+                else:
+                    session.add(GameLogRecord(
+                        player_id=player_id,
+                        game_id=game_id,
+                        season=season,
+                        team_abbrev=log.get("team_abbrev"),
+                        opponent_abbrev=log.get("opponent_abbrev"),
+                        game_date=log.get("game_date"),
+                        home_road=log.get("home_road"),
+                        goals=log.get("goals", 0),
+                        assists=log.get("assists", 0),
+                        points=log.get("points", 0),
+                        plus_minus=log.get("plus_minus", 0),
+                        pim=log.get("pim", 0),
+                        shots=log.get("shots", 0),
+                        shifts=log.get("shifts", 0),
+                        toi=log.get("toi"),
+                        power_play_goals=log.get("power_play_goals", 0),
+                        power_play_points=log.get("power_play_points", 0),
+                        shorthanded_goals=log.get("shorthanded_goals", 0),
+                        game_winning_goals=log.get("game_winning_goals", 0),
+                        ot_goals=log.get("ot_goals", 0),
+                        raw_data=json.dumps(log),
+                    ))
+                count += 1
+
+            session.commit()
+            return count
+
+    def insert_shots(self, shots: list[dict[str, Any]]) -> int:
+        """Insert shot records. Bulk insert for efficiency."""
+        with self.get_session() as session:
+            count = 0
+            for s in shots:
+                session.add(ShotRecord(
+                    season=s.get("season"),
+                    game_id=s.get("game_id"),
+                    team=s.get("team"),
+                    shooter_id=s.get("shooter_id"),
+                    shooter_name=s.get("shooter_name"),
+                    goalie_id=s.get("goalie_id"),
+                    goalie_name=s.get("goalie_name"),
+                    event=s.get("event"),
+                    period=s.get("period"),
+                    time=s.get("time"),
+                    x_coord=s.get("x_coord"),
+                    y_coord=s.get("y_coord"),
+                    shot_type=s.get("shot_type"),
+                    x_goal=s.get("x_goal"),
+                    goal=s.get("goal"),
+                    shot_angle=s.get("shot_angle"),
+                    shot_distance=s.get("shot_distance"),
+                    shot_rebound=s.get("shot_rebound"),
+                    shot_rush=s.get("shot_rush"),
+                    situation=s.get("situation"),
+                    is_home=s.get("is_home"),
+                ))
+                count += 1
+
+                # Batch commit every 10000
+                if count % 10000 == 0:
+                    session.commit()
+
+            session.commit()
+            self.logger.info("inserted_shots", count=count)
             return count
 
     def upsert_rosters(self, rosters: list[dict[str, Any]]) -> int:
