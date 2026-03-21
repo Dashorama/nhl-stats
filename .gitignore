@@ -50,6 +50,7 @@ data/*.csv
 # Logs
 *.log
 logs/
+data/logs/
 
 # OS
 .DS_Store
