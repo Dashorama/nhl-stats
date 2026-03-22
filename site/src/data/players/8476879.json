@@ -1,0 +1,46 @@
+{
+  "player_id": 8476879,
+  "player_name": "Cody Ceci",
+  "team_abbrev": "SJS",
+  "goals": 4,
+  "xg": 4.6,
+  "gax": -0.6,
+  "shots": 161,
+  "sh_vs_expected": 0.87,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.5
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.46
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.21
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.35
+    }
+  ],
+  "verdict": "Career average 5% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

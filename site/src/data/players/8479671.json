@@ -1,0 +1,42 @@
+{
+  "player_id": 8479671,
+  "player_name": "Mathieu Olivier",
+  "team_abbrev": "CBJ",
+  "goals": 19,
+  "xg": 12.9,
+  "gax": 6.1,
+  "shots": 152,
+  "sh_vs_expected": 1.47,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.54
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.76
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.47
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.11
+    }
+  ],
+  "verdict": "Career average 1% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

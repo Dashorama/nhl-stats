@@ -1,0 +1,46 @@
+{
+  "player_id": 8475745,
+  "player_name": "Charlie Coyle",
+  "team_abbrev": "BOS",
+  "goals": 18,
+  "xg": 14.6,
+  "gax": 3.4,
+  "shots": 184,
+  "sh_vs_expected": 1.23,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.92
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.23
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.8
+    }
+  ],
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8478396,
+  "player_name": "Noah Hanifin",
+  "team_abbrev": "VGK",
+  "goals": 11,
+  "xg": 7.9,
+  "gax": 3.1,
+  "shots": 245,
+  "sh_vs_expected": 1.39,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.71
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.39
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.54
+    }
+  ],
+  "verdict": "Career average 9% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

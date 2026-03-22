@@ -1,0 +1,46 @@
+{
+  "player_id": 8480336,
+  "player_name": "Sean Walker",
+  "team_abbrev": "CAR",
+  "goals": 6,
+  "xg": 9.9,
+  "gax": -3.9,
+  "shots": 260,
+  "sh_vs_expected": 0.61,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.45
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.61
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.83
+    }
+  ],
+  "verdict": "Career average 0% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

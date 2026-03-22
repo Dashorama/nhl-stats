@@ -1,0 +1,46 @@
+{
+  "player_id": 8475764,
+  "player_name": "Cam Fowler",
+  "team_abbrev": "ANA",
+  "goals": 11,
+  "xg": 5.6,
+  "gax": 5.4,
+  "shots": 127,
+  "sh_vs_expected": 1.98,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.56
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.49
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.98
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.58
+    }
+  ],
+  "verdict": "Career average 22% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

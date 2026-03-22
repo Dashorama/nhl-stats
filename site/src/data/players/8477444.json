@@ -1,0 +1,46 @@
+{
+  "player_id": 8477444,
+  "player_name": "Andre Burakovsky",
+  "team_abbrev": "SEA",
+  "goals": 10,
+  "xg": 11.8,
+  "gax": -1.8,
+  "shots": 169,
+  "sh_vs_expected": 0.85,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.37
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 2.3
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.89
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.58
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.41
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.03
+    }
+  ],
+  "verdict": "Career average 40% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

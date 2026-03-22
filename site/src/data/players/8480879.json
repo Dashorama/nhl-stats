@@ -1,0 +1,38 @@
+{
+  "player_id": 8480879,
+  "player_name": "Jacob Bernard-Docker",
+  "team_abbrev": "OTT",
+  "goals": 2,
+  "xg": 1.1,
+  "gax": 0.9,
+  "shots": 56,
+  "sh_vs_expected": 1.78,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.34
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.78
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 35% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

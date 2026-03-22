@@ -1,0 +1,30 @@
+{
+  "player_id": 8482157,
+  "player_name": "Will Cuylle",
+  "team_abbrev": "NYR",
+  "goals": 21,
+  "xg": 22.8,
+  "gax": -1.8,
+  "shots": 224,
+  "sh_vs_expected": 0.92,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.92
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.83
+    }
+  ],
+  "verdict": "Career average 9% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

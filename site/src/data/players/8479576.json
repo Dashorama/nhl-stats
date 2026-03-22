@@ -1,0 +1,30 @@
+{
+  "player_id": 8479576,
+  "player_name": "Vincent Desharnais",
+  "team_abbrev": "VAN",
+  "goals": 0,
+  "xg": 1.0,
+  "gax": -1.0,
+  "shots": 58,
+  "sh_vs_expected": 1.0,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.69
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.38
+    }
+  ],
+  "verdict": "Career average 2% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

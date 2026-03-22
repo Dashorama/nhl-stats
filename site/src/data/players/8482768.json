@@ -1,0 +1,22 @@
+{
+  "player_id": 8482768,
+  "player_name": "Fedor Svechkov",
+  "team_abbrev": "NSH",
+  "goals": 8,
+  "xg": 9.1,
+  "gax": -1.1,
+  "shots": 106,
+  "sh_vs_expected": 0.88,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.42
+    }
+  ],
+  "verdict": "Career average 35% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

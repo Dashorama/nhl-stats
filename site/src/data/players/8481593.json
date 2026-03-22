@@ -1,0 +1,26 @@
+{
+  "player_id": 8481593,
+  "player_name": "Jayden Struble",
+  "team_abbrev": "MTL",
+  "goals": 2,
+  "xg": 1.5,
+  "gax": 0.5,
+  "shots": 70,
+  "sh_vs_expected": 1.31,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.48
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.31
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 26% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

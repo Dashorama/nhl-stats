@@ -1,0 +1,26 @@
+{
+  "player_id": 8483495,
+  "player_name": "Simon Nemec",
+  "team_abbrev": "NJD",
+  "goals": 3,
+  "xg": 1.5,
+  "gax": 1.5,
+  "shots": 51,
+  "sh_vs_expected": 2.02,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.57
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 2.02
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 2.12
+    }
+  ],
+  "verdict": "Career average 57% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

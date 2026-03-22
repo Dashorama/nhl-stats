@@ -1,0 +1,26 @@
+{
+  "player_id": 8483445,
+  "player_name": "Cutter Gauthier",
+  "team_abbrev": "ANA",
+  "goals": 20,
+  "xg": 18.0,
+  "gax": 2.0,
+  "shots": 306,
+  "sh_vs_expected": 1.11,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.11
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.43
+    }
+  ],
+  "verdict": "Career average 18% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

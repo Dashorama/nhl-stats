@@ -1,0 +1,26 @@
+{
+  "player_id": 8484911,
+  "player_name": "Collin Graf",
+  "team_abbrev": "SJS",
+  "goals": 5,
+  "xg": 4.2,
+  "gax": 0.8,
+  "shots": 54,
+  "sh_vs_expected": 1.18,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.21
+    }
+  ],
+  "verdict": "Career average 13% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

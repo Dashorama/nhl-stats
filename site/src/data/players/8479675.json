@@ -1,0 +1,46 @@
+{
+  "player_id": 8479675,
+  "player_name": "Trevor Moore",
+  "team_abbrev": "LAK",
+  "goals": 20,
+  "xg": 20.7,
+  "gax": -0.7,
+  "shots": 268,
+  "sh_vs_expected": 0.97,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.76
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.69
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.6
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.76
+    }
+  ],
+  "verdict": "Career average 16% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

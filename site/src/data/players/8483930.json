@@ -1,0 +1,22 @@
+{
+  "player_id": 8483930,
+  "player_name": "Ivan Ivan",
+  "team_abbrev": "COL",
+  "goals": 5,
+  "xg": 5.5,
+  "gax": -0.5,
+  "shots": 50,
+  "sh_vs_expected": 0.91,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

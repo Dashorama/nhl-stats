@@ -1,0 +1,30 @@
+{
+  "player_id": 8482087,
+  "player_name": "Kaiden Guhle",
+  "team_abbrev": "MTL",
+  "goals": 6,
+  "xg": 3.8,
+  "gax": 2.2,
+  "shots": 127,
+  "sh_vs_expected": 1.59,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.74
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.33
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.59
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.63
+    }
+  ],
+  "verdict": "Career average 32% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

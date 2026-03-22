@@ -1,0 +1,26 @@
+{
+  "player_id": 8482737,
+  "player_name": "Zack Bolduc",
+  "team_abbrev": "STL",
+  "goals": 19,
+  "xg": 13.4,
+  "gax": 5.6,
+  "shots": 199,
+  "sh_vs_expected": 1.42,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.76
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.42
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.73
+    }
+  ],
+  "verdict": "Career average 30% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

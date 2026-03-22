@@ -1,0 +1,42 @@
+{
+  "player_id": 8477919,
+  "player_name": "Frederick Gaudreau",
+  "team_abbrev": "MIN",
+  "goals": 18,
+  "xg": 11.2,
+  "gax": 6.8,
+  "shots": 157,
+  "sh_vs_expected": 1.61,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.6
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.36
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.77
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.61
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.67
+    }
+  ],
+  "verdict": "Career average 3% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

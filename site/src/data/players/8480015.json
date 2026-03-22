@@ -1,0 +1,38 @@
+{
+  "player_id": 8480015,
+  "player_name": "Owen Tippett",
+  "team_abbrev": "PHI",
+  "goals": 21,
+  "xg": 15.2,
+  "gax": 5.8,
+  "shots": 296,
+  "sh_vs_expected": 1.38,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.11
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.38
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.07
+    }
+  ],
+  "verdict": "Career average 4% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

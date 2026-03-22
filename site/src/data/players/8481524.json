@@ -1,0 +1,38 @@
+{
+  "player_id": 8481524,
+  "player_name": "Bowen Byram",
+  "team_abbrev": "BUF",
+  "goals": 7,
+  "xg": 8.8,
+  "gax": -1.8,
+  "shots": 144,
+  "sh_vs_expected": 0.79,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.92
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.37
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.02
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.97
+    }
+  ],
+  "verdict": "Career average 18% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

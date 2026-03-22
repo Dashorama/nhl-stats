@@ -1,0 +1,46 @@
+{
+  "player_id": 8475171,
+  "player_name": "Oliver Ekman-Larsson",
+  "team_abbrev": "TOR",
+  "goals": 6,
+  "xg": 6.2,
+  "gax": -0.2,
+  "shots": 206,
+  "sh_vs_expected": 0.97,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.42
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.43
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.77
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.72
+    }
+  ],
+  "verdict": "Career average 16% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

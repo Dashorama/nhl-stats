@@ -1,0 +1,46 @@
+{
+  "player_id": 8480113,
+  "player_name": "Alex Iafallo",
+  "team_abbrev": "WPG",
+  "goals": 16,
+  "xg": 16.4,
+  "gax": -0.4,
+  "shots": 182,
+  "sh_vs_expected": 0.98,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.76
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.81
+    }
+  ],
+  "verdict": "Career average 7% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

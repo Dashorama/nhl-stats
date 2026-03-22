@@ -1,0 +1,38 @@
+{
+  "player_id": 8478904,
+  "player_name": "Steven Lorentz",
+  "team_abbrev": "TOR",
+  "goals": 8,
+  "xg": 9.5,
+  "gax": -1.5,
+  "shots": 128,
+  "sh_vs_expected": 0.84,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.29
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.7
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.67
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.73
+    }
+  ],
+  "verdict": "Career average 34% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,38 @@
+{
+  "player_id": 8479968,
+  "player_name": "Vinni Lettieri",
+  "team_abbrev": "BOS",
+  "goals": 3,
+  "xg": 5.7,
+  "gax": -2.7,
+  "shots": 81,
+  "sh_vs_expected": 0.53,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.28
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.53
+    }
+  ],
+  "verdict": "Career average 14% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

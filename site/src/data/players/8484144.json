@@ -1,0 +1,26 @@
+{
+  "player_id": 8484144,
+  "player_name": "Connor Bedard",
+  "team_abbrev": "CHI",
+  "goals": 23,
+  "xg": 19.1,
+  "gax": 3.9,
+  "shots": 289,
+  "sh_vs_expected": 1.2,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.26
+    }
+  ],
+  "verdict": "Career average 17% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

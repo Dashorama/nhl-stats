@@ -1,0 +1,42 @@
+{
+  "player_id": 8478859,
+  "player_name": "Niko Mikkola",
+  "team_abbrev": "FLA",
+  "goals": 9,
+  "xg": 7.5,
+  "gax": 1.5,
+  "shots": 210,
+  "sh_vs_expected": 1.19,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.22
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.41
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.84
+    }
+  ],
+  "verdict": "Career average 6% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

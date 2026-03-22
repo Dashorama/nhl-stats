@@ -1,0 +1,22 @@
+{
+  "player_id": 8482126,
+  "player_name": "Emil Andrae",
+  "team_abbrev": "PHI",
+  "goals": 1,
+  "xg": 3.2,
+  "gax": -2.2,
+  "shots": 76,
+  "sh_vs_expected": 0.31,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.31
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.84
+    }
+  ],
+  "verdict": "Career average 43% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

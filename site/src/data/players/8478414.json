@@ -1,0 +1,46 @@
+{
+  "player_id": 8478414,
+  "player_name": "Timo Meier",
+  "team_abbrev": "NJD",
+  "goals": 29,
+  "xg": 33.2,
+  "gax": -4.2,
+  "shots": 423,
+  "sh_vs_expected": 0.87,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.13
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.69
+    }
+  ],
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

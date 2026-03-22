@@ -1,0 +1,38 @@
+{
+  "player_id": 8478421,
+  "player_name": "A.J. Greer",
+  "team_abbrev": "FLA",
+  "goals": 8,
+  "xg": 12.9,
+  "gax": -4.9,
+  "shots": 144,
+  "sh_vs_expected": 0.62,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.57
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.62
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.09
+    }
+  ],
+  "verdict": "Career average 22% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

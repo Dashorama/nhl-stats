@@ -1,0 +1,22 @@
+{
+  "player_id": 8480840,
+  "player_name": "Oskar Back",
+  "team_abbrev": "DAL",
+  "goals": 4,
+  "xg": 6.9,
+  "gax": -2.9,
+  "shots": 63,
+  "sh_vs_expected": 0.58,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.46
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.89
+    }
+  ],
+  "verdict": "Career average 32% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

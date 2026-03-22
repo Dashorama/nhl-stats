@@ -1,0 +1,46 @@
+{
+  "player_id": 8479336,
+  "player_name": "Carl Grundstrom",
+  "team_abbrev": "SJS",
+  "goals": 3,
+  "xg": 7.5,
+  "gax": -4.5,
+  "shots": 119,
+  "sh_vs_expected": 0.4,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.22
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.83
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.4
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.48
+    }
+  ],
+  "verdict": "Career average 2% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

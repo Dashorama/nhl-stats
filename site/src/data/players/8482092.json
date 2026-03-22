@@ -1,0 +1,30 @@
+{
+  "player_id": 8482092,
+  "player_name": "Ridly Greig",
+  "team_abbrev": "OTT",
+  "goals": 14,
+  "xg": 19.5,
+  "gax": -5.5,
+  "shots": 204,
+  "sh_vs_expected": 0.72,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.43
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.77
+    }
+  ],
+  "verdict": "Career average 27% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

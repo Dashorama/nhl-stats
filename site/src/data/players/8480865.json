@@ -1,0 +1,42 @@
+{
+  "player_id": 8480865,
+  "player_name": "Noah Dobson",
+  "team_abbrev": "NYI",
+  "goals": 10,
+  "xg": 9.7,
+  "gax": 0.3,
+  "shots": 296,
+  "sh_vs_expected": 1.04,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.61
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.46
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.41
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.48
+    }
+  ],
+  "verdict": "Career average 21% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

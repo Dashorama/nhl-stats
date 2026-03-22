@@ -1,0 +1,42 @@
+{
+  "player_id": 8479982,
+  "player_name": "Conor Timmins",
+  "team_abbrev": "TOR",
+  "goals": 3,
+  "xg": 3.3,
+  "gax": -0.3,
+  "shots": 110,
+  "sh_vs_expected": 0.91,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 3.73
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.64
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 33% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

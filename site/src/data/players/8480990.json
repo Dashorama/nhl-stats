@@ -1,0 +1,30 @@
+{
+  "player_id": 8480990,
+  "player_name": "Declan Chisholm",
+  "team_abbrev": "MIN",
+  "goals": 2,
+  "xg": 2.0,
+  "gax": -0.0,
+  "shots": 95,
+  "sh_vs_expected": 0.98,
+  "seasons": [
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.72
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.66
+    }
+  ],
+  "verdict": "Career average 34% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

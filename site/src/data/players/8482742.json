@@ -1,0 +1,22 @@
+{
+  "player_id": 8482742,
+  "player_name": "Zachary L'Heureux",
+  "team_abbrev": "NSH",
+  "goals": 5,
+  "xg": 11.7,
+  "gax": -6.7,
+  "shots": 127,
+  "sh_vs_expected": 0.43,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.43
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.72
+    }
+  ],
+  "verdict": "Career average 43% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

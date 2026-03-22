@@ -1,0 +1,22 @@
+{
+  "player_id": 8482144,
+  "player_name": "Jack Thompson",
+  "team_abbrev": "SJS",
+  "goals": 4,
+  "xg": 1.6,
+  "gax": 2.4,
+  "shots": 61,
+  "sh_vs_expected": 2.53,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 2.53
+    }
+  ],
+  "verdict": "Career average 76% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

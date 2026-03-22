@@ -1,0 +1,46 @@
+{
+  "player_id": 8480002,
+  "player_name": "Nico Hischier",
+  "team_abbrev": "NJD",
+  "goals": 39,
+  "xg": 36.6,
+  "gax": 2.4,
+  "shots": 287,
+  "sh_vs_expected": 1.07,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.94
+    }
+  ],
+  "verdict": "Career average 5% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,42 @@
+{
+  "player_id": 8475413,
+  "player_name": "Justin Dowling",
+  "team_abbrev": "NJD",
+  "goals": 2,
+  "xg": 4.9,
+  "gax": -2.9,
+  "shots": 69,
+  "sh_vs_expected": 0.4,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.5
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.03
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.4
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 1% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

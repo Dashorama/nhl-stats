@@ -1,0 +1,46 @@
+{
+  "player_id": 8479314,
+  "player_name": "Matthew Tkachuk",
+  "team_abbrev": "FLA",
+  "goals": 30,
+  "xg": 29.8,
+  "gax": 0.2,
+  "shots": 308,
+  "sh_vs_expected": 1.01,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.17
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.88
+    }
+  ],
+  "verdict": "Career average 3% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

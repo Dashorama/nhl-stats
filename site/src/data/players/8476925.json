@@ -1,0 +1,46 @@
+{
+  "player_id": 8476925,
+  "player_name": "Colton Sissons",
+  "team_abbrev": "NSH",
+  "goals": 7,
+  "xg": 11.0,
+  "gax": -4.0,
+  "shots": 123,
+  "sh_vs_expected": 0.64,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.49
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.82
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.7
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.64
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.68
+    }
+  ],
+  "verdict": "Career average 16% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

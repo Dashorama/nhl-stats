@@ -1,0 +1,42 @@
+{
+  "player_id": 8480028,
+  "player_name": "Morgan Frost",
+  "team_abbrev": "PHI",
+  "goals": 14,
+  "xg": 16.1,
+  "gax": -2.1,
+  "shots": 206,
+  "sh_vs_expected": 0.87,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.58
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.82
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.06
+    }
+  ],
+  "verdict": "Career average 15% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

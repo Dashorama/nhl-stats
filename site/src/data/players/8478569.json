@@ -1,0 +1,46 @@
+{
+  "player_id": 8478569,
+  "player_name": "Noel Acciari",
+  "team_abbrev": "PIT",
+  "goals": 5,
+  "xg": 11.2,
+  "gax": -6.2,
+  "shots": 115,
+  "sh_vs_expected": 0.45,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.6
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.47
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.47
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.6
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.45
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.84
+    }
+  ],
+  "verdict": "Career average 27% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

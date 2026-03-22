@@ -1,0 +1,38 @@
+{
+  "player_id": 8477070,
+  "player_name": "Liam O'Brien",
+  "team_abbrev": "UTA",
+  "goals": 0,
+  "xg": 4.6,
+  "gax": -4.6,
+  "shots": 53,
+  "sh_vs_expected": 1.0,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.5
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.65
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.58
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.54
+    }
+  ],
+  "verdict": "Career average 29% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

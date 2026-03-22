@@ -1,0 +1,46 @@
+{
+  "player_id": 8477956,
+  "player_name": "David Pastrnak",
+  "team_abbrev": "BOS",
+  "goals": 43,
+  "xg": 30.5,
+  "gax": 12.5,
+  "shots": 443,
+  "sh_vs_expected": 1.41,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.45
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.48
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.31
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.33
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.41
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.03
+    }
+  ],
+  "verdict": "Career average 31% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

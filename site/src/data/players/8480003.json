@@ -1,0 +1,42 @@
+{
+  "player_id": 8480003,
+  "player_name": "Jesper Boqvist",
+  "team_abbrev": "FLA",
+  "goals": 14,
+  "xg": 11.4,
+  "gax": 2.6,
+  "shots": 143,
+  "sh_vs_expected": 1.23,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.23
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.62
+    }
+  ],
+  "verdict": "Career average 8% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

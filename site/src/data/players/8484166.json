@@ -1,0 +1,26 @@
+{
+  "player_id": 8484166,
+  "player_name": "Adam Fantilli",
+  "team_abbrev": "CBJ",
+  "goals": 32,
+  "xg": 17.4,
+  "gax": 14.6,
+  "shots": 279,
+  "sh_vs_expected": 1.83,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.83
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.9
+    }
+  ],
+  "verdict": "Career average 26% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8478136,
+  "player_name": "Jake Middleton",
+  "team_abbrev": "MIN",
+  "goals": 8,
+  "xg": 5.3,
+  "gax": 2.7,
+  "shots": 147,
+  "sh_vs_expected": 1.51,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.48
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.23
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.51
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.36
+    }
+  ],
+  "verdict": "Career average 7% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

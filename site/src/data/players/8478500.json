@@ -1,0 +1,46 @@
+{
+  "player_id": 8478500,
+  "player_name": "Ivan Provorov",
+  "team_abbrev": "CBJ",
+  "goals": 7,
+  "xg": 5.6,
+  "gax": 1.4,
+  "shots": 148,
+  "sh_vs_expected": 1.25,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.35
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.16
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.33
+    }
+  ],
+  "verdict": "Career average 13% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

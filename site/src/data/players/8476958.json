@@ -1,0 +1,46 @@
+{
+  "player_id": 8476958,
+  "player_name": "Jaccob Slavin",
+  "team_abbrev": "CAR",
+  "goals": 8,
+  "xg": 8.6,
+  "gax": -0.6,
+  "shots": 264,
+  "sh_vs_expected": 0.93,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.61
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.45
+    }
+  ],
+  "verdict": "Career average 17% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

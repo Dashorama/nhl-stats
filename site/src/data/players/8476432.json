@@ -1,0 +1,46 @@
+{
+  "player_id": 8476432,
+  "player_name": "Boone Jenner",
+  "team_abbrev": "CBJ",
+  "goals": 7,
+  "xg": 13.0,
+  "gax": -6.0,
+  "shots": 111,
+  "sh_vs_expected": 0.54,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.64
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.54
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.73
+    }
+  ],
+  "verdict": "Career average 16% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

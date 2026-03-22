@@ -1,0 +1,42 @@
+{
+  "player_id": 8479414,
+  "player_name": "Nathan Bastian",
+  "team_abbrev": "NJD",
+  "goals": 4,
+  "xg": 7.5,
+  "gax": -3.5,
+  "shots": 70,
+  "sh_vs_expected": 0.53,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.72
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.61
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.53
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 2.03
+    }
+  ],
+  "verdict": "Career average 3% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

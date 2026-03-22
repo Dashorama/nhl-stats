@@ -1,0 +1,46 @@
+{
+  "player_id": 8477504,
+  "player_name": "Josh Morrissey",
+  "team_abbrev": "WPG",
+  "goals": 14,
+  "xg": 11.2,
+  "gax": 2.8,
+  "shots": 320,
+  "sh_vs_expected": 1.25,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.17
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.39
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.99
+    }
+  ],
+  "verdict": "Career average 22% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

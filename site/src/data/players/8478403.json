@@ -1,0 +1,46 @@
+{
+  "player_id": 8478403,
+  "player_name": "Jack Eichel",
+  "team_abbrev": "VGK",
+  "goals": 29,
+  "xg": 27.8,
+  "gax": 1.2,
+  "shots": 348,
+  "sh_vs_expected": 1.04,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.56
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.32
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.16
+    }
+  ],
+  "verdict": "Career average 10% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

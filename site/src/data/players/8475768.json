@@ -1,0 +1,46 @@
+{
+  "player_id": 8475768,
+  "player_name": "Jaden Schwartz",
+  "team_abbrev": "SEA",
+  "goals": 26,
+  "xg": 30.1,
+  "gax": -4.1,
+  "shots": 294,
+  "sh_vs_expected": 0.86,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.93
+    }
+  ],
+  "verdict": "Career average 10% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

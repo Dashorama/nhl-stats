@@ -1,0 +1,38 @@
+{
+  "player_id": 8479525,
+  "player_name": "Ross Colton",
+  "team_abbrev": "COL",
+  "goals": 16,
+  "xg": 18.3,
+  "gax": -2.3,
+  "shots": 200,
+  "sh_vs_expected": 0.88,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.46
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.5
+    }
+  ],
+  "verdict": "Career average 8% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

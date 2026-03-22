@@ -1,0 +1,26 @@
+{
+  "player_id": 8482803,
+  "player_name": "Olen Zellweger",
+  "team_abbrev": "ANA",
+  "goals": 7,
+  "xg": 6.4,
+  "gax": 0.6,
+  "shots": 199,
+  "sh_vs_expected": 1.09,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.43
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.81
+    }
+  ],
+  "verdict": "Career average 11% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

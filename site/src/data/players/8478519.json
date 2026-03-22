@@ -1,0 +1,46 @@
+{
+  "player_id": 8478519,
+  "player_name": "Anthony Cirelli",
+  "team_abbrev": "TBL",
+  "goals": 28,
+  "xg": 29.0,
+  "gax": -1.0,
+  "shots": 241,
+  "sh_vs_expected": 0.96,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.86
+    }
+  ],
+  "verdict": "Career average 8% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

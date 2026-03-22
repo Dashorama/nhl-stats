@@ -1,0 +1,46 @@
+{
+  "player_id": 8480069,
+  "player_name": "Cale Makar",
+  "team_abbrev": "COL",
+  "goals": 31,
+  "xg": 21.7,
+  "gax": 9.3,
+  "shots": 434,
+  "sh_vs_expected": 1.43,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.54
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.31
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.61
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.96
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.29
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.43
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.19
+    }
+  ],
+  "verdict": "Career average 45% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8477450,
+  "player_name": "Jason Dickinson",
+  "team_abbrev": "CHI",
+  "goals": 7,
+  "xg": 8.0,
+  "gax": -1.0,
+  "shots": 93,
+  "sh_vs_expected": 0.87,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.13
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.68
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.23
+    }
+  ],
+  "verdict": "Career average 2% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8477503,
+  "player_name": "Max Domi",
+  "team_abbrev": "TOR",
+  "goals": 11,
+  "xg": 9.8,
+  "gax": 1.2,
+  "shots": 165,
+  "sh_vs_expected": 1.12,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.33
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.48
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.28
+    }
+  ],
+  "verdict": "Career average 10% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

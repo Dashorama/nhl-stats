@@ -1,0 +1,26 @@
+{
+  "player_id": 8482511,
+  "player_name": "Mason Lohrei",
+  "team_abbrev": "BOS",
+  "goals": 5,
+  "xg": 6.6,
+  "gax": -1.6,
+  "shots": 155,
+  "sh_vs_expected": 0.76,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.9
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.76
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.49
+    }
+  ],
+  "verdict": "Career average 38% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

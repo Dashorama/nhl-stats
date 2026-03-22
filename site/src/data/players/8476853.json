@@ -1,0 +1,46 @@
+{
+  "player_id": 8476853,
+  "player_name": "Morgan Rielly",
+  "team_abbrev": "TOR",
+  "goals": 11,
+  "xg": 6.4,
+  "gax": 4.6,
+  "shots": 230,
+  "sh_vs_expected": 1.73,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 2.1
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.48
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.64
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.73
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.2
+    }
+  ],
+  "verdict": "Career average 16% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

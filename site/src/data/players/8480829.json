@@ -1,0 +1,46 @@
+{
+  "player_id": 8480829,
+  "player_name": "Jesperi Kotkaniemi",
+  "team_abbrev": "CAR",
+  "goals": 12,
+  "xg": 16.4,
+  "gax": -4.4,
+  "shots": 194,
+  "sh_vs_expected": 0.73,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.39
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.45
+    }
+  ],
+  "verdict": "Career average 7% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8477935,
+  "player_name": "Sam Bennett",
+  "team_abbrev": "FLA",
+  "goals": 40,
+  "xg": 42.3,
+  "gax": -2.3,
+  "shots": 428,
+  "sh_vs_expected": 0.95,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.91
+    }
+  ],
+  "verdict": "Career average 13% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

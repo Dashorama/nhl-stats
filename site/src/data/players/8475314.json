@@ -1,0 +1,46 @@
+{
+  "player_id": 8475314,
+  "player_name": "Anders Lee",
+  "team_abbrev": "NYI",
+  "goals": 29,
+  "xg": 34.5,
+  "gax": -5.5,
+  "shots": 337,
+  "sh_vs_expected": 0.84,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.16
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.52
+    }
+  ],
+  "verdict": "Career average 16% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,42 @@
+{
+  "player_id": 8479323,
+  "player_name": "Adam Fox",
+  "team_abbrev": "NYR",
+  "goals": 10,
+  "xg": 13.9,
+  "gax": -3.9,
+  "shots": 210,
+  "sh_vs_expected": 0.72,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.62
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.5
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.81
+    }
+  ],
+  "verdict": "Career average 11% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

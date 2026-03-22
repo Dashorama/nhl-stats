@@ -1,0 +1,46 @@
+{
+  "player_id": 8477950,
+  "player_name": "Tony DeAngelo",
+  "team_abbrev": "NYI",
+  "goals": 4,
+  "xg": 3.2,
+  "gax": 0.8,
+  "shots": 101,
+  "sh_vs_expected": 1.27,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 2.04
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.36
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.16
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.4
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.76
+    }
+  ],
+  "verdict": "Career average 25% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

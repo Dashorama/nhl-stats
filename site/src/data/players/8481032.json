@@ -1,0 +1,34 @@
+{
+  "player_id": 8481032,
+  "player_name": "Paul Cotter",
+  "team_abbrev": "NJD",
+  "goals": 16,
+  "xg": 13.9,
+  "gax": 2.1,
+  "shots": 154,
+  "sh_vs_expected": 1.15,
+  "seasons": [
+    {
+      "season": "2021",
+      "sh_vs_expected": 2.24
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.55
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.57
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.02
+    }
+  ],
+  "verdict": "Career average 31% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,34 @@
+{
+  "player_id": 8481167,
+  "player_name": "Brayden Pachal",
+  "team_abbrev": "CGY",
+  "goals": 3,
+  "xg": 2.2,
+  "gax": 0.8,
+  "shots": 102,
+  "sh_vs_expected": 1.35,
+  "seasons": [
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.35
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 4% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

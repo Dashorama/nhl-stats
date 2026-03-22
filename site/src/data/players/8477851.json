@@ -1,0 +1,42 @@
+{
+  "player_id": 8477851,
+  "player_name": "Jordan Oesterle",
+  "team_abbrev": "BOS",
+  "goals": 4,
+  "xg": 1.4,
+  "gax": 2.6,
+  "shots": 64,
+  "sh_vs_expected": 2.79,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.41
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 2.79
+    }
+  ],
+  "verdict": "Career average 22% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

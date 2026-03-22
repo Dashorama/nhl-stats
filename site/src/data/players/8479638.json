@@ -1,0 +1,26 @@
+{
+  "player_id": 8479638,
+  "player_name": "Justin Brazeau",
+  "team_abbrev": "BOS",
+  "goals": 11,
+  "xg": 13.2,
+  "gax": -2.2,
+  "shots": 136,
+  "sh_vs_expected": 0.84,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.28
+    }
+  ],
+  "verdict": "Career average 3% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}
