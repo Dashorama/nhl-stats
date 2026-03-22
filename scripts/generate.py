@@ -38,15 +38,15 @@ class Generator:
         finally:
             conn.close()
 
-    def _unavailable_players(self) -> set[int]:
+    def _unavailable_players(self) -> dict[int, str]:
         with self._db() as conn:
             try:
                 rows = conn.execute(
-                    "SELECT player_id FROM injuries WHERE status IN ('IR','LTIR','SUSPENDED')"
+                    "SELECT player_id, status FROM injuries WHERE status IN ('IR','LTIR','SUSPENDED')"
                 ).fetchall()
-                return {r[0] for r in rows}
+                return {r[0]: r[1] for r in rows}
             except sqlite3.OperationalError:
-                return set()  # injuries table may not exist yet
+                return {}  # injuries table may not exist yet
 
     def _query_leaderboard(self) -> dict:
         unavailable = self._unavailable_players()
@@ -75,6 +75,7 @@ class Generator:
 
         team_rows_raw = []
         with self._db() as conn:
+            # TODO: add WHERE season=NHL_API_SEASON once games.season is populated by the scraper
             team_rows_raw = conn.execute("""
                 SELECT home_team AS team,
                        SUM(CASE WHEN home_score > away_score THEN 1.0 ELSE 0.0 END) / COUNT(*) AS win_pct,
@@ -120,7 +121,7 @@ class Generator:
         cold = sorted([s for s in all_shooters if s["gax"] < 0], key=lambda x: x["gax"])[:10]
         return {"hot_shooters": hot, "cold_shooters": cold, "teams": teams[:10]}
 
-    def _query_story_data(self) -> dict:
+    def _query_story_data(self, teams: list) -> dict:
         unavailable = self._unavailable_players()
         with self._db() as conn:
             rows = conn.execute("""
@@ -176,10 +177,9 @@ class Generator:
                     for r in hist
                 ]
 
-        leaderboard = self._query_leaderboard()
         return {
             "shooters": shooters,
-            "teams": leaderboard["teams"],
+            "teams": teams,
             "career_stats": career,
             "unavailable": unavailable,
         }
@@ -233,7 +233,7 @@ class Generator:
                 )
             else:
                 verdict = ""
-            status = "IR" if s["player_id"] in story_data.get("unavailable", set()) else "HEALTHY"
+            status = story_data.get("unavailable", {}).get(s["player_id"], "HEALTHY")
             (out_dir / f"{s['player_id']}.json").write_text(
                 json.dumps({**s, "seasons": career, "verdict": verdict, "injury_status": status}, indent=2)
             )
@@ -273,14 +273,14 @@ class Generator:
         pub_dir.mkdir(parents=True, exist_ok=True)
 
         leaderboard = self._query_leaderboard()
-        story_data  = self._query_story_data()
+        story_data  = self._query_story_data(teams=leaderboard["teams"])
 
         selector = StorySelector(
             shooters=story_data["shooters"],
             teams=story_data["teams"],
             career_stats=story_data["career_stats"],
             headlines=headlines if injuries_available else [],
-            unavailable_players=story_data["unavailable"] if injuries_available else set(),
+            unavailable_players=set(story_data["unavailable"].keys()) if injuries_available else set(),
             history_path=self.history_path,
         )
         story = selector.select()
