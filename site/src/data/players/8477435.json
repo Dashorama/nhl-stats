@@ -102,5 +102,16 @@
     }
   ],
   "verdict": "Career average 29% above expected \u2014 watch for regression.",
-  "injury_status": "HEALTHY"
+  "injury_status": "HEALTHY",
+  "tracking": {
+    "player_id": 8477435,
+    "max_speed_mph": 21.34,
+    "max_speed_pct": 36.2,
+    "shot_speed_mph": 92.35,
+    "shot_speed_pct": 65.6,
+    "oz_pct": 42.1,
+    "oz_percentile": 55.4,
+    "distance_mi": 129.3,
+    "distance_pct": 45.3
+  }
 }

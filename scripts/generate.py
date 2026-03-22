@@ -17,6 +17,7 @@ PROJECT_DIR = Path(__file__).parent.parent
 DEFAULT_DB      = PROJECT_DIR / "data/nhl.db"
 DEFAULT_SITE    = PROJECT_DIR / "site"
 DEFAULT_HISTORY = PROJECT_DIR / "data/story_history.json"
+EDGE_STATS_PATH = PROJECT_DIR / "data/edge_stats.json"
 
 # Season format constants — see plan docs
 MONEYPUCK_SEASON = "2024"     # shots table: "2024" = 2024-25 season
@@ -243,7 +244,17 @@ class Generator:
         plt.close()
         return chart_name
 
-    def _write_player_files(self, story_data: dict, rush_rates: dict[int, float]) -> None:
+    def _load_edge_stats(self) -> dict[int, dict]:
+        """Load EDGE tracking stats keyed by player_id. Returns {} if file missing."""
+        if not EDGE_STATS_PATH.exists():
+            return {}
+        try:
+            raw = json.loads(EDGE_STATS_PATH.read_text())
+            return {int(k): v for k, v in raw.items()}
+        except Exception:
+            return {}
+
+    def _write_player_files(self, story_data: dict, rush_rates: dict[int, float], edge_stats: dict[int, dict]) -> None:
         out_dir = self.site_dir / "src/data/players"
         out_dir.mkdir(parents=True, exist_ok=True)
         for s in story_data["shooters"]:
@@ -267,8 +278,15 @@ class Generator:
                     # Apply season-level rush rate only to current season (PBP is current only)
                     if season["season"] == "2025":
                         season["rush_rate"] = rush_rates[s["player_id"]]
+            edge = edge_stats.get(s["player_id"])
             (out_dir / f"{s['player_id']}.json").write_text(
-                json.dumps({**player_data, "seasons": career, "verdict": verdict, "injury_status": status}, indent=2)
+                json.dumps({
+                    **player_data,
+                    "seasons": career,
+                    "verdict": verdict,
+                    "injury_status": status,
+                    "tracking": edge,
+                }, indent=2)
             )
 
     def _compute_rush_rates(self) -> dict[int, float]:
@@ -414,7 +432,8 @@ class Generator:
         (pub_dir / "story.json").write_text(json.dumps(story, indent=2))
 
         rush_rates = self._compute_rush_rates()
-        self._write_player_files(story_data, rush_rates)
+        edge_stats = self._load_edge_stats()
+        self._write_player_files(story_data, rush_rates, edge_stats)
         self._write_team_files(leaderboard_teams=leaderboard["all_teams"])
         selector.record(story)
         self._cleanup_old_charts()

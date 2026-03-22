@@ -25,6 +25,37 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         <p className="text-gray-600 mb-6 italic">{player.verdict}</p>
       )}
 
+      {player.tracking && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
+          <h2 className="font-bold text-gray-700 mb-1 text-sm uppercase tracking-wide">
+            NHL EDGE Tracking
+          </h2>
+          <p className="text-xs text-gray-400 mb-4">Season bests, 2024–25. Percentile vs. all skaters.</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-black text-gray-900">{player.tracking.max_speed_mph} <span className="text-base font-normal text-gray-400">mph</span></p>
+              <p className="text-xs text-gray-500 mt-0.5">Top Speed</p>
+              <p className="text-xs text-blue-500 font-semibold">{player.tracking.max_speed_pct}th pct</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-gray-900">{player.tracking.shot_speed_mph} <span className="text-base font-normal text-gray-400">mph</span></p>
+              <p className="text-xs text-gray-500 mt-0.5">Hardest Shot</p>
+              <p className="text-xs text-blue-500 font-semibold">{player.tracking.shot_speed_pct}th pct</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-gray-900">{player.tracking.oz_pct}<span className="text-base font-normal text-gray-400">%</span></p>
+              <p className="text-xs text-gray-500 mt-0.5">Offensive Zone Time</p>
+              <p className="text-xs text-blue-500 font-semibold">{player.tracking.oz_percentile}th pct</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-gray-900">{player.tracking.distance_mi} <span className="text-base font-normal text-gray-400">mi</span></p>
+              <p className="text-xs text-gray-500 mt-0.5">Distance Skated</p>
+              <p className="text-xs text-blue-500 font-semibold">{player.tracking.distance_pct}th pct</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h2 className="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">
           Goals vs. Expected Goals by Season

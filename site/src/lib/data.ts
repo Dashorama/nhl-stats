@@ -57,6 +57,17 @@ export interface PlayerSeason {
   rush_rate: number;     // % of shots off the rush
 }
 
+export interface EdgeTracking {
+  max_speed_mph: number;
+  max_speed_pct: number;
+  shot_speed_mph: number;
+  shot_speed_pct: number;
+  oz_pct: number;
+  oz_percentile: number;
+  distance_mi: number;
+  distance_pct: number;
+}
+
 export interface Player {
   player_id: number;
   player_name: string;
@@ -65,6 +76,7 @@ export interface Player {
   seasons: PlayerSeason[];
   verdict: string;
   injury_status: string;
+  tracking: EdgeTracking | null;
 }
 
 export interface Team {

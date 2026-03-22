@@ -42,6 +42,11 @@ log "Fetching RSS..."
 PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/fetch_rss.py" >> "$LOG_FILE" 2>&1 \
     || log "  RSS fetch failed (non-fatal)"
 
+# Step 2b: Scrape NHL EDGE tracking data (non-fatal)
+log "Scraping NHL EDGE tracking data..."
+PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/scrape_edge.py" >> "$LOG_FILE" 2>&1 \
+    || log "  EDGE scrape failed (non-fatal — tracking data will be stale)"
+
 # Step 3: Generate data files (fatal — deploy without this is pointless)
 log "Generating data files..."
 if ! PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/generate.py" "${INJURIES_ARGS[@]}" >> "$LOG_FILE" 2>&1; then
