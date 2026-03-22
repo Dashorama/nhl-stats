@@ -7,35 +7,87 @@
   "gax": 0.3,
   "shots": 296,
   "sh_vs_expected": 1.04,
+  "hd_shot_pct": 9.1,
+  "rebound_rate": 1.4,
+  "rush_rate": 0,
   "position": "D",
   "seasons": [
     {
       "season": "2019",
-      "sh_vs_expected": 0.61
+      "goals": 1,
+      "xg": 1.6,
+      "gax": -0.6,
+      "shots": 49,
+      "sh_vs_expected": 0.61,
+      "hd_shot_pct": 16.3,
+      "rebound_rate": 4.1,
+      "rush_rate": 0
     },
     {
       "season": "2020",
-      "sh_vs_expected": 1.19
+      "goals": 3,
+      "xg": 2.5,
+      "gax": 0.5,
+      "shots": 126,
+      "sh_vs_expected": 1.19,
+      "hd_shot_pct": 7.1,
+      "rebound_rate": 0.8,
+      "rush_rate": 0
     },
     {
       "season": "2021",
-      "sh_vs_expected": 1.46
+      "goals": 13,
+      "xg": 8.9,
+      "gax": 4.1,
+      "shots": 269,
+      "sh_vs_expected": 1.46,
+      "hd_shot_pct": 8.6,
+      "rebound_rate": 0.7,
+      "rush_rate": 0
     },
     {
       "season": "2022",
-      "sh_vs_expected": 1.28
+      "goals": 13,
+      "xg": 10.2,
+      "gax": 2.8,
+      "shots": 324,
+      "sh_vs_expected": 1.28,
+      "hd_shot_pct": 6.2,
+      "rebound_rate": 3.1,
+      "rush_rate": 0
     },
     {
       "season": "2023",
-      "sh_vs_expected": 1.41
+      "goals": 10,
+      "xg": 7.1,
+      "gax": 2.9,
+      "shots": 272,
+      "sh_vs_expected": 1.41,
+      "hd_shot_pct": 7.0,
+      "rebound_rate": 2.6,
+      "rush_rate": 0
     },
     {
       "season": "2024",
-      "sh_vs_expected": 1.04
+      "goals": 10,
+      "xg": 9.7,
+      "gax": 0.3,
+      "shots": 296,
+      "sh_vs_expected": 1.04,
+      "hd_shot_pct": 9.1,
+      "rebound_rate": 1.4,
+      "rush_rate": 0
     },
     {
       "season": "2025",
-      "sh_vs_expected": 1.48
+      "goals": 12,
+      "xg": 8.1,
+      "gax": 3.9,
+      "shots": 216,
+      "sh_vs_expected": 1.48,
+      "hd_shot_pct": 11.6,
+      "rebound_rate": 1.4,
+      "rush_rate": 0
     }
   ],
   "verdict": "Career average 21% above expected \u2014 watch for regression.",

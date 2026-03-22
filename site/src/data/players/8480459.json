@@ -7,31 +7,76 @@
   "gax": 5.7,
   "shots": 195,
   "sh_vs_expected": 1.28,
+  "hd_shot_pct": 52.3,
+  "rebound_rate": 11.3,
+  "rush_rate": 0,
   "position": "C",
   "seasons": [
     {
       "season": "2020",
-      "sh_vs_expected": 1.01
+      "goals": 14,
+      "xg": 13.9,
+      "gax": 0.1,
+      "shots": 133,
+      "sh_vs_expected": 1.01,
+      "hd_shot_pct": 63.9,
+      "rebound_rate": 9.8,
+      "rush_rate": 0
     },
     {
       "season": "2021",
-      "sh_vs_expected": 0.69
+      "goals": 15,
+      "xg": 21.7,
+      "gax": -6.7,
+      "shots": 216,
+      "sh_vs_expected": 0.69,
+      "hd_shot_pct": 55.6,
+      "rebound_rate": 14.4,
+      "rush_rate": 0
     },
     {
       "season": "2022",
-      "sh_vs_expected": 1.08
+      "goals": 14,
+      "xg": 12.9,
+      "gax": 1.1,
+      "shots": 145,
+      "sh_vs_expected": 1.08,
+      "hd_shot_pct": 53.8,
+      "rebound_rate": 10.3,
+      "rush_rate": 0
     },
     {
       "season": "2023",
-      "sh_vs_expected": 0.8
+      "goals": 16,
+      "xg": 20.0,
+      "gax": -4.0,
+      "shots": 183,
+      "sh_vs_expected": 0.8,
+      "hd_shot_pct": 62.8,
+      "rebound_rate": 14.8,
+      "rush_rate": 0
     },
     {
       "season": "2024",
-      "sh_vs_expected": 1.28
+      "goals": 26,
+      "xg": 20.3,
+      "gax": 5.7,
+      "shots": 195,
+      "sh_vs_expected": 1.28,
+      "hd_shot_pct": 52.3,
+      "rebound_rate": 11.3,
+      "rush_rate": 0
     },
     {
       "season": "2025",
-      "sh_vs_expected": 0.82
+      "goals": 10,
+      "xg": 12.2,
+      "gax": -2.2,
+      "shots": 120,
+      "sh_vs_expected": 0.82,
+      "hd_shot_pct": 65.8,
+      "rebound_rate": 17.5,
+      "rush_rate": 0
     }
   ],
   "verdict": "Career average 5% below expected \u2014 due for improvement.",

@@ -37,6 +37,9 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
               <th className="pb-2 text-right">xG</th>
               <th className="pb-2 text-right">GAx</th>
               <th className="pb-2 text-right">Sh/Exp</th>
+              <th className="pb-2 text-right" title="% of shots from the slot">HD%</th>
+              <th className="pb-2 text-right" title="% of shots that were rebounds">Reb%</th>
+              <th className="pb-2 text-right" title="% of shots off the rush">Rush%</th>
             </tr>
           </thead>
           <tbody>
@@ -49,6 +52,9 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
                   {s.gax > 0 ? "+" : ""}{s.gax}
                 </td>
                 <td className="py-2 text-right font-mono text-gray-500">{s.sh_vs_expected}x</td>
+                <td className="py-2 text-right font-mono text-gray-500">{s.hd_shot_pct}%</td>
+                <td className="py-2 text-right font-mono text-gray-500">{s.rebound_rate}%</td>
+                <td className="py-2 text-right font-mono text-gray-500">{s.rush_rate}%</td>
               </tr>
             ))}
           </tbody>

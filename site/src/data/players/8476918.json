@@ -7,35 +7,87 @@
   "gax": 1.5,
   "shots": 57,
   "sh_vs_expected": 1.44,
+  "hd_shot_pct": 42.1,
+  "rebound_rate": 3.5,
+  "rush_rate": 0,
   "position": "F",
   "seasons": [
     {
       "season": "2018",
-      "sh_vs_expected": 0.85
+      "goals": 17,
+      "xg": 20.0,
+      "gax": -3.0,
+      "shots": 201,
+      "sh_vs_expected": 0.85,
+      "hd_shot_pct": 63.2,
+      "rebound_rate": 9.5,
+      "rush_rate": 0
     },
     {
       "season": "2019",
-      "sh_vs_expected": 0.8
+      "goals": 9,
+      "xg": 11.3,
+      "gax": -2.3,
+      "shots": 137,
+      "sh_vs_expected": 0.8,
+      "hd_shot_pct": 59.9,
+      "rebound_rate": 6.6,
+      "rush_rate": 0
     },
     {
       "season": "2020",
-      "sh_vs_expected": 0.75
+      "goals": 5,
+      "xg": 6.7,
+      "gax": -1.7,
+      "shots": 81,
+      "sh_vs_expected": 0.75,
+      "hd_shot_pct": 61.7,
+      "rebound_rate": 6.2,
+      "rush_rate": 0
     },
     {
       "season": "2021",
-      "sh_vs_expected": 0.64
+      "goals": 8,
+      "xg": 12.4,
+      "gax": -4.4,
+      "shots": 155,
+      "sh_vs_expected": 0.64,
+      "hd_shot_pct": 47.1,
+      "rebound_rate": 5.8,
+      "rush_rate": 0
     },
     {
       "season": "2022",
-      "sh_vs_expected": 0.67
+      "goals": 11,
+      "xg": 16.3,
+      "gax": -5.3,
+      "shots": 169,
+      "sh_vs_expected": 0.67,
+      "hd_shot_pct": 56.2,
+      "rebound_rate": 9.5,
+      "rush_rate": 0
     },
     {
       "season": "2023",
-      "sh_vs_expected": 0.79
+      "goals": 14,
+      "xg": 17.6,
+      "gax": -3.6,
+      "shots": 186,
+      "sh_vs_expected": 0.79,
+      "hd_shot_pct": 50.0,
+      "rebound_rate": 10.2,
+      "rush_rate": 0
     },
     {
       "season": "2024",
-      "sh_vs_expected": 1.44
+      "goals": 5,
+      "xg": 3.5,
+      "gax": 1.5,
+      "shots": 57,
+      "sh_vs_expected": 1.44,
+      "hd_shot_pct": 42.1,
+      "rebound_rate": 3.5,
+      "rush_rate": 0
     }
   ],
   "verdict": "Career average 15% below expected \u2014 due for improvement.",

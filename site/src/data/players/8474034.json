@@ -7,35 +7,87 @@
   "gax": -4.7,
   "shots": 110,
   "sh_vs_expected": 0.52,
+  "hd_shot_pct": 52.7,
+  "rebound_rate": 17.3,
+  "rush_rate": 0,
   "position": "F",
   "seasons": [
     {
       "season": "2018",
-      "sh_vs_expected": 0.71
+      "goals": 13,
+      "xg": 18.2,
+      "gax": -5.2,
+      "shots": 215,
+      "sh_vs_expected": 0.71,
+      "hd_shot_pct": 64.2,
+      "rebound_rate": 9.8,
+      "rush_rate": 0
     },
     {
       "season": "2019",
-      "sh_vs_expected": 0.75
+      "goals": 10,
+      "xg": 13.4,
+      "gax": -3.4,
+      "shots": 141,
+      "sh_vs_expected": 0.75,
+      "hd_shot_pct": 53.9,
+      "rebound_rate": 12.1,
+      "rush_rate": 0
     },
     {
       "season": "2020",
-      "sh_vs_expected": 0.63
+      "goals": 6,
+      "xg": 9.5,
+      "gax": -3.5,
+      "shots": 91,
+      "sh_vs_expected": 0.63,
+      "hd_shot_pct": 67.0,
+      "rebound_rate": 7.7,
+      "rush_rate": 0
     },
     {
       "season": "2021",
-      "sh_vs_expected": 0.91
+      "goals": 15,
+      "xg": 16.4,
+      "gax": -1.4,
+      "shots": 172,
+      "sh_vs_expected": 0.91,
+      "hd_shot_pct": 59.3,
+      "rebound_rate": 8.7,
+      "rush_rate": 0
     },
     {
       "season": "2022",
-      "sh_vs_expected": 0.51
+      "goals": 5,
+      "xg": 9.8,
+      "gax": -4.8,
+      "shots": 104,
+      "sh_vs_expected": 0.51,
+      "hd_shot_pct": 59.6,
+      "rebound_rate": 10.6,
+      "rush_rate": 0
     },
     {
       "season": "2023",
-      "sh_vs_expected": 0.55
+      "goals": 4,
+      "xg": 7.2,
+      "gax": -3.2,
+      "shots": 83,
+      "sh_vs_expected": 0.55,
+      "hd_shot_pct": 56.6,
+      "rebound_rate": 13.3,
+      "rush_rate": 0
     },
     {
       "season": "2024",
-      "sh_vs_expected": 0.52
+      "goals": 5,
+      "xg": 9.7,
+      "gax": -4.7,
+      "shots": 110,
+      "sh_vs_expected": 0.52,
+      "hd_shot_pct": 52.7,
+      "rebound_rate": 17.3,
+      "rush_rate": 0
     }
   ],
   "verdict": "Career average 35% below expected \u2014 due for improvement.",

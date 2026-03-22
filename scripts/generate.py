@@ -130,7 +130,11 @@ class Generator:
                        SUM(x_goal)           AS xg,
                        SUM(goal)-SUM(x_goal) AS gax,
                        COUNT(*)              AS shots,
-                       CAST(SUM(goal) AS FLOAT)/NULLIF(SUM(x_goal),0) AS sh_vs_exp
+                       CAST(SUM(goal) AS FLOAT)/NULLIF(SUM(x_goal),0) AS sh_vs_exp,
+                       CAST(SUM(CASE WHEN x_coord >= 69 AND ABS(y_coord) <= 22 THEN 1 ELSE 0 END) AS FLOAT)
+                           / NULLIF(COUNT(*), 0)                       AS hd_shot_pct,
+                       CAST(SUM(shot_rebound) AS FLOAT) / NULLIF(COUNT(*), 0) AS rebound_rate,
+                       CAST(SUM(shot_rush)    AS FLOAT) / NULLIF(COUNT(*), 0) AS rush_rate
                 FROM shots WHERE season=?
                 GROUP BY shooter_id, shooter_name
                 HAVING shots >= 50
@@ -146,6 +150,9 @@ class Generator:
                 "gax": round(r["gax"], 1),
                 "shots": r["shots"],
                 "sh_vs_expected": round(r["sh_vs_exp"] or 1.0, 2),
+                "hd_shot_pct": round((r["hd_shot_pct"] or 0) * 100, 1),
+                "rebound_rate": round((r["rebound_rate"] or 0) * 100, 1),
+                "rush_rate": round((r["rush_rate"] or 0) * 100, 1),
             }
             for r in rows
         ]
@@ -169,11 +176,29 @@ class Generator:
             for s in shooters:
                 hist = conn.execute("""
                     SELECT season,
-                           CAST(SUM(goal) AS FLOAT)/NULLIF(SUM(x_goal),0) AS sh_vs_exp
+                           SUM(goal)             AS goals,
+                           SUM(x_goal)           AS xg,
+                           SUM(goal)-SUM(x_goal) AS gax,
+                           COUNT(*)              AS shots,
+                           CAST(SUM(goal) AS FLOAT)/NULLIF(SUM(x_goal),0) AS sh_vs_exp,
+                           CAST(SUM(CASE WHEN x_coord >= 69 AND ABS(y_coord) <= 22 THEN 1 ELSE 0 END) AS FLOAT)
+                               / NULLIF(COUNT(*), 0) AS hd_shot_pct,
+                           CAST(SUM(shot_rebound) AS FLOAT) / NULLIF(COUNT(*), 0) AS rebound_rate,
+                           CAST(SUM(shot_rush)    AS FLOAT) / NULLIF(COUNT(*), 0) AS rush_rate
                     FROM shots WHERE shooter_id=? GROUP BY season ORDER BY season
                 """, (s["player_id"],)).fetchall()
                 career[s["player_id"]] = [
-                    {"season": r["season"], "sh_vs_expected": round(r["sh_vs_exp"] or 1.0, 2)}
+                    {
+                        "season": r["season"],
+                        "goals": r["goals"],
+                        "xg": round(r["xg"] or 0, 1),
+                        "gax": round(r["gax"] or 0, 1),
+                        "shots": r["shots"],
+                        "sh_vs_expected": round(r["sh_vs_exp"] or 1.0, 2),
+                        "hd_shot_pct": round((r["hd_shot_pct"] or 0) * 100, 1),
+                        "rebound_rate": round((r["rebound_rate"] or 0) * 100, 1),
+                        "rush_rate": round((r["rush_rate"] or 0) * 100, 1),
+                    }
                     for r in hist
                 ]
 

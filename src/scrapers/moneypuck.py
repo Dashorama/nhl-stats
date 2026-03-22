@@ -318,7 +318,7 @@ class MoneyPuckScraper(BaseScraper):
                     "shot_angle": float(row.get("shotAngleAdjusted", 0)) if row.get("shotAngleAdjusted") else None,
                     "shot_distance": float(row.get("shotDistance", 0)) if row.get("shotDistance") else None,
                     "shot_rebound": safe_int(row.get("shotRebound")) or 0,
-                    "shot_rush": safe_int(row.get("shotRushShot")) or 0,
+                    "shot_rush": safe_int(row.get("shotRush")) or 0,
                     "situation": row.get("situation", ""),
                     "is_home": row.get("isHomeTeam") == "1",
                 })

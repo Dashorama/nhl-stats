@@ -52,6 +52,9 @@ export interface PlayerSeason {
   gax: number;
   shots: number;
   sh_vs_expected: number;
+  hd_shot_pct: number;   // % of shots from high-danger zone (slot)
+  rebound_rate: number;  // % of shots that were rebounds
+  rush_rate: number;     // % of shots off the rush
 }
 
 export interface Player {

@@ -1,14 +1,14 @@
 {
   "story_type": "StoryType.NEWS_COMBO",
   "subject_type": "player",
-  "subject_id": 8477934,
-  "subject_name": "Leon Draisaitl",
-  "headline": "Leon Draisaitl is scoring 68% above expectations",
-  "body": "Leon Draisaitl has scored 63 goals against an expected 37.4 this season (+25.6 goals above expected). Historical data suggests deviations this large tend to normalize.",
-  "social_text": "Leon Draisaitl is scoring at 1.68x expected (+25.6 GAx). History says this won't last.",
+  "subject_id": 8476453,
+  "subject_name": "Nikita Kucherov",
+  "headline": "Nikita Kucherov is scoring 32% above expectations",
+  "body": "Nikita Kucherov has scored 37 goals against an expected 28.0 this season (+9.0 goals above expected). Historical data suggests deviations this large tend to normalize.",
+  "social_text": "Nikita Kucherov is scoring at 1.32x expected (+9.0 GAx). History says this won't last.",
   "headlines": [
     {
-      "title": "Oilers\u2019 Draisaitl visits doctor in Germany for injury",
+      "title": "Kucherov finishes shorthanded break after Lightning lay out McDavid",
       "url": "",
       "source": "Sportsnet"
     }

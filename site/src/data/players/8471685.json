@@ -7,39 +7,98 @@
   "gax": 5.7,
   "shots": 163,
   "sh_vs_expected": 1.33,
+  "hd_shot_pct": 57.7,
+  "rebound_rate": 13.5,
+  "rush_rate": 0,
   "position": "C",
   "seasons": [
     {
       "season": "2018",
-      "sh_vs_expected": 1.13
+      "goals": 22,
+      "xg": 19.5,
+      "gax": 2.5,
+      "shots": 227,
+      "sh_vs_expected": 1.13,
+      "hd_shot_pct": 43.6,
+      "rebound_rate": 9.3,
+      "rush_rate": 0
     },
     {
       "season": "2019",
-      "sh_vs_expected": 1.23
+      "goals": 21,
+      "xg": 17.1,
+      "gax": 3.9,
+      "shots": 191,
+      "sh_vs_expected": 1.23,
+      "hd_shot_pct": 34.6,
+      "rebound_rate": 7.3,
+      "rush_rate": 0
     },
     {
       "season": "2020",
-      "sh_vs_expected": 1.17
+      "goals": 13,
+      "xg": 11.1,
+      "gax": 1.9,
+      "shots": 162,
+      "sh_vs_expected": 1.17,
+      "hd_shot_pct": 40.1,
+      "rebound_rate": 7.4,
+      "rush_rate": 0
     },
     {
       "season": "2021",
-      "sh_vs_expected": 0.84
+      "goals": 20,
+      "xg": 23.8,
+      "gax": -3.8,
+      "shots": 311,
+      "sh_vs_expected": 0.84,
+      "hd_shot_pct": 38.3,
+      "rebound_rate": 3.9,
+      "rush_rate": 0
     },
     {
       "season": "2022",
-      "sh_vs_expected": 1.16
+      "goals": 30,
+      "xg": 25.9,
+      "gax": 4.1,
+      "shots": 259,
+      "sh_vs_expected": 1.16,
+      "hd_shot_pct": 53.3,
+      "rebound_rate": 8.5,
+      "rush_rate": 0
     },
     {
       "season": "2023",
-      "sh_vs_expected": 1.41
+      "goals": 27,
+      "xg": 19.2,
+      "gax": 7.8,
+      "shots": 196,
+      "sh_vs_expected": 1.41,
+      "hd_shot_pct": 56.1,
+      "rebound_rate": 8.7,
+      "rush_rate": 0
     },
     {
       "season": "2024",
-      "sh_vs_expected": 1.33
+      "goals": 23,
+      "xg": 17.3,
+      "gax": 5.7,
+      "shots": 163,
+      "sh_vs_expected": 1.33,
+      "hd_shot_pct": 57.7,
+      "rebound_rate": 13.5,
+      "rush_rate": 0
     },
     {
       "season": "2025",
-      "sh_vs_expected": 0.89
+      "goals": 11,
+      "xg": 12.4,
+      "gax": -1.4,
+      "shots": 124,
+      "sh_vs_expected": 0.89,
+      "hd_shot_pct": 62.9,
+      "rebound_rate": 14.5,
+      "rush_rate": 0
     }
   ],
   "verdict": "Career average 15% above expected \u2014 watch for regression.",

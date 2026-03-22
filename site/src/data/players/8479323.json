@@ -7,35 +7,87 @@
   "gax": -3.9,
   "shots": 210,
   "sh_vs_expected": 0.72,
+  "hd_shot_pct": 23.3,
+  "rebound_rate": 5.2,
+  "rush_rate": 0,
   "position": "D",
   "seasons": [
     {
       "season": "2019",
-      "sh_vs_expected": 1.2
+      "goals": 8,
+      "xg": 6.6,
+      "gax": 1.4,
+      "shots": 181,
+      "sh_vs_expected": 1.2,
+      "hd_shot_pct": 21.0,
+      "rebound_rate": 3.9,
+      "rush_rate": 0
     },
     {
       "season": "2020",
-      "sh_vs_expected": 0.74
+      "goals": 5,
+      "xg": 6.7,
+      "gax": -1.7,
+      "shots": 139,
+      "sh_vs_expected": 0.74,
+      "hd_shot_pct": 16.5,
+      "rebound_rate": 5.0,
+      "rush_rate": 0
     },
     {
       "season": "2021",
-      "sh_vs_expected": 1.62
+      "goals": 16,
+      "xg": 9.9,
+      "gax": 6.1,
+      "shots": 249,
+      "sh_vs_expected": 1.62,
+      "hd_shot_pct": 20.5,
+      "rebound_rate": 2.0,
+      "rush_rate": 0
     },
     {
       "season": "2022",
-      "sh_vs_expected": 1.2
+      "goals": 12,
+      "xg": 10.0,
+      "gax": 2.0,
+      "shots": 234,
+      "sh_vs_expected": 1.2,
+      "hd_shot_pct": 21.4,
+      "rebound_rate": 6.8,
+      "rush_rate": 0
     },
     {
       "season": "2023",
-      "sh_vs_expected": 1.5
+      "goals": 17,
+      "xg": 11.3,
+      "gax": 5.7,
+      "shots": 237,
+      "sh_vs_expected": 1.5,
+      "hd_shot_pct": 19.0,
+      "rebound_rate": 5.9,
+      "rush_rate": 0
     },
     {
       "season": "2024",
-      "sh_vs_expected": 0.72
+      "goals": 10,
+      "xg": 13.9,
+      "gax": -3.9,
+      "shots": 210,
+      "sh_vs_expected": 0.72,
+      "hd_shot_pct": 23.3,
+      "rebound_rate": 5.2,
+      "rush_rate": 0
     },
     {
       "season": "2025",
-      "sh_vs_expected": 0.81
+      "goals": 5,
+      "xg": 6.2,
+      "gax": -1.2,
+      "shots": 118,
+      "sh_vs_expected": 0.81,
+      "hd_shot_pct": 7.6,
+      "rebound_rate": 5.9,
+      "rush_rate": 0
     }
   ],
   "verdict": "Career average 11% above expected \u2014 watch for regression.",
