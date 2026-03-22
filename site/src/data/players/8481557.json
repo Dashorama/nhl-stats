@@ -7,6 +7,7 @@
   "gax": -4.2,
   "shots": 459,
   "sh_vs_expected": 0.88,
+  "position": "L",
   "seasons": [
     {
       "season": "2021",

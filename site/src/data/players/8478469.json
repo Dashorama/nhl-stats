@@ -7,6 +7,7 @@
   "gax": 1.2,
   "shots": 273,
   "sh_vs_expected": 1.14,
+  "position": "D",
   "seasons": [
     {
       "season": "2018",

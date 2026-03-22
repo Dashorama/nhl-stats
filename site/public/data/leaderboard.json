@@ -1,6 +1,259 @@
 {
-  "hot_shooters": [],
-  "cold_shooters": [],
-  "teams": [],
+  "hot_shooters": [
+    {
+      "player_id": 8477934,
+      "player_name": "Leon Draisaitl",
+      "team_abbrev": "EDM",
+      "goals": 63,
+      "xg": 37.4,
+      "gax": 25.6,
+      "shots": 436
+    },
+    {
+      "player_id": 8479420,
+      "player_name": "Tage Thompson",
+      "team_abbrev": "BUF",
+      "goals": 44,
+      "xg": 23.5,
+      "gax": 20.5,
+      "shots": 353
+    },
+    {
+      "player_id": 8477939,
+      "player_name": "William Nylander",
+      "team_abbrev": "TOR",
+      "goals": 51,
+      "xg": 35.8,
+      "gax": 15.2,
+      "shots": 405
+    },
+    {
+      "player_id": 8484166,
+      "player_name": "Adam Fantilli",
+      "team_abbrev": "CBJ",
+      "goals": 32,
+      "xg": 17.4,
+      "gax": 14.6,
+      "shots": 279
+    },
+    {
+      "player_id": 8471214,
+      "player_name": "Alex Ovechkin",
+      "team_abbrev": "WSH",
+      "goals": 49,
+      "xg": 35.5,
+      "gax": 13.5,
+      "shots": 410
+    },
+    {
+      "player_id": 8476460,
+      "player_name": "Mark Scheifele",
+      "team_abbrev": "WPG",
+      "goals": 44,
+      "xg": 31.2,
+      "gax": 12.8,
+      "shots": 305
+    },
+    {
+      "player_id": 8477956,
+      "player_name": "David Pastrnak",
+      "team_abbrev": "BOS",
+      "goals": 43,
+      "xg": 30.5,
+      "gax": 12.5,
+      "shots": 443
+    },
+    {
+      "player_id": 8479987,
+      "player_name": "Morgan Geekie",
+      "team_abbrev": "BOS",
+      "goals": 33,
+      "xg": 20.5,
+      "gax": 12.5,
+      "shots": 230
+    },
+    {
+      "player_id": 8478398,
+      "player_name": "Kyle Connor",
+      "team_abbrev": "WPG",
+      "goals": 46,
+      "xg": 34.2,
+      "gax": 11.8,
+      "shots": 416
+    },
+    {
+      "player_id": 8480027,
+      "player_name": "Jason Robertson",
+      "team_abbrev": "DAL",
+      "goals": 39,
+      "xg": 27.2,
+      "gax": 11.8,
+      "shots": 326
+    }
+  ],
+  "cold_shooters": [
+    {
+      "player_id": 8482055,
+      "player_name": "Drew O'Connor",
+      "team_abbrev": "PIT",
+      "goals": 9,
+      "xg": 21.0,
+      "gax": -12.0,
+      "shots": 197
+    },
+    {
+      "player_id": 8476399,
+      "player_name": "Blake Coleman",
+      "team_abbrev": "CGY",
+      "goals": 15,
+      "xg": 26.1,
+      "gax": -11.1,
+      "shots": 292
+    },
+    {
+      "player_id": 8475786,
+      "player_name": "Zach Hyman",
+      "team_abbrev": "EDM",
+      "goals": 32,
+      "xg": 42.8,
+      "gax": -10.8,
+      "shots": 362
+    },
+    {
+      "player_id": 8480797,
+      "player_name": "Joel Farabee",
+      "team_abbrev": "PHI",
+      "goals": 11,
+      "xg": 21.5,
+      "gax": -10.5,
+      "shots": 201
+    },
+    {
+      "player_id": 8479318,
+      "player_name": "Auston Matthews",
+      "team_abbrev": "TOR",
+      "goals": 36,
+      "xg": 46.4,
+      "gax": -10.4,
+      "shots": 461
+    },
+    {
+      "player_id": 8477409,
+      "player_name": "Carter Verhaeghe",
+      "team_abbrev": "FLA",
+      "goals": 27,
+      "xg": 37.4,
+      "gax": -10.4,
+      "shots": 445
+    },
+    {
+      "player_id": 8480849,
+      "player_name": "Barrett Hayton",
+      "team_abbrev": "UTA",
+      "goals": 20,
+      "xg": 30.2,
+      "gax": -10.2,
+      "shots": 242
+    },
+    {
+      "player_id": 8481028,
+      "player_name": "Martin Pospisil",
+      "team_abbrev": "CGY",
+      "goals": 4,
+      "xg": 13.4,
+      "gax": -9.4,
+      "shots": 174
+    },
+    {
+      "player_id": 8476458,
+      "player_name": "Ryan Strome",
+      "team_abbrev": "ANA",
+      "goals": 10,
+      "xg": 19.2,
+      "gax": -9.2,
+      "shots": 211
+    },
+    {
+      "player_id": 8484145,
+      "player_name": "Zach Benson",
+      "team_abbrev": "BUF",
+      "goals": 10,
+      "xg": 18.1,
+      "gax": -8.1,
+      "shots": 183
+    }
+  ],
+  "teams": [
+    {
+      "abbrev": "BOS",
+      "name": "Boston Bruins",
+      "win_pct": 0.722,
+      "xg_win_pct": 0.464,
+      "diff": 0.258
+    },
+    {
+      "abbrev": "VAN",
+      "name": "Vancouver Canucks",
+      "win_pct": 0.229,
+      "xg_win_pct": 0.459,
+      "diff": -0.231
+    },
+    {
+      "abbrev": "NYR",
+      "name": "New York Rangers",
+      "win_pct": 0.281,
+      "xg_win_pct": 0.49,
+      "diff": -0.209
+    },
+    {
+      "abbrev": "LAK",
+      "name": "Los Angeles Kings",
+      "win_pct": 0.303,
+      "xg_win_pct": 0.498,
+      "diff": -0.195
+    },
+    {
+      "abbrev": "ANA",
+      "name": "Anaheim Ducks",
+      "win_pct": 0.647,
+      "xg_win_pct": 0.47,
+      "diff": 0.177
+    },
+    {
+      "abbrev": "BUF",
+      "name": "Buffalo Sabres",
+      "win_pct": 0.647,
+      "xg_win_pct": 0.482,
+      "diff": 0.165
+    },
+    {
+      "abbrev": "COL",
+      "name": "Colorado Avalanche",
+      "win_pct": 0.676,
+      "xg_win_pct": 0.512,
+      "diff": 0.165
+    },
+    {
+      "abbrev": "CAR",
+      "name": "Carolina Hurricanes",
+      "win_pct": 0.694,
+      "xg_win_pct": 0.568,
+      "diff": 0.127
+    },
+    {
+      "abbrev": "TBL",
+      "name": "Tampa Bay Lightning",
+      "win_pct": 0.625,
+      "xg_win_pct": 0.511,
+      "diff": 0.114
+    },
+    {
+      "abbrev": "NYI",
+      "name": "New York Islanders",
+      "win_pct": 0.581,
+      "xg_win_pct": 0.473,
+      "diff": 0.108
+    }
+  ],
   "date": "2026-03-22"
 }

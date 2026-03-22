@@ -7,6 +7,7 @@
   "gax": 1.9,
   "shots": 71,
   "sh_vs_expected": 1.93,
+  "position": "D",
   "seasons": [
     {
       "season": "2024",
