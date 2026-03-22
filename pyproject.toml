@@ -17,6 +17,7 @@ dependencies = [
     "structlog>=24.0",
     "rich>=13.0",
     "click>=8.1",
+    "feedparser>=6.0",
 ]
 
 [project.optional-dependencies]
