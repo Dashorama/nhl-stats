@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.87,
   "hd_shot_pct": 46.5,
   "rebound_rate": 11.2,
-  "rush_rate": 0,
+  "rush_rate": 0.3,
   "position": "L",
   "seasons": [
     {
@@ -87,7 +87,7 @@
       "sh_vs_expected": 0.87,
       "hd_shot_pct": 46.5,
       "rebound_rate": 11.2,
-      "rush_rate": 0
+      "rush_rate": 0.3
     },
     {
       "season": "2025",

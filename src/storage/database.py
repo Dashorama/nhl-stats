@@ -866,8 +866,14 @@ class Database:
             return count
 
     def insert_shots(self, shots: list[dict[str, Any]]) -> int:
-        """Insert shot records. Bulk insert for efficiency."""
+        """Insert shot records. Clears existing records for the season before inserting."""
+        if not shots:
+            return 0
+        season = shots[0].get("season")
         with self.get_session() as session:
+            if season:
+                session.query(ShotRecord).filter(ShotRecord.season == season).delete()
+                session.commit()
             count = 0
             for s in shots:
                 session.add(ShotRecord(
