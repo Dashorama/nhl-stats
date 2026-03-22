@@ -18,6 +18,8 @@ dependencies = [
     "rich>=13.0",
     "click>=8.1",
     "feedparser>=6.0",
+    "atproto>=0.0.55",
+    "matplotlib>=3.8",
 ]
 
 [project.optional-dependencies]
