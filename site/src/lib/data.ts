@@ -68,6 +68,15 @@ export interface EdgeTracking {
   distance_pct: number;
 }
 
+export interface FaceoffStats {
+  fo_wins: number;
+  fo_losses: number;
+  fo_pct: number;
+  fo_oz_pct: number | null;
+  fo_dz_pct: number | null;
+  fo_nz_pct: number | null;
+}
+
 export interface Player {
   player_id: number;
   player_name: string;
@@ -77,6 +86,7 @@ export interface Player {
   verdict: string;
   injury_status: string;
   tracking: EdgeTracking | null;
+  faceoffs: FaceoffStats | null;
 }
 
 export interface Team {

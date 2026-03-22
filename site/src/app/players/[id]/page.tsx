@@ -56,6 +56,41 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
         </div>
       )}
 
+      {player.faceoffs && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-4">
+          <h2 className="font-bold text-gray-700 mb-1 text-sm uppercase tracking-wide">
+            Faceoffs
+          </h2>
+          <p className="text-xs text-gray-400 mb-4">
+            {player.faceoffs.fo_wins + player.faceoffs.fo_losses} total draws, 2024–25.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-black text-gray-900">{player.faceoffs.fo_pct}<span className="text-base font-normal text-gray-400">%</span></p>
+              <p className="text-xs text-gray-500 mt-0.5">Overall</p>
+            </div>
+            <div>
+              <p className={`text-2xl font-black ${player.faceoffs.fo_oz_pct != null && player.faceoffs.fo_oz_pct >= 50 ? "text-emerald-600" : "text-red-500"}`}>
+                {player.faceoffs.fo_oz_pct ?? "—"}<span className="text-base font-normal text-gray-400">%</span>
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">Off. Zone</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-gray-900">
+                {player.faceoffs.fo_dz_pct ?? "—"}<span className="text-base font-normal text-gray-400">%</span>
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">Def. Zone</p>
+            </div>
+            <div>
+              <p className="text-2xl font-black text-gray-900">
+                {player.faceoffs.fo_nz_pct ?? "—"}<span className="text-base font-normal text-gray-400">%</span>
+              </p>
+              <p className="text-xs text-gray-500 mt-0.5">Neutral Zone</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
         <h2 className="font-bold text-gray-700 mb-4 text-sm uppercase tracking-wide">
           Goals vs. Expected Goals by Season

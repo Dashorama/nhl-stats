@@ -58,5 +58,6 @@
     "oz_percentile": 0.4,
     "distance_mi": 125.3,
     "distance_pct": 44.6
-  }
+  },
+  "faceoffs": null
 }

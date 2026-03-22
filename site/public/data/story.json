@@ -1,12 +1,30 @@
 {
-  "story_type": "StoryType.EXTREME_SHOOTER",
+  "story_type": "StoryType.NEWS_COMBO",
   "subject_type": "player",
-  "subject_id": 8476460,
-  "subject_name": "Mark Scheifele",
-  "headline": "Mark Scheifele is scoring 41% above expectations",
-  "body": "Mark Scheifele has scored 44 goals against an expected 31.2 this season (+12.8 goals above expected). Historical data suggests deviations this large tend to normalize.",
-  "social_text": "Mark Scheifele is scoring at 1.41x expected (+12.8 GAx). History says this won't last.",
-  "headlines": [],
+  "subject_id": 8478398,
+  "subject_name": "Kyle Connor",
+  "headline": "Kyle Connor is scoring 35% above expectations",
+  "body": "Kyle Connor has scored 46 goals against an expected 34.2 this season (+11.8 goals above expected). Historical data suggests deviations this large tend to normalize.",
+  "social_text": "Kyle Connor is scoring at 1.35x expected (+11.8 GAx). History says this won't last.",
+  "headlines": [
+    {
+      "title": "NHL Predictions: Chicago Blackhawks vs Nashville Predators, March 22",
+      "url": "https://lastwordonsports.com/hockey/2026/03/22/nhl-predictions-chicago-blackhawks-nashville-predators-march-22/",
+      "source": "Last Word",
+      "tags": [
+        "Chicago Blackhawks",
+        "Nashville Predators",
+        "Connor Bedard",
+        "Filip Forsberg"
+      ]
+    },
+    {
+      "title": "Tyson Gross set to make Flames debut vs. Lightning with Connor Zary day-to-day",
+      "url": "",
+      "source": "Sportsnet",
+      "tags": []
+    }
+  ],
   "chart": "chart-2026-03-22.png",
   "date": "2026-03-22"
 }

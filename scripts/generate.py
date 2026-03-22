@@ -244,6 +244,45 @@ class Generator:
         plt.close()
         return chart_name
 
+    def _compute_faceoff_stats(self) -> dict[int, dict]:
+        """Compute faceoff win rates by zone from play-by-play. Returns {player_id: stats}."""
+        with self._db() as conn:
+            rows = conn.execute("""
+                SELECT
+                    player_id,
+                    SUM(won)          AS wins,
+                    SUM(1 - won)      AS losses,
+                    SUM(CASE WHEN zone_code='O' THEN won     ELSE 0 END) AS oz_wins,
+                    SUM(CASE WHEN zone_code='O' THEN 1       ELSE 0 END) AS oz_total,
+                    SUM(CASE WHEN zone_code='D' THEN won     ELSE 0 END) AS dz_wins,
+                    SUM(CASE WHEN zone_code='D' THEN 1       ELSE 0 END) AS dz_total,
+                    SUM(CASE WHEN zone_code='N' THEN won     ELSE 0 END) AS nz_wins,
+                    SUM(CASE WHEN zone_code='N' THEN 1       ELSE 0 END) AS nz_total
+                FROM (
+                    SELECT player1_id AS player_id, zone_code, 1 AS won FROM play_by_play WHERE event_type='faceoff'
+                    UNION ALL
+                    SELECT player2_id AS player_id, zone_code, 0 AS won FROM play_by_play WHERE event_type='faceoff'
+                )
+                WHERE player_id IS NOT NULL
+                GROUP BY player_id
+                HAVING wins + losses >= 100
+            """).fetchall()
+
+        def pct(w, t):
+            return round(100.0 * w / t, 1) if t else None
+
+        return {
+            r["player_id"]: {
+                "fo_wins":    r["wins"],
+                "fo_losses":  r["losses"],
+                "fo_pct":     pct(r["wins"], r["wins"] + r["losses"]),
+                "fo_oz_pct":  pct(r["oz_wins"], r["oz_total"]),
+                "fo_dz_pct":  pct(r["dz_wins"], r["dz_total"]),
+                "fo_nz_pct":  pct(r["nz_wins"], r["nz_total"]),
+            }
+            for r in rows
+        }
+
     def _load_edge_stats(self) -> dict[int, dict]:
         """Load EDGE tracking stats keyed by player_id. Returns {} if file missing."""
         if not EDGE_STATS_PATH.exists():
@@ -254,7 +293,7 @@ class Generator:
         except Exception:
             return {}
 
-    def _write_player_files(self, story_data: dict, rush_rates: dict[int, float], edge_stats: dict[int, dict]) -> None:
+    def _write_player_files(self, story_data: dict, rush_rates: dict[int, float], edge_stats: dict[int, dict], faceoff_stats: dict[int, dict]) -> None:
         out_dir = self.site_dir / "src/data/players"
         out_dir.mkdir(parents=True, exist_ok=True)
         for s in story_data["shooters"]:
@@ -279,6 +318,7 @@ class Generator:
                     if season["season"] == "2025":
                         season["rush_rate"] = rush_rates[s["player_id"]]
             edge = edge_stats.get(s["player_id"])
+            faceoffs = faceoff_stats.get(s["player_id"])
             (out_dir / f"{s['player_id']}.json").write_text(
                 json.dumps({
                     **player_data,
@@ -286,6 +326,7 @@ class Generator:
                     "verdict": verdict,
                     "injury_status": status,
                     "tracking": edge,
+                    "faceoffs": faceoffs,
                 }, indent=2)
             )
 
@@ -433,7 +474,8 @@ class Generator:
 
         rush_rates = self._compute_rush_rates()
         edge_stats = self._load_edge_stats()
-        self._write_player_files(story_data, rush_rates, edge_stats)
+        faceoff_stats = self._compute_faceoff_stats()
+        self._write_player_files(story_data, rush_rates, edge_stats, faceoff_stats)
         self._write_team_files(leaderboard_teams=leaderboard["all_teams"])
         selector.record(story)
         self._cleanup_old_charts()

@@ -113,5 +113,13 @@
     "oz_percentile": 50.9,
     "distance_mi": 159.7,
     "distance_pct": 56.7
+  },
+  "faceoffs": {
+    "fo_wins": 564,
+    "fo_losses": 501,
+    "fo_pct": 53.0,
+    "fo_oz_pct": 54.9,
+    "fo_dz_pct": 49.4,
+    "fo_nz_pct": 55.2
   }
 }

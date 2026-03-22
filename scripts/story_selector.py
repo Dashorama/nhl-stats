@@ -42,12 +42,34 @@ class StorySelector:
             and s["player_id"] not in recent
         ]
 
+    def _headlines_for_player(self, player: dict) -> list[dict]:
+        """Return headlines relevant to a player, preferring tag matches over title matches."""
+        name_lower = player["player_name"].lower()
+        last_name = name_lower.split()[-1]
+        matched = []
+        for h in self.headlines:
+            tags_lower = [t.lower() for t in h.get("tags", [])]
+            tag_hit = any(last_name in t for t in tags_lower) or any(name_lower in t for t in tags_lower)
+            title_hit = last_name in h["title"].lower()
+            if tag_hit or title_hit:
+                # Prefer tag hits (more precise) by sorting them first
+                matched.append((0 if tag_hit else 1, h))
+        matched.sort(key=lambda x: x[0])
+        return [h for _, h in matched[:2]]
+
     def _try_news_combo(self, available: list[dict]) -> dict | None:
+        # Build a quick index: team name → headlines with that tag
+        team_tagged: dict[str, list[dict]] = {}
+        for h in self.headlines:
+            for tag in h.get("tags", []):
+                team_tagged.setdefault(tag, []).append(h)
+
         headline_text = " ".join(h["title"].lower() for h in self.headlines)
         for player in sorted(available, key=lambda p: abs(p["gax"]), reverse=True):
-            last_name = player["player_name"].split()[-1].lower()
-            if last_name in headline_text and abs(player["gax"]) >= 8:
-                matched = [h for h in self.headlines if last_name in h["title"].lower()][:2]
+            if abs(player["gax"]) < 8:
+                continue
+            matched = self._headlines_for_player(player)
+            if matched:
                 return self._player_story(player, StoryType.NEWS_COMBO, matched)
         return None
 
