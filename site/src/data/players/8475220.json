@@ -1,0 +1,46 @@
+{
+  "player_id": 8475220,
+  "player_name": "Marcus Foligno",
+  "team_abbrev": "MIN",
+  "goals": 17,
+  "xg": 20.2,
+  "gax": -3.2,
+  "shots": 150,
+  "sh_vs_expected": 0.84,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.64
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.13
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.82
+    }
+  ],
+  "verdict": "Career average 1% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8478427,
+  "player_name": "Sebastian Aho",
+  "team_abbrev": "CAR",
+  "goals": 36,
+  "xg": 31.6,
+  "gax": 4.4,
+  "shots": 404,
+  "sh_vs_expected": 1.14,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.14
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.29
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.14
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.06
+    }
+  ],
+  "verdict": "Career average 12% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

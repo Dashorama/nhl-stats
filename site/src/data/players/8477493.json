@@ -1,0 +1,42 @@
+{
+  "player_id": 8477493,
+  "player_name": "Aleksander Barkov",
+  "team_abbrev": "FLA",
+  "goals": 26,
+  "xg": 27.6,
+  "gax": -1.6,
+  "shots": 301,
+  "sh_vs_expected": 0.94,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.36
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.94
+    }
+  ],
+  "verdict": "Career average 9% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

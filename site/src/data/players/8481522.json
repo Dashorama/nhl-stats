@@ -1,0 +1,38 @@
+{
+  "player_id": 8481522,
+  "player_name": "Peyton Krebs",
+  "team_abbrev": "BUF",
+  "goals": 10,
+  "xg": 10.3,
+  "gax": -0.3,
+  "shots": 139,
+  "sh_vs_expected": 0.97,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.49
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.56
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.82
+    }
+  ],
+  "verdict": "Career average 2% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

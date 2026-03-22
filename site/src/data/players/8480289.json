@@ -1,0 +1,38 @@
+{
+  "player_id": 8480289,
+  "player_name": "Morgan Barron",
+  "team_abbrev": "WPG",
+  "goals": 8,
+  "xg": 13.3,
+  "gax": -5.3,
+  "shots": 166,
+  "sh_vs_expected": 0.6,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 11.84
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.47
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.6
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.98
+    }
+  ],
+  "verdict": "Career average 164% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

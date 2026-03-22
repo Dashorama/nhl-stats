@@ -1,0 +1,46 @@
+{
+  "player_id": 8476902,
+  "player_name": "Esa Lindell",
+  "team_abbrev": "DAL",
+  "goals": 6,
+  "xg": 8.0,
+  "gax": -2.0,
+  "shots": 175,
+  "sh_vs_expected": 0.75,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.48
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.54
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.87
+    }
+  ],
+  "verdict": "Career average 3% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

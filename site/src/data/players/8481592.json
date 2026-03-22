@@ -1,0 +1,30 @@
+{
+  "player_id": 8481592,
+  "player_name": "Jakob Pelletier",
+  "team_abbrev": "CGY",
+  "goals": 7,
+  "xg": 6.8,
+  "gax": 0.2,
+  "shots": 72,
+  "sh_vs_expected": 1.02,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.45
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.29
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 6% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

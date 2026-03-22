@@ -1,0 +1,38 @@
+{
+  "player_id": 8481014,
+  "player_name": "Alexander Romanov",
+  "team_abbrev": "NYI",
+  "goals": 4,
+  "xg": 3.8,
+  "gax": 0.2,
+  "shots": 145,
+  "sh_vs_expected": 1.05,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.91
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 1% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

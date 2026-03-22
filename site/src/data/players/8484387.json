@@ -1,0 +1,22 @@
+{
+  "player_id": 8484387,
+  "player_name": "Matvei Michkov",
+  "team_abbrev": "PHI",
+  "goals": 27,
+  "xg": 24.2,
+  "gax": 2.8,
+  "shots": 282,
+  "sh_vs_expected": 1.12,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.07
+    }
+  ],
+  "verdict": "Career average 10% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

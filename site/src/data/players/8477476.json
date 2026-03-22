@@ -1,0 +1,46 @@
+{
+  "player_id": 8477476,
+  "player_name": "Artturi Lehkonen",
+  "team_abbrev": "COL",
+  "goals": 30,
+  "xg": 31.5,
+  "gax": -1.5,
+  "shots": 264,
+  "sh_vs_expected": 0.95,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.66
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.8
+    }
+  ],
+  "verdict": "Career average 12% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

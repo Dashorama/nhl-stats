@@ -366,6 +366,19 @@ class ShotRecord(Base):
     )
 
 
+class InjuryRecord(Base):
+    """Player injury/availability snapshot."""
+
+    __tablename__ = "injuries"
+
+    player_id = Column(Integer, primary_key=True)
+    player_name = Column(String(100))
+    team_abbrev = Column(String(3))
+    status = Column(String(20))   # 'IR', 'LTIR', 'DTD', 'SUSPENDED', 'HEALTHY'
+    detail = Column(String(200))
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+
 class Database:
     """SQLite database wrapper for NHL data."""
 
@@ -381,6 +394,39 @@ class Database:
     def get_session(self) -> Session:
         """Get a new database session."""
         return self.SessionLocal()
+
+    def upsert_injuries(self, records: list[dict]) -> int:
+        """Insert or update player availability records."""
+        with self.get_session() as session:
+            count = 0
+            for r in records:
+                existing = session.get(InjuryRecord, r["player_id"])
+                if existing:
+                    existing.player_name = r["player_name"]
+                    existing.team_abbrev = r["team_abbrev"]
+                    existing.status = r["status"]
+                    existing.detail = r.get("detail")
+                    existing.updated_at = datetime.utcnow()
+                else:
+                    session.add(InjuryRecord(
+                        player_id=r["player_id"],
+                        player_name=r["player_name"],
+                        team_abbrev=r["team_abbrev"],
+                        status=r["status"],
+                        detail=r.get("detail"),
+                        updated_at=datetime.utcnow(),
+                    ))
+                count += 1
+            session.commit()
+        return count
+
+    def get_unavailable_players(self) -> set[int]:
+        """Return player IDs that are IR, LTIR, or SUSPENDED."""
+        with self.get_session() as session:
+            rows = session.query(InjuryRecord).filter(
+                InjuryRecord.status.in_(["IR", "LTIR", "SUSPENDED"])
+            ).all()
+            return {r.player_id for r in rows}
 
     def upsert_players(self, players: list[dict[str, Any]]) -> int:
         """Insert or update player records."""

@@ -1,0 +1,46 @@
+{
+  "player_id": 8478891,
+  "player_name": "Mason Appleton",
+  "team_abbrev": "WPG",
+  "goals": 10,
+  "xg": 11.9,
+  "gax": -1.9,
+  "shots": 178,
+  "sh_vs_expected": 0.84,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.16
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.71
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.62
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.98
+    }
+  ],
+  "verdict": "Career average 6% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

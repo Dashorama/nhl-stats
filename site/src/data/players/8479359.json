@@ -1,0 +1,38 @@
+{
+  "player_id": 8479359,
+  "player_name": "Beck Malenstyn",
+  "team_abbrev": "BUF",
+  "goals": 4,
+  "xg": 7.0,
+  "gax": -3.0,
+  "shots": 105,
+  "sh_vs_expected": 0.57,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 2.45
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.53
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.57
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.93
+    }
+  ],
+  "verdict": "Career average 9% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

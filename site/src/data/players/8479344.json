@@ -1,0 +1,38 @@
+{
+  "player_id": 8479344,
+  "player_name": "Jesse Puljujarvi",
+  "team_abbrev": "PIT",
+  "goals": 4,
+  "xg": 5.1,
+  "gax": -1.1,
+  "shots": 76,
+  "sh_vs_expected": 0.79,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.36
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.79
+    }
+  ],
+  "verdict": "Career average 24% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

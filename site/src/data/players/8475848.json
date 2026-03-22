@@ -1,0 +1,46 @@
+{
+  "player_id": 8475848,
+  "player_name": "Brendan Gallagher",
+  "team_abbrev": "MTL",
+  "goals": 21,
+  "xg": 26.6,
+  "gax": -5.6,
+  "shots": 242,
+  "sh_vs_expected": 0.79,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.4
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.44
+    }
+  ],
+  "verdict": "Career average 28% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

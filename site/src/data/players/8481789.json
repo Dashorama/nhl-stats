@@ -1,0 +1,30 @@
+{
+  "player_id": 8481789,
+  "player_name": "Tye Kartye",
+  "team_abbrev": "SEA",
+  "goals": 6,
+  "xg": 5.5,
+  "gax": 0.5,
+  "shots": 81,
+  "sh_vs_expected": 1.1,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 3.51
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.26
+    }
+  ],
+  "verdict": "Career average 68% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

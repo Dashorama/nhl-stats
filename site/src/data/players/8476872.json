@@ -1,0 +1,46 @@
+{
+  "player_id": 8476872,
+  "player_name": "Scott Laughton",
+  "team_abbrev": "PHI",
+  "goals": 13,
+  "xg": 18.8,
+  "gax": -5.8,
+  "shots": 211,
+  "sh_vs_expected": 0.69,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.49
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.76
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.83
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.69
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.37
+    }
+  ],
+  "verdict": "Career average 2% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

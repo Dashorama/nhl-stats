@@ -1,0 +1,42 @@
+{
+  "player_id": 8479992,
+  "player_name": "Michael Rasmussen",
+  "team_abbrev": "DET",
+  "goals": 9,
+  "xg": 16.5,
+  "gax": -7.5,
+  "shots": 148,
+  "sh_vs_expected": 0.54,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.82
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.4
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.67
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.83
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.54
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.6
+    }
+  ],
+  "verdict": "Career average 31% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8477406,
+  "player_name": "Mattias Janmark",
+  "team_abbrev": "EDM",
+  "goals": 5,
+  "xg": 10.8,
+  "gax": -5.8,
+  "shots": 109,
+  "sh_vs_expected": 0.46,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.53
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.61
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.46
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.26
+    }
+  ],
+  "verdict": "Career average 34% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

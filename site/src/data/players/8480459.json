@@ -1,0 +1,38 @@
+{
+  "player_id": 8480459,
+  "player_name": "Pius Suter",
+  "team_abbrev": "VAN",
+  "goals": 26,
+  "xg": 20.3,
+  "gax": 5.7,
+  "shots": 195,
+  "sh_vs_expected": 1.28,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.69
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.08
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.82
+    }
+  ],
+  "verdict": "Career average 5% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

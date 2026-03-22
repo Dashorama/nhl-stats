@@ -1,0 +1,46 @@
+{
+  "player_id": 8477934,
+  "player_name": "Leon Draisaitl",
+  "team_abbrev": "EDM",
+  "goals": 63,
+  "xg": 37.4,
+  "gax": 25.6,
+  "shots": 436,
+  "sh_vs_expected": 1.68,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.64
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.39
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.21
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.52
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.68
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.46
+    }
+  ],
+  "verdict": "Career average 44% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

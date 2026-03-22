@@ -1,0 +1,46 @@
+{
+  "player_id": 8476457,
+  "player_name": "Adam Larsson",
+  "team_abbrev": "SEA",
+  "goals": 7,
+  "xg": 6.6,
+  "gax": 0.4,
+  "shots": 180,
+  "sh_vs_expected": 1.06,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.42
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.41
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.78
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.22
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.81
+    }
+  ],
+  "verdict": "Career average 13% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

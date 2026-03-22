@@ -1,0 +1,42 @@
+{
+  "player_id": 8474034,
+  "player_name": "Patrick Maroon",
+  "team_abbrev": "CHI",
+  "goals": 5,
+  "xg": 9.7,
+  "gax": -4.7,
+  "shots": 110,
+  "sh_vs_expected": 0.52,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.71
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.51
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.52
+    }
+  ],
+  "verdict": "Career average 35% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

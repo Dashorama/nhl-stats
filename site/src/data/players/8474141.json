@@ -1,0 +1,46 @@
+{
+  "player_id": 8474141,
+  "player_name": "Patrick Kane",
+  "team_abbrev": "DET",
+  "goals": 21,
+  "xg": 19.0,
+  "gax": 2.0,
+  "shots": 254,
+  "sh_vs_expected": 1.1,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.41
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.35
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.17
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.22
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.71
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.86
+    }
+  ],
+  "verdict": "Career average 24% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

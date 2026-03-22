@@ -750,6 +750,24 @@ def update(ctx: click.Context, daily: bool) -> None:
     asyncio.run(run())
 
 
+@main.command()
+@click.pass_context
+def injuries(ctx: click.Context) -> None:
+    """Update player injury/availability status."""
+    from .scrapers.nhl_injuries import NHLInjuriesScraper
+    db: Database = ctx.obj["db"]
+    errors = []
+    try:
+        scraper = NHLInjuriesScraper()
+        result = asyncio.run(scraper.scrape_all(db))
+        click.echo(f"  ✓ {result['players']} players")
+        if result["errors"]:
+            errors.append(f"teams failed: {result['errors']}")
+    except Exception as e:
+        errors.append(f"injuries: {e}")
+    _print_summary(errors)
+
+
 def _print_summary(errors: list[str]) -> None:
     """Print update summary and exit with appropriate code."""
     import sys

@@ -1,0 +1,46 @@
+{
+  "player_id": 8477429,
+  "player_name": "Andrew Copp",
+  "team_abbrev": "DET",
+  "goals": 10,
+  "xg": 12.3,
+  "gax": -2.3,
+  "shots": 99,
+  "sh_vs_expected": 0.81,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.66
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.81
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.53
+    }
+  ],
+  "verdict": "Career average 20% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

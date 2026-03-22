@@ -1,0 +1,38 @@
+{
+  "player_id": 8478864,
+  "player_name": "Kirill Kaprizov",
+  "team_abbrev": "MIN",
+  "goals": 30,
+  "xg": 23.1,
+  "gax": 6.9,
+  "shots": 234,
+  "sh_vs_expected": 1.3,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.55
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.3
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.15
+    }
+  ],
+  "verdict": "Career average 26% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

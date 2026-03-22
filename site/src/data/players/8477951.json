@@ -1,0 +1,46 @@
+{
+  "player_id": 8477951,
+  "player_name": "Nick Schmaltz",
+  "team_abbrev": "UTA",
+  "goals": 20,
+  "xg": 26.0,
+  "gax": -6.0,
+  "shots": 264,
+  "sh_vs_expected": 0.77,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.81
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.61
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.77
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.13
+    }
+  ],
+  "verdict": "Career average 6% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

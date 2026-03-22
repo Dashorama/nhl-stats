@@ -1,0 +1,46 @@
+{
+  "player_id": 8478416,
+  "player_name": "Erik Cernak",
+  "team_abbrev": "TBL",
+  "goals": 4,
+  "xg": 3.4,
+  "gax": 0.6,
+  "shots": 130,
+  "sh_vs_expected": 1.16,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.35
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.56
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.5
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.81
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.16
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.42
+    }
+  ],
+  "verdict": "Career average 13% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

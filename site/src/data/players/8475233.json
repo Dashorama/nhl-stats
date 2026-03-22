@@ -1,0 +1,42 @@
+{
+  "player_id": 8475233,
+  "player_name": "David Savard",
+  "team_abbrev": "MTL",
+  "goals": 1,
+  "xg": 2.7,
+  "gax": -1.7,
+  "shots": 77,
+  "sh_vs_expected": 0.37,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.23
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.64
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.28
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.37
+    }
+  ],
+  "verdict": "Career average 3% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

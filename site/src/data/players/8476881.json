@@ -1,0 +1,46 @@
+{
+  "player_id": 8476881,
+  "player_name": "Tomas Hertl",
+  "team_abbrev": "VGK",
+  "goals": 35,
+  "xg": 35.6,
+  "gax": -0.6,
+  "shots": 298,
+  "sh_vs_expected": 0.98,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.23
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.77
+    }
+  ],
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

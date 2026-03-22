@@ -1,0 +1,26 @@
+{
+  "player_id": 8481716,
+  "player_name": "Dmitri Voronkov",
+  "team_abbrev": "CBJ",
+  "goals": 22,
+  "xg": 25.6,
+  "gax": -3.6,
+  "shots": 232,
+  "sh_vs_expected": 0.86,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.94
+    }
+  ],
+  "verdict": "Career average 11% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

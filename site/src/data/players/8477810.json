@@ -1,0 +1,46 @@
+{
+  "player_id": 8477810,
+  "player_name": "Joel Hanley",
+  "team_abbrev": "CGY",
+  "goals": 2,
+  "xg": 1.8,
+  "gax": 0.2,
+  "shots": 79,
+  "sh_vs_expected": 1.1,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 3.18
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 2.46
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.92
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 46% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

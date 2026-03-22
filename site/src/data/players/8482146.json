@@ -1,0 +1,30 @@
+{
+  "player_id": 8482146,
+  "player_name": "Luke Evangelista",
+  "team_abbrev": "NSH",
+  "goals": 10,
+  "xg": 13.9,
+  "gax": -3.9,
+  "shots": 172,
+  "sh_vs_expected": 0.72,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.19
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.53
+    }
+  ],
+  "verdict": "Career average 14% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

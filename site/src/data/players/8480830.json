@@ -1,0 +1,46 @@
+{
+  "player_id": 8480830,
+  "player_name": "Andrei Svechnikov",
+  "team_abbrev": "CAR",
+  "goals": 28,
+  "xg": 33.1,
+  "gax": -5.1,
+  "shots": 347,
+  "sh_vs_expected": 0.85,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.71
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.93
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.06
+    }
+  ],
+  "verdict": "Career average 7% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

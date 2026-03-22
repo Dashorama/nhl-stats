@@ -1,0 +1,46 @@
+{
+  "player_id": 8476312,
+  "player_name": "Josh Manson",
+  "team_abbrev": "COL",
+  "goals": 3,
+  "xg": 3.1,
+  "gax": -0.1,
+  "shots": 118,
+  "sh_vs_expected": 0.97,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.39
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.53
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.41
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.91
+    }
+  ],
+  "verdict": "Career average 2% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

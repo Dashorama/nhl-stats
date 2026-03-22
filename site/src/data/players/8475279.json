@@ -1,0 +1,46 @@
+{
+  "player_id": 8475279,
+  "player_name": "Ben Chiarot",
+  "team_abbrev": "DET",
+  "goals": 4,
+  "xg": 4.2,
+  "gax": -0.2,
+  "shots": 162,
+  "sh_vs_expected": 0.95,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.31
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.53
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.31
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.32
+    }
+  ],
+  "verdict": "Career average 8% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

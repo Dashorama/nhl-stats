@@ -1,0 +1,38 @@
+{
+  "player_id": 8478115,
+  "player_name": "Pierre Engvall",
+  "team_abbrev": "NYI",
+  "goals": 8,
+  "xg": 8.3,
+  "gax": -0.3,
+  "shots": 118,
+  "sh_vs_expected": 0.96,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.79
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.62
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.96
+    }
+  ],
+  "verdict": "Career average 9% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

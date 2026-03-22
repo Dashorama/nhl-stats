@@ -1,0 +1,46 @@
+{
+  "player_id": 8476393,
+  "player_name": "Nick Cousins",
+  "team_abbrev": "OTT",
+  "goals": 6,
+  "xg": 8.0,
+  "gax": -2.0,
+  "shots": 101,
+  "sh_vs_expected": 0.75,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.53
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.66
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.81
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.08
+    }
+  ],
+  "verdict": "Career average 19% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8478493,
+  "player_name": "Joel Eriksson Ek",
+  "team_abbrev": "MIN",
+  "goals": 14,
+  "xg": 19.6,
+  "gax": -5.6,
+  "shots": 209,
+  "sh_vs_expected": 0.72,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.12
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.7
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.76
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.77
+    }
+  ],
+  "verdict": "Career average 17% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

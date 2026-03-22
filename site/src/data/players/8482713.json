@@ -1,0 +1,26 @@
+{
+  "player_id": 8482713,
+  "player_name": "Mackie Samoskevich",
+  "team_abbrev": "FLA",
+  "goals": 15,
+  "xg": 18.8,
+  "gax": -3.8,
+  "shots": 226,
+  "sh_vs_expected": 0.8,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.32
+    }
+  ],
+  "verdict": "Career average 29% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

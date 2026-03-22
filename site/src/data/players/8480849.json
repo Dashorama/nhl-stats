@@ -1,0 +1,42 @@
+{
+  "player_id": 8480849,
+  "player_name": "Barrett Hayton",
+  "team_abbrev": "UTA",
+  "goals": 20,
+  "xg": 30.2,
+  "gax": -10.2,
+  "shots": 242,
+  "sh_vs_expected": 0.66,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.34
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 2.58
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.92
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.35
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.66
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.6
+    }
+  ],
+  "verdict": "Career average 10% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

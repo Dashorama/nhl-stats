@@ -1,0 +1,38 @@
+{
+  "player_id": 8480796,
+  "player_name": "Martin Fehervary",
+  "team_abbrev": "WSH",
+  "goals": 5,
+  "xg": 3.9,
+  "gax": 1.1,
+  "shots": 118,
+  "sh_vs_expected": 1.29,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.85
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.92
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.49
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.86
+    }
+  ],
+  "verdict": "Career average 23% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8478233,
+  "player_name": "Andrew Mangiapane",
+  "team_abbrev": "WSH",
+  "goals": 15,
+  "xg": 15.8,
+  "gax": -0.8,
+  "shots": 157,
+  "sh_vs_expected": 0.95,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.33
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.7
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.67
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.02
+    }
+  ],
+  "verdict": "Career average 3% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

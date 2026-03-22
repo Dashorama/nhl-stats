@@ -1,0 +1,46 @@
+{
+  "player_id": 8478402,
+  "player_name": "Connor McDavid",
+  "team_abbrev": "EDM",
+  "goals": 33,
+  "xg": 36.4,
+  "gax": -3.4,
+  "shots": 398,
+  "sh_vs_expected": 0.91,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.36
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.42
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.29
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.03
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.37
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.97
+    }
+  ],
+  "verdict": "Career average 17% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

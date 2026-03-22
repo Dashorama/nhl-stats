@@ -1,0 +1,42 @@
+{
+  "player_id": 8473453,
+  "player_name": "Trevor Lewis",
+  "team_abbrev": "LAK",
+  "goals": 6,
+  "xg": 5.1,
+  "gax": 0.9,
+  "shots": 95,
+  "sh_vs_expected": 1.18,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.44
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.6
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.66
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.78
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.62
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.18
+    }
+  ],
+  "verdict": "Career average 26% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

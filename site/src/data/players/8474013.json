@@ -1,0 +1,46 @@
+{
+  "player_id": 8474013,
+  "player_name": "Ian Cole",
+  "team_abbrev": "UTA",
+  "goals": 1,
+  "xg": 5.2,
+  "gax": -4.2,
+  "shots": 119,
+  "sh_vs_expected": 0.19,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.58
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.9
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.7
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.75
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.19
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.93
+    }
+  ],
+  "verdict": "Career average 28% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

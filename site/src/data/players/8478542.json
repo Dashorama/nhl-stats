@@ -1,0 +1,46 @@
+{
+  "player_id": 8478542,
+  "player_name": "Evan Rodrigues",
+  "team_abbrev": "FLA",
+  "goals": 17,
+  "xg": 20.1,
+  "gax": -3.1,
+  "shots": 305,
+  "sh_vs_expected": 0.85,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.82
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.84
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.75
+    }
+  ],
+  "verdict": "Career average 15% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

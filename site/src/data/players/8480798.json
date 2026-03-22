@@ -1,0 +1,38 @@
+{
+  "player_id": 8480798,
+  "player_name": "Philipp Kurashev",
+  "team_abbrev": "CHI",
+  "goals": 7,
+  "xg": 6.4,
+  "gax": 0.6,
+  "shots": 86,
+  "sh_vs_expected": 1.09,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.14
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.82
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.33
+    }
+  ],
+  "verdict": "Career average 4% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

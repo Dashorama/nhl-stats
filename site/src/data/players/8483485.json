@@ -1,0 +1,22 @@
+{
+  "player_id": 8483485,
+  "player_name": "Denton Mateychuk",
+  "team_abbrev": "CBJ",
+  "goals": 4,
+  "xg": 2.1,
+  "gax": 1.9,
+  "shots": 71,
+  "sh_vs_expected": 1.93,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.93
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 2.35
+    }
+  ],
+  "verdict": "Career average 114% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

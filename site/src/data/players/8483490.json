@@ -1,0 +1,26 @@
+{
+  "player_id": 8483490,
+  "player_name": "Pavel Mintyukov",
+  "team_abbrev": "ANA",
+  "goals": 5,
+  "xg": 5.8,
+  "gax": -0.8,
+  "shots": 114,
+  "sh_vs_expected": 0.86,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.66
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.37
+    }
+  ],
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

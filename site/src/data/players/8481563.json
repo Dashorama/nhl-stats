@@ -1,0 +1,26 @@
+{
+  "player_id": 8481563,
+  "player_name": "Drew Helleson",
+  "team_abbrev": "ANA",
+  "goals": 4,
+  "xg": 2.4,
+  "gax": 1.6,
+  "shots": 92,
+  "sh_vs_expected": 1.65,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 4.64
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.65
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.45
+    }
+  ],
+  "verdict": "Career average 158% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

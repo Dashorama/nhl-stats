@@ -1,0 +1,38 @@
+{
+  "player_id": 8479378,
+  "player_name": "Logan Stanley",
+  "team_abbrev": "WPG",
+  "goals": 1,
+  "xg": 1.8,
+  "gax": -0.8,
+  "shots": 86,
+  "sh_vs_expected": 0.56,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.29
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.34
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.92
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.56
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 2.46
+    }
+  ],
+  "verdict": "Career average 27% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

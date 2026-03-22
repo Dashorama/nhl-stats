@@ -52,6 +52,10 @@ data/*.csv
 logs/
 data/logs/
 
+# Next.js
+site/.next/
+site/node_modules/
+
 # OS
 .DS_Store
 Thumbs.db

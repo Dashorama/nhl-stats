@@ -1,0 +1,42 @@
+{
+  "player_id": 8481582,
+  "player_name": "Nicholas Robertson",
+  "team_abbrev": "TOR",
+  "goals": 16,
+  "xg": 10.6,
+  "gax": 5.4,
+  "shots": 176,
+  "sh_vs_expected": 1.5,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 2.39
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.54
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.83
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.45
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.5
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.09
+    }
+  ],
+  "verdict": "Career average 40% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

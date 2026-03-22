@@ -1,0 +1,42 @@
+{
+  "player_id": 8475750,
+  "player_name": "Jon Merrill",
+  "team_abbrev": "MIN",
+  "goals": 2,
+  "xg": 2.0,
+  "gax": 0.0,
+  "shots": 81,
+  "sh_vs_expected": 1.01,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.54
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.62
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.01
+    }
+  ],
+  "verdict": "Career average 15% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

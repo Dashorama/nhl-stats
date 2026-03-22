@@ -1,0 +1,38 @@
+{
+  "player_id": 8482062,
+  "player_name": "Cole Smith",
+  "team_abbrev": "NSH",
+  "goals": 4,
+  "xg": 8.9,
+  "gax": -4.9,
+  "shots": 102,
+  "sh_vs_expected": 0.45,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.37
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.45
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.62
+    }
+  ],
+  "verdict": "Career average 33% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

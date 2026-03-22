@@ -1,0 +1,22 @@
+{
+  "player_id": 8484958,
+  "player_name": "Maxim Tsyplakov",
+  "team_abbrev": "NYI",
+  "goals": 10,
+  "xg": 16.2,
+  "gax": -6.2,
+  "shots": 191,
+  "sh_vs_expected": 0.62,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.62
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.59
+    }
+  ],
+  "verdict": "Career average 40% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,26 @@
+{
+  "player_id": 8482858,
+  "player_name": "Ryker Evans",
+  "team_abbrev": "SEA",
+  "goals": 5,
+  "xg": 3.2,
+  "gax": 1.8,
+  "shots": 109,
+  "sh_vs_expected": 1.58,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.58
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 4.6
+    }
+  ],
+  "verdict": "Career average 127% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

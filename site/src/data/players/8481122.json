@@ -1,0 +1,38 @@
+{
+  "player_id": 8481122,
+  "player_name": "Simon Benoit",
+  "team_abbrev": "TOR",
+  "goals": 1,
+  "xg": 2.1,
+  "gax": -1.1,
+  "shots": 90,
+  "sh_vs_expected": 0.47,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.62
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.58
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.47
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 26% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

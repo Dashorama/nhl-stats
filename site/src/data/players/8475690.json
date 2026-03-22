@@ -1,0 +1,46 @@
+{
+  "player_id": 8475690,
+  "player_name": "Chris Tanev",
+  "team_abbrev": "TOR",
+  "goals": 4,
+  "xg": 1.8,
+  "gax": 2.2,
+  "shots": 74,
+  "sh_vs_expected": 2.23,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.56
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.68
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 2.23
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 12% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

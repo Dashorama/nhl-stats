@@ -1,0 +1,46 @@
+{
+  "player_id": 8474567,
+  "player_name": "Zach Bogosian",
+  "team_abbrev": "MIN",
+  "goals": 4,
+  "xg": 2.8,
+  "gax": 1.2,
+  "shots": 125,
+  "sh_vs_expected": 1.42,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.35
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.45
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.42
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.91
+    }
+  ],
+  "verdict": "Career average 1% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

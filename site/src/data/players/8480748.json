@@ -1,0 +1,46 @@
+{
+  "player_id": 8480748,
+  "player_name": "Kiefer Sherwood",
+  "team_abbrev": "VAN",
+  "goals": 19,
+  "xg": 12.0,
+  "gax": 7.0,
+  "shots": 214,
+  "sh_vs_expected": 1.58,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.58
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.19
+    }
+  ],
+  "verdict": "Career average 13% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

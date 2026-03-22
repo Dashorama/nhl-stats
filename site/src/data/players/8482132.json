@@ -1,0 +1,22 @@
+{
+  "player_id": 8482132,
+  "player_name": "Brett Berard",
+  "team_abbrev": "NYR",
+  "goals": 6,
+  "xg": 5.1,
+  "gax": 0.9,
+  "shots": 77,
+  "sh_vs_expected": 1.18,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.0
+    }
+  ],
+  "verdict": "Career average 9% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,26 @@
+{
+  "player_id": 8484258,
+  "player_name": "Sam Malinski",
+  "team_abbrev": "COL",
+  "goals": 5,
+  "xg": 4.7,
+  "gax": 0.3,
+  "shots": 179,
+  "sh_vs_expected": 1.07,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.06
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.68
+    }
+  ],
+  "verdict": "Career average 27% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

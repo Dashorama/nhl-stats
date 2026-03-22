@@ -1,0 +1,26 @@
+{
+  "player_id": 8482201,
+  "player_name": "Gage Goncalves",
+  "team_abbrev": "TBL",
+  "goals": 9,
+  "xg": 8.3,
+  "gax": 0.7,
+  "shots": 95,
+  "sh_vs_expected": 1.09,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.4
+    }
+  ],
+  "verdict": "Career average 16% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

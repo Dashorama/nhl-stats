@@ -1,0 +1,22 @@
+{
+  "player_id": 8481607,
+  "player_name": "Albert Johansson",
+  "team_abbrev": "DET",
+  "goals": 3,
+  "xg": 1.8,
+  "gax": 1.2,
+  "shots": 73,
+  "sh_vs_expected": 1.67,
+  "seasons": [
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.67
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.86
+    }
+  ],
+  "verdict": "Career average 26% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

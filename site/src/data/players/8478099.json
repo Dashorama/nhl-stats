@@ -1,0 +1,42 @@
+{
+  "player_id": 8478099,
+  "player_name": "Kevin Labanc",
+  "team_abbrev": "CBJ",
+  "goals": 2,
+  "xg": 2.5,
+  "gax": -0.5,
+  "shots": 60,
+  "sh_vs_expected": 0.79,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.88
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.37
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.44
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.79
+    }
+  ],
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

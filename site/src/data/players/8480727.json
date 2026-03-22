@@ -1,0 +1,42 @@
+{
+  "player_id": 8480727,
+  "player_name": "Zach Whitecloud",
+  "team_abbrev": "VGK",
+  "goals": 4,
+  "xg": 3.4,
+  "gax": 0.6,
+  "shots": 126,
+  "sh_vs_expected": 1.18,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.35
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.91
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.7
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.83
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.76
+    }
+  ],
+  "verdict": "Career average 21% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

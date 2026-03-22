@@ -1,0 +1,26 @@
+{
+  "player_id": 8481237,
+  "player_name": "Kyle MacLean",
+  "team_abbrev": "NYI",
+  "goals": 4,
+  "xg": 5.6,
+  "gax": -1.6,
+  "shots": 92,
+  "sh_vs_expected": 0.72,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.45
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.43
+    }
+  ],
+  "verdict": "Career average 13% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

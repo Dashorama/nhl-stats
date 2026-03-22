@@ -1,0 +1,30 @@
+{
+  "player_id": 8482964,
+  "player_name": "Arber Xhekaj",
+  "team_abbrev": "MTL",
+  "goals": 1,
+  "xg": 2.9,
+  "gax": -1.9,
+  "shots": 113,
+  "sh_vs_expected": 0.34,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.73
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.8
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.34
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.72
+    }
+  ],
+  "verdict": "Career average 15% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,38 @@
+{
+  "player_id": 8480789,
+  "player_name": "Oliver Wahlstrom",
+  "team_abbrev": "NYI",
+  "goals": 3,
+  "xg": 4.1,
+  "gax": -1.1,
+  "shots": 72,
+  "sh_vs_expected": 0.74,
+  "seasons": [
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.81
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.2
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.69
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.74
+    }
+  ],
+  "verdict": "Career average 5% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

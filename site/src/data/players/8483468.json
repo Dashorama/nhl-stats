@@ -1,0 +1,26 @@
+{
+  "player_id": 8483468,
+  "player_name": "Jiri Kulich",
+  "team_abbrev": "BUF",
+  "goals": 15,
+  "xg": 15.6,
+  "gax": -0.6,
+  "shots": 201,
+  "sh_vs_expected": 0.96,
+  "seasons": [
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.17
+    }
+  ],
+  "verdict": "Career average 4% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

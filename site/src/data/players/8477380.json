@@ -1,0 +1,46 @@
+{
+  "player_id": 8477380,
+  "player_name": "Jonny Brodzinski",
+  "team_abbrev": "NYR",
+  "goals": 12,
+  "xg": 7.8,
+  "gax": 4.2,
+  "shots": 108,
+  "sh_vs_expected": 1.54,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 3.32
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.47
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.54
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.69
+    }
+  ],
+  "verdict": "Career average 18% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

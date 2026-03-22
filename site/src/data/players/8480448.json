@@ -1,0 +1,38 @@
+{
+  "player_id": 8480448,
+  "player_name": "Parker Kelly",
+  "team_abbrev": "COL",
+  "goals": 8,
+  "xg": 11.0,
+  "gax": -3.0,
+  "shots": 166,
+  "sh_vs_expected": 0.73,
+  "seasons": [
+    {
+      "season": "2020",
+      "sh_vs_expected": 11.84
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.17
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.43
+    }
+  ],
+  "verdict": "Career average 171% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

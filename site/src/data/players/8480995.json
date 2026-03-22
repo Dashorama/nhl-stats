@@ -1,0 +1,30 @@
+{
+  "player_id": 8480995,
+  "player_name": "Pontus Holmberg",
+  "team_abbrev": "TOR",
+  "goals": 7,
+  "xg": 11.8,
+  "gax": -4.8,
+  "shots": 131,
+  "sh_vs_expected": 0.59,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.37
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.99
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.59
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.84
+    }
+  ],
+  "verdict": "Career average 5% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

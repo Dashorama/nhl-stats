@@ -1,0 +1,30 @@
+{
+  "player_id": 8481006,
+  "player_name": "Tyler Tucker",
+  "team_abbrev": "STL",
+  "goals": 4,
+  "xg": 1.6,
+  "gax": 2.4,
+  "shots": 60,
+  "sh_vs_expected": 2.49,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 2.42
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.38
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 2.49
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.15
+    }
+  ],
+  "verdict": "Career average 111% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

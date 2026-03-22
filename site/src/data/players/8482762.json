@@ -1,0 +1,30 @@
+{
+  "player_id": 8482762,
+  "player_name": "Simon Edvinsson",
+  "team_abbrev": "DET",
+  "goals": 7,
+  "xg": 6.1,
+  "gax": 0.9,
+  "shots": 131,
+  "sh_vs_expected": 1.15,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 5.61
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.73
+    }
+  ],
+  "verdict": "Career average 144% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

@@ -1,0 +1,46 @@
+{
+  "player_id": 8475726,
+  "player_name": "Tyler Toffoli",
+  "team_abbrev": "SJS",
+  "goals": 30,
+  "xg": 27.4,
+  "gax": 2.6,
+  "shots": 317,
+  "sh_vs_expected": 1.1,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.18
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.23
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.91
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.14
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.17
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.1
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.87
+    }
+  ],
+  "verdict": "Career average 2% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

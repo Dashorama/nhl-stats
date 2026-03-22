@@ -1,0 +1,46 @@
+{
+  "player_id": 8478882,
+  "player_name": "Vladislav Gavrikov",
+  "team_abbrev": "LAK",
+  "goals": 5,
+  "xg": 5.3,
+  "gax": -0.3,
+  "shots": 177,
+  "sh_vs_expected": 0.94,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.17
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.85
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 2.34
+    }
+  ],
+  "verdict": "Career average 11% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

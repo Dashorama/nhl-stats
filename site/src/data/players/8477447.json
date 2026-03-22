@@ -1,0 +1,46 @@
+{
+  "player_id": 8477447,
+  "player_name": "Shea Theodore",
+  "team_abbrev": "VGK",
+  "goals": 9,
+  "xg": 9.6,
+  "gax": -0.6,
+  "shots": 220,
+  "sh_vs_expected": 0.94,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.11
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.37
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.97
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.8
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.08
+    }
+  ],
+  "verdict": "Career average 6% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

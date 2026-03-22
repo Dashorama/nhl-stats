@@ -1,0 +1,30 @@
+{
+  "player_id": 8481013,
+  "player_name": "Jonatan Berggren",
+  "team_abbrev": "DET",
+  "goals": 12,
+  "xg": 11.6,
+  "gax": 0.4,
+  "shots": 141,
+  "sh_vs_expected": 1.04,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.42
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.58
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.04
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.39
+    }
+  ],
+  "verdict": "Career average 36% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

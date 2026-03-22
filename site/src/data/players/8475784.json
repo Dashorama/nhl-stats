@@ -1,0 +1,46 @@
+{
+  "player_id": 8475784,
+  "player_name": "Jeff Skinner",
+  "team_abbrev": "EDM",
+  "goals": 17,
+  "xg": 18.0,
+  "gax": -1.0,
+  "shots": 217,
+  "sh_vs_expected": 0.94,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.65
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.09
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.15
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.05
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.94
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.15
+    }
+  ],
+  "verdict": "Career average 2% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

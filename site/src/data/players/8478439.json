@@ -1,0 +1,46 @@
+{
+  "player_id": 8478439,
+  "player_name": "Travis Konecny",
+  "team_abbrev": "PHI",
+  "goals": 24,
+  "xg": 24.6,
+  "gax": -0.6,
+  "shots": 296,
+  "sh_vs_expected": 0.98,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.28
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.25
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.33
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.22
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.98
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.4
+    }
+  ],
+  "verdict": "Career average 14% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

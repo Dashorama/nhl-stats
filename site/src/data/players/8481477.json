@@ -1,0 +1,46 @@
+{
+  "player_id": 8481477,
+  "player_name": "Nico Sturm",
+  "team_abbrev": "SJS",
+  "goals": 7,
+  "xg": 6.9,
+  "gax": 0.1,
+  "shots": 91,
+  "sh_vs_expected": 1.01,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.0
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.99
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.32
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.71
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.54
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.01
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.85
+    }
+  ],
+  "verdict": "Career average 6% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

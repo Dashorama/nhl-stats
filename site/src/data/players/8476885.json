@@ -1,0 +1,46 @@
+{
+  "player_id": 8476885,
+  "player_name": "Jacob Trouba",
+  "team_abbrev": "NYR",
+  "goals": 1,
+  "xg": 3.6,
+  "gax": -2.6,
+  "shots": 164,
+  "sh_vs_expected": 0.27,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.95
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.65
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.96
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.83
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.63
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.27
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.46
+    }
+  ],
+  "verdict": "Career average 19% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

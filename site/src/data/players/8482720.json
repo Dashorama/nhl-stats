@@ -1,0 +1,30 @@
+{
+  "player_id": 8482720,
+  "player_name": "Matthew Knies",
+  "team_abbrev": "TOR",
+  "goals": 35,
+  "xg": 32.9,
+  "gax": 2.1,
+  "shots": 258,
+  "sh_vs_expected": 1.07,
+  "seasons": [
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.51
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 1.06
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.07
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.89
+    }
+  ],
+  "verdict": "Career average 12% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}

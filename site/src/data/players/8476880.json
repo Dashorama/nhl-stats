@@ -1,0 +1,46 @@
+{
+  "player_id": 8476880,
+  "player_name": "Tom Wilson",
+  "team_abbrev": "WSH",
+  "goals": 36,
+  "xg": 32.0,
+  "gax": 4.0,
+  "shots": 292,
+  "sh_vs_expected": 1.13,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.26
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.89
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 1.27
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.23
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 1.24
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 1.13
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 1.14
+    }
+  ],
+  "verdict": "Career average 11% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

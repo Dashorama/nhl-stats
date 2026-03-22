@@ -1,0 +1,46 @@
+{
+  "player_id": 8477507,
+  "player_name": "Nikita Zadorov",
+  "team_abbrev": "BOS",
+  "goals": 4,
+  "xg": 5.5,
+  "gax": -1.5,
+  "shots": 164,
+  "sh_vs_expected": 0.73,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 1.57
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 1.72
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.55
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 0.86
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 2.31
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 2.65
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.73
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.19
+    }
+  ],
+  "verdict": "Career average 32% above expected \u2014 watch for regression.",
+  "injury_status": "HEALTHY"
+}

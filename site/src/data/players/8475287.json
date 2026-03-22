@@ -1,0 +1,46 @@
+{
+  "player_id": 8475287,
+  "player_name": "Erik Haula",
+  "team_abbrev": "NJD",
+  "goals": 11,
+  "xg": 15.5,
+  "gax": -4.5,
+  "shots": 178,
+  "sh_vs_expected": 0.71,
+  "seasons": [
+    {
+      "season": "2018",
+      "sh_vs_expected": 0.49
+    },
+    {
+      "season": "2019",
+      "sh_vs_expected": 0.87
+    },
+    {
+      "season": "2020",
+      "sh_vs_expected": 0.72
+    },
+    {
+      "season": "2021",
+      "sh_vs_expected": 1.02
+    },
+    {
+      "season": "2022",
+      "sh_vs_expected": 0.68
+    },
+    {
+      "season": "2023",
+      "sh_vs_expected": 0.74
+    },
+    {
+      "season": "2024",
+      "sh_vs_expected": 0.71
+    },
+    {
+      "season": "2025",
+      "sh_vs_expected": 0.82
+    }
+  ],
+  "verdict": "Career average 24% below expected \u2014 due for improvement.",
+  "injury_status": "HEALTHY"
+}
