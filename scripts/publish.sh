@@ -12,7 +12,15 @@ mkdir -p "${PROJECT_DIR}/data/logs"
 
 log() { echo "[$(date -Iseconds)] $*" | tee -a "$LOG_FILE"; }
 
-INJURIES_FLAG=""
+# NOTE: This script is scheduled 30 minutes after update.sh (10:00 UTC → 10:30 UTC).
+# The gap is a fixed delay, not a dependency lock. If update.sh ever takes >30 minutes,
+# this script will deploy stale data. Extend the gap in install-cron.sh if needed.
+
+: "${VERCEL_TOKEN:?VERCEL_TOKEN is required}"
+: "${BLUESKY_HANDLE:?BLUESKY_HANDLE is required}"
+: "${BLUESKY_APP_PASSWORD:?BLUESKY_APP_PASSWORD is required}"
+
+INJURIES_ARGS=()
 SKIP_SOCIAL=""
 
 log "=== Publish pipeline start ==="
@@ -24,7 +32,7 @@ if python -m src.cli injuries >> "$LOG_FILE" 2>&1; then
     log "  injuries OK"
 else
     log "  injuries FAILED — player stories and social post disabled"
-    INJURIES_FLAG="--injuries-unavailable"
+    INJURIES_ARGS=("--injuries-unavailable")
     SKIP_SOCIAL="1"
 fi
 
@@ -35,7 +43,7 @@ PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/fetch_rss.py" >> "$LO
 
 # Step 3: Generate data files (fatal — deploy without this is pointless)
 log "Generating data files..."
-if ! PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/generate.py" $INJURIES_FLAG >> "$LOG_FILE" 2>&1; then
+if ! PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/generate.py" "${INJURIES_ARGS[@]}" >> "$LOG_FILE" 2>&1; then
     log "  generate FAILED — aborting"
     exit 1
 fi
