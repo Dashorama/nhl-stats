@@ -55,6 +55,7 @@ data/logs/
 # Next.js
 site/.next/
 site/node_modules/
+!site/src/lib/
 
 # OS
 .DS_Store
@@ -65,3 +66,4 @@ Thumbs.db
 .env.local
 *.pem
 .worktrees/
+.vercel

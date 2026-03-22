@@ -1,0 +1,114 @@
+import path from "path";
+import fs from "fs";
+
+export interface Shooter {
+  player_id: number;
+  player_name: string;
+  team_abbrev: string;
+  goals: number;
+  xg: number;
+  gax: number;
+  shots: number;
+}
+
+export interface TeamEntry {
+  abbrev: string;
+  name: string;
+  win_pct: number;
+  xg_win_pct: number;
+  diff: number;
+}
+
+export interface Leaderboard {
+  date: string;
+  hot_shooters: Shooter[];
+  cold_shooters: Shooter[];
+  teams: TeamEntry[];
+}
+
+export interface Headline {
+  title: string;
+  url: string;
+  source: string;
+}
+
+export interface Story {
+  date: string;
+  story_type: string;
+  headline: string;
+  body: string;
+  chart: string;
+  subject_type: string;
+  subject_id: number | string | null;
+  subject_name: string;
+  social_text: string;
+  headlines: Headline[];
+}
+
+export interface PlayerSeason {
+  season: string;
+  goals: number;
+  xg: number;
+  gax: number;
+  shots: number;
+  sh_vs_expected: number;
+}
+
+export interface Player {
+  player_id: number;
+  player_name: string;
+  position: string;
+  team_abbrev: string;
+  seasons: PlayerSeason[];
+  verdict: string;
+  injury_status: string;
+}
+
+export interface Team {
+  abbrev: string;
+  name: string;
+  conference: string;
+  division: string;
+  current_season: {
+    win_pct?: number;
+    xg_win_pct?: number;
+    xgf?: number;
+    xga?: number;
+    games_played?: number;
+  };
+}
+
+function readJson<T>(filePath: string): T {
+  return JSON.parse(fs.readFileSync(filePath, "utf-8")) as T;
+}
+
+const PUBLIC_DATA = path.join(process.cwd(), "public", "data");
+const SRC_DATA = path.join(process.cwd(), "src", "data");
+
+export function loadStory(): Story {
+  return readJson<Story>(path.join(PUBLIC_DATA, "story.json"));
+}
+
+export function loadLeaderboard(): Leaderboard {
+  return readJson<Leaderboard>(path.join(PUBLIC_DATA, "leaderboard.json"));
+}
+
+export function loadAllPlayerIds(): string[] {
+  const dir = path.join(SRC_DATA, "players");
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", ""));
+}
+
+export function loadPlayer(id: string): Player {
+  return readJson<Player>(path.join(SRC_DATA, "players", `${id}.json`));
+}
+
+export function loadAllTeamAbbrevs(): string[] {
+  const dir = path.join(SRC_DATA, "teams");
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", ""));
+}
+
+export function loadTeam(abbrev: string): Team {
+  return readJson<Team>(path.join(SRC_DATA, "teams", `${abbrev}.json`));
+}
