@@ -2,11 +2,13 @@
 # Publish pipeline: generate site data, deploy to Vercel, post to Bluesky.
 # Runs after update.sh (cron 10:30 UTC). Each step fails independently.
 #
-# Required env vars: VERCEL_TOKEN, BLUESKY_HANDLE, BLUESKY_APP_PASSWORD, SITE_URL
+# Required env vars: BLUESKY_HANDLE, BLUESKY_APP_PASSWORD, SITE_URL
+# Vercel auth uses stored CLI credentials (~/.local/share/com.vercel.cli/auth.json)
 
 set -uo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+[ -f "${HOME}/.env.nhl-stats" ] && source "${HOME}/.env.nhl-stats"
 LOG_FILE="${PROJECT_DIR}/data/logs/publish-$(date +%Y-%m-%d).log"
 mkdir -p "${PROJECT_DIR}/data/logs"
 
@@ -16,7 +18,6 @@ log() { echo "[$(date -Iseconds)] $*" | tee -a "$LOG_FILE"; }
 # The gap is a fixed delay, not a dependency lock. If update.sh ever takes >30 minutes,
 # this script will deploy stale data. Extend the gap in install-cron.sh if needed.
 
-: "${VERCEL_TOKEN:?VERCEL_TOKEN is required}"
 : "${BLUESKY_HANDLE:?BLUESKY_HANDLE is required}"
 : "${BLUESKY_APP_PASSWORD:?BLUESKY_APP_PASSWORD is required}"
 
@@ -50,7 +51,7 @@ fi
 
 # Step 4: Deploy to Vercel (fatal)
 log "Deploying to Vercel..."
-if ! (cd "${PROJECT_DIR}/site" && vercel deploy --token "${VERCEL_TOKEN}" --yes >> "$LOG_FILE" 2>&1); then
+if ! (cd "${PROJECT_DIR}/site" && vercel deploy --yes >> "$LOG_FILE" 2>&1); then
     log "  deploy FAILED"
     exit 1
 fi
