@@ -20,7 +20,7 @@ DEFAULT_HISTORY = PROJECT_DIR / "data/story_history.json"
 
 # Season format constants — see plan docs
 MONEYPUCK_SEASON = "2024"     # shots table: "2024" = 2024-25 season
-NHL_API_SEASON   = "20242025" # games table: "20242025"
+NHL_API_SEASON   = "20242025"  # NOTE: games.season is NULL in DB; constant kept for future use
 
 
 class Generator:
@@ -148,6 +148,20 @@ class Generator:
             }
             for r in rows
         ]
+
+        # Look up positions from players table in bulk
+        shooter_ids = [s["player_id"] for s in shooters]
+        if shooter_ids:
+            with self._db() as conn:
+                rows = conn.execute(
+                    "SELECT id, position FROM players WHERE id IN ({})".format(
+                        ",".join("?" * len(shooter_ids))
+                    ),
+                    shooter_ids,
+                ).fetchall()
+            positions = {r["id"]: r["position"] or "F" for r in rows}
+            for s in shooters:
+                s["position"] = positions.get(s["player_id"], "F")
 
         career: dict[int, list] = {}
         with self._db() as conn:
