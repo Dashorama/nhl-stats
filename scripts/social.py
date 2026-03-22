@@ -37,8 +37,15 @@ def post(story: dict, chart_path: Path) -> None:
 
 
 def main():
+    if not STORY_PATH.exists():
+        print("[social] no story.json, skipping", file=sys.stderr)
+        sys.exit(0)
     story = json.loads(STORY_PATH.read_text())
-    chart_path = PROJECT_DIR / "site/public/data" / story.get("chart", "")
+    chart_name = story.get("chart", "")
+    if not chart_name:
+        print("[social] no chart in story, skipping", file=sys.stderr)
+        sys.exit(0)
+    chart_path = PROJECT_DIR / "site/public/data" / chart_name
     if should_skip(STORY_PATH, chart_path):
         sys.exit(0)
     try:

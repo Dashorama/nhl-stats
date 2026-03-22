@@ -33,3 +33,23 @@ def test_should_not_skip_when_all_present(tmp_path):
     chart_path = tmp_path / "chart.png"
     chart_path.write_bytes(b"fake png")
     assert should_skip(story_path, chart_path) is False
+
+
+def test_post_calls_send_image(tmp_path):
+    chart_path = tmp_path / "chart.png"
+    chart_path.write_bytes(b"fake png")
+    story = {"social_text": "Draisaitl is hot.", "headline": "Hat trick alert", "chart": "chart.png"}
+
+    mock_client = MagicMock()
+    mock_client.send_image.return_value = MagicMock(uri="at://did:plc:abc/post/123")
+
+    with patch("scripts.social.Client", return_value=mock_client), \
+         patch.dict("os.environ", {"BLUESKY_HANDLE": "user.bsky.social", "BLUESKY_APP_PASSWORD": "pass"}):
+        from scripts.social import post
+        post(story, chart_path)
+
+    mock_client.login.assert_called_once_with("user.bsky.social", "pass")
+    mock_client.send_image.assert_called_once()
+    call_kwargs = mock_client.send_image.call_args
+    assert "Draisaitl is hot." in call_kwargs.kwargs.get("text", call_kwargs.args[0] if call_kwargs.args else "")
+    assert call_kwargs.kwargs.get("image_alt") == "Hat trick alert"
