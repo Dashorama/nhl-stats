@@ -7,6 +7,7 @@ from ..storage.database import Database
 logger = structlog.get_logger()
 
 BASE_URL = "https://api-web.nhle.com/v1"
+SOURCE_NAME = "nhl_injuries"
 
 NHL_TEAMS = [
     "ANA","BOS","BUF","CAR","CBJ","CGY","CHI","COL","DAL","DET",
