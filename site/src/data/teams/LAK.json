@@ -3,5 +3,14 @@
   "name": "Los Angeles Kings",
   "conference": "Western",
   "division": "Pacific",
-  "current_season": {}
+  "current_season": {
+    "wins": 28,
+    "losses": 24,
+    "ot_losses": 16,
+    "points": 72,
+    "games_played": 68,
+    "win_pct": 0.303,
+    "xg_win_pct": 0.498,
+    "diff": -0.195
+  }
 }

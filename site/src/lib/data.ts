@@ -73,11 +73,14 @@ export interface Team {
   conference: string;
   division: string;
   current_season: {
+    wins?: number;
+    losses?: number;
+    ot_losses?: number;
+    points?: number;
+    games_played?: number;
     win_pct?: number;
     xg_win_pct?: number;
-    xgf?: number;
-    xga?: number;
-    games_played?: number;
+    diff?: number;
   };
 }
 

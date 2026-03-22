@@ -3,5 +3,14 @@
   "name": "Philadelphia Flyers",
   "conference": "Eastern",
   "division": "Metropolitan",
-  "current_season": {}
+  "current_season": {
+    "wins": 33,
+    "losses": 23,
+    "ot_losses": 12,
+    "points": 78,
+    "games_played": 68,
+    "win_pct": 0.441,
+    "xg_win_pct": 0.478,
+    "diff": -0.037
+  }
 }

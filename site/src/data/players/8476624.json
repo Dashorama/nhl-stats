@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.56,
   "hd_shot_pct": 46.4,
   "rebound_rate": 8.2,
-  "rush_rate": 0,
+  "rush_rate": 13.6,
   "position": "C",
   "seasons": [
     {
@@ -98,7 +98,7 @@
       "sh_vs_expected": 0.56,
       "hd_shot_pct": 59.3,
       "rebound_rate": 17.3,
-      "rush_rate": 0
+      "rush_rate": 13.6
     }
   ],
   "verdict": "Career average 24% below expected \u2014 due for improvement.",

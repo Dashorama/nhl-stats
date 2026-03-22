@@ -3,5 +3,14 @@
   "name": "Seattle Kraken",
   "conference": "Western",
   "division": "Pacific",
-  "current_season": {}
+  "current_season": {
+    "wins": 31,
+    "losses": 28,
+    "ot_losses": 9,
+    "points": 71,
+    "games_played": 68,
+    "win_pct": 0.472,
+    "xg_win_pct": 0.468,
+    "diff": 0.004
+  }
 }

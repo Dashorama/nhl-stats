@@ -3,5 +3,14 @@
   "name": "San Jose Sharks",
   "conference": "Western",
   "division": "Pacific",
-  "current_season": {}
+  "current_season": {
+    "wins": 32,
+    "losses": 29,
+    "ot_losses": 6,
+    "points": 70,
+    "games_played": 67,
+    "win_pct": 0.515,
+    "xg_win_pct": 0.45,
+    "diff": 0.065
+  }
 }

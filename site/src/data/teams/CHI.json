@@ -3,5 +3,14 @@
   "name": "Chicago Blackhawks",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 26,
+    "losses": 30,
+    "ot_losses": 12,
+    "points": 64,
+    "games_played": 68,
+    "win_pct": 0.382,
+    "xg_win_pct": 0.43,
+    "diff": -0.048
+  }
 }

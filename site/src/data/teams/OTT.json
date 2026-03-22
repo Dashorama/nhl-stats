@@ -3,5 +3,14 @@
   "name": "Ottawa Senators",
   "conference": "Eastern",
   "division": "Atlantic",
-  "current_season": {}
+  "current_season": {
+    "wins": 35,
+    "losses": 24,
+    "ot_losses": 9,
+    "points": 79,
+    "games_played": 68,
+    "win_pct": 0.515,
+    "xg_win_pct": 0.495,
+    "diff": 0.02
+  }
 }

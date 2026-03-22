@@ -3,5 +3,14 @@
   "name": "Calgary Flames",
   "conference": "Western",
   "division": "Pacific",
-  "current_season": {}
+  "current_season": {
+    "wins": 27,
+    "losses": 34,
+    "ot_losses": 7,
+    "points": 61,
+    "games_played": 68,
+    "win_pct": 0.515,
+    "xg_win_pct": 0.472,
+    "diff": 0.043
+  }
 }

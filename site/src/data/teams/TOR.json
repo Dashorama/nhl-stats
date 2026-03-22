@@ -3,5 +3,14 @@
   "name": "Toronto Maple Leafs",
   "conference": "Eastern",
   "division": "Atlantic",
-  "current_season": {}
+  "current_season": {
+    "wins": 29,
+    "losses": 28,
+    "ot_losses": 12,
+    "points": 70,
+    "games_played": 69,
+    "win_pct": 0.459,
+    "xg_win_pct": 0.523,
+    "diff": -0.064
+  }
 }

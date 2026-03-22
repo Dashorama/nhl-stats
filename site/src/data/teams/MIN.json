@@ -3,5 +3,14 @@
   "name": "Minnesota Wild",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 39,
+    "losses": 19,
+    "ot_losses": 12,
+    "points": 90,
+    "games_played": 70,
+    "win_pct": 0.514,
+    "xg_win_pct": 0.484,
+    "diff": 0.029
+  }
 }

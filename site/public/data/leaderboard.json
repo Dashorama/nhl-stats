@@ -255,5 +255,231 @@
       "diff": 0.108
     }
   ],
+  "all_teams": [
+    {
+      "abbrev": "BOS",
+      "name": "Boston Bruins",
+      "win_pct": 0.722,
+      "xg_win_pct": 0.464,
+      "diff": 0.258
+    },
+    {
+      "abbrev": "VAN",
+      "name": "Vancouver Canucks",
+      "win_pct": 0.229,
+      "xg_win_pct": 0.459,
+      "diff": -0.231
+    },
+    {
+      "abbrev": "NYR",
+      "name": "New York Rangers",
+      "win_pct": 0.281,
+      "xg_win_pct": 0.49,
+      "diff": -0.209
+    },
+    {
+      "abbrev": "LAK",
+      "name": "Los Angeles Kings",
+      "win_pct": 0.303,
+      "xg_win_pct": 0.498,
+      "diff": -0.195
+    },
+    {
+      "abbrev": "ANA",
+      "name": "Anaheim Ducks",
+      "win_pct": 0.647,
+      "xg_win_pct": 0.47,
+      "diff": 0.177
+    },
+    {
+      "abbrev": "BUF",
+      "name": "Buffalo Sabres",
+      "win_pct": 0.647,
+      "xg_win_pct": 0.482,
+      "diff": 0.165
+    },
+    {
+      "abbrev": "COL",
+      "name": "Colorado Avalanche",
+      "win_pct": 0.676,
+      "xg_win_pct": 0.512,
+      "diff": 0.165
+    },
+    {
+      "abbrev": "CAR",
+      "name": "Carolina Hurricanes",
+      "win_pct": 0.694,
+      "xg_win_pct": 0.568,
+      "diff": 0.127
+    },
+    {
+      "abbrev": "TBL",
+      "name": "Tampa Bay Lightning",
+      "win_pct": 0.625,
+      "xg_win_pct": 0.511,
+      "diff": 0.114
+    },
+    {
+      "abbrev": "NYI",
+      "name": "New York Islanders",
+      "win_pct": 0.581,
+      "xg_win_pct": 0.473,
+      "diff": 0.108
+    },
+    {
+      "abbrev": "DET",
+      "name": "Detroit Red Wings",
+      "win_pct": 0.588,
+      "xg_win_pct": 0.488,
+      "diff": 0.1
+    },
+    {
+      "abbrev": "DAL",
+      "name": "Dallas Stars",
+      "win_pct": 0.647,
+      "xg_win_pct": 0.549,
+      "diff": 0.098
+    },
+    {
+      "abbrev": "CBJ",
+      "name": "Columbus Blue Jackets",
+      "win_pct": 0.559,
+      "xg_win_pct": 0.473,
+      "diff": 0.086
+    },
+    {
+      "abbrev": "VGK",
+      "name": "Vegas Golden Knights",
+      "win_pct": 0.457,
+      "xg_win_pct": 0.533,
+      "diff": -0.076
+    },
+    {
+      "abbrev": "MTL",
+      "name": "Montr\u00e9al Canadiens",
+      "win_pct": 0.559,
+      "xg_win_pct": 0.487,
+      "diff": 0.072
+    },
+    {
+      "abbrev": "SJS",
+      "name": "San Jose Sharks",
+      "win_pct": 0.515,
+      "xg_win_pct": 0.45,
+      "diff": 0.065
+    },
+    {
+      "abbrev": "WSH",
+      "name": "Washington Capitals",
+      "win_pct": 0.595,
+      "xg_win_pct": 0.529,
+      "diff": 0.065
+    },
+    {
+      "abbrev": "TOR",
+      "name": "Toronto Maple Leafs",
+      "win_pct": 0.459,
+      "xg_win_pct": 0.523,
+      "diff": -0.064
+    },
+    {
+      "abbrev": "UTA",
+      "name": "Utah Mammoth",
+      "win_pct": 0.562,
+      "xg_win_pct": 0.502,
+      "diff": 0.06
+    },
+    {
+      "abbrev": "FLA",
+      "name": "Florida Panthers",
+      "win_pct": 0.514,
+      "xg_win_pct": 0.573,
+      "diff": -0.058
+    },
+    {
+      "abbrev": "WPG",
+      "name": "Winnipeg Jets",
+      "win_pct": 0.472,
+      "xg_win_pct": 0.526,
+      "diff": -0.054
+    },
+    {
+      "abbrev": "CHI",
+      "name": "Chicago Blackhawks",
+      "win_pct": 0.382,
+      "xg_win_pct": 0.43,
+      "diff": -0.048
+    },
+    {
+      "abbrev": "CGY",
+      "name": "Calgary Flames",
+      "win_pct": 0.515,
+      "xg_win_pct": 0.472,
+      "diff": 0.043
+    },
+    {
+      "abbrev": "EDM",
+      "name": "Edmonton Oilers",
+      "win_pct": 0.529,
+      "xg_win_pct": 0.569,
+      "diff": -0.04
+    },
+    {
+      "abbrev": "NSH",
+      "name": "Nashville Predators",
+      "win_pct": 0.529,
+      "xg_win_pct": 0.491,
+      "diff": 0.039
+    },
+    {
+      "abbrev": "PHI",
+      "name": "Philadelphia Flyers",
+      "win_pct": 0.441,
+      "xg_win_pct": 0.478,
+      "diff": -0.037
+    },
+    {
+      "abbrev": "MIN",
+      "name": "Minnesota Wild",
+      "win_pct": 0.514,
+      "xg_win_pct": 0.484,
+      "diff": 0.029
+    },
+    {
+      "abbrev": "STL",
+      "name": "St. Louis Blues",
+      "win_pct": 0.441,
+      "xg_win_pct": 0.471,
+      "diff": -0.029
+    },
+    {
+      "abbrev": "OTT",
+      "name": "Ottawa Senators",
+      "win_pct": 0.515,
+      "xg_win_pct": 0.495,
+      "diff": 0.02
+    },
+    {
+      "abbrev": "NJD",
+      "name": "New Jersey Devils",
+      "win_pct": 0.514,
+      "xg_win_pct": 0.518,
+      "diff": -0.004
+    },
+    {
+      "abbrev": "PIT",
+      "name": "Pittsburgh Penguins",
+      "win_pct": 0.485,
+      "xg_win_pct": 0.489,
+      "diff": -0.004
+    },
+    {
+      "abbrev": "SEA",
+      "name": "Seattle Kraken",
+      "win_pct": 0.472,
+      "xg_win_pct": 0.468,
+      "diff": 0.004
+    }
+  ],
   "date": "2026-03-22"
 }

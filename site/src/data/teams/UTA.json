@@ -3,5 +3,14 @@
   "name": "Utah Mammoth",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 36,
+    "losses": 27,
+    "ot_losses": 6,
+    "points": 78,
+    "games_played": 69,
+    "win_pct": 0.562,
+    "xg_win_pct": 0.502,
+    "diff": 0.06
+  }
 }

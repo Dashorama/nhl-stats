@@ -3,5 +3,14 @@
   "name": "Winnipeg Jets",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 28,
+    "losses": 29,
+    "ot_losses": 11,
+    "points": 67,
+    "games_played": 68,
+    "win_pct": 0.472,
+    "xg_win_pct": 0.526,
+    "diff": -0.054
+  }
 }

@@ -3,5 +3,14 @@
   "name": "St. Louis Blues",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 27,
+    "losses": 30,
+    "ot_losses": 11,
+    "points": 65,
+    "games_played": 68,
+    "win_pct": 0.441,
+    "xg_win_pct": 0.471,
+    "diff": -0.029
+  }
 }

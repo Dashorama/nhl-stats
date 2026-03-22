@@ -1,11 +1,11 @@
 {
   "story_type": "StoryType.EXTREME_SHOOTER",
   "subject_type": "player",
-  "subject_id": 8477939,
-  "subject_name": "William Nylander",
-  "headline": "William Nylander is scoring 43% above expectations",
-  "body": "William Nylander has scored 51 goals against an expected 35.8 this season (+15.2 goals above expected). Historical data suggests deviations this large tend to normalize.",
-  "social_text": "William Nylander is scoring at 1.43x expected (+15.2 GAx). History says this won't last.",
+  "subject_id": 8471214,
+  "subject_name": "Alex Ovechkin",
+  "headline": "Alex Ovechkin is scoring 38% above expectations",
+  "body": "Alex Ovechkin has scored 49 goals against an expected 35.5 this season (+13.5 goals above expected). Historical data suggests deviations this large tend to normalize.",
+  "social_text": "Alex Ovechkin is scoring at 1.38x expected (+13.5 GAx). History says this won't last.",
   "headlines": [],
   "chart": "chart-2026-03-22.png",
   "date": "2026-03-22"

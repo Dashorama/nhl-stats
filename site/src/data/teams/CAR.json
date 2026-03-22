@@ -3,5 +3,14 @@
   "name": "Carolina Hurricanes",
   "conference": "Eastern",
   "division": "Metropolitan",
-  "current_season": {}
+  "current_season": {
+    "wins": 43,
+    "losses": 19,
+    "ot_losses": 6,
+    "points": 92,
+    "games_played": 68,
+    "win_pct": 0.694,
+    "xg_win_pct": 0.568,
+    "diff": 0.127
+  }
 }

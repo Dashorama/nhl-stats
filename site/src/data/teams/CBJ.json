@@ -3,5 +3,14 @@
   "name": "Columbus Blue Jackets",
   "conference": "Eastern",
   "division": "Metropolitan",
-  "current_season": {}
+  "current_season": {
+    "wins": 36,
+    "losses": 21,
+    "ot_losses": 11,
+    "points": 83,
+    "games_played": 68,
+    "win_pct": 0.559,
+    "xg_win_pct": 0.473,
+    "diff": 0.086
+  }
 }

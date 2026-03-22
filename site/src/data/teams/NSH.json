@@ -3,5 +3,14 @@
   "name": "Nashville Predators",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 31,
+    "losses": 28,
+    "ot_losses": 9,
+    "points": 71,
+    "games_played": 68,
+    "win_pct": 0.529,
+    "xg_win_pct": 0.491,
+    "diff": 0.039
+  }
 }

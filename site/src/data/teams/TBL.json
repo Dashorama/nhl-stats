@@ -3,5 +3,14 @@
   "name": "Tampa Bay Lightning",
   "conference": "Eastern",
   "division": "Atlantic",
-  "current_season": {}
+  "current_season": {
+    "wins": 42,
+    "losses": 21,
+    "ot_losses": 4,
+    "points": 88,
+    "games_played": 67,
+    "win_pct": 0.625,
+    "xg_win_pct": 0.511,
+    "diff": 0.114
+  }
 }

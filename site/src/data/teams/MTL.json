@@ -3,5 +3,14 @@
   "name": "Montr\u00e9al Canadiens",
   "conference": "Eastern",
   "division": "Atlantic",
-  "current_season": {}
+  "current_season": {
+    "wins": 37,
+    "losses": 21,
+    "ot_losses": 10,
+    "points": 84,
+    "games_played": 68,
+    "win_pct": 0.559,
+    "xg_win_pct": 0.487,
+    "diff": 0.072
+  }
 }

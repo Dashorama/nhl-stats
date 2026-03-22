@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.71,
   "hd_shot_pct": 9.9,
   "rebound_rate": 3.6,
-  "rush_rate": 0,
+  "rush_rate": 0.0,
   "position": "D",
   "seasons": [
     {
@@ -87,7 +87,7 @@
       "sh_vs_expected": 2.06,
       "hd_shot_pct": 4.5,
       "rebound_rate": 4.5,
-      "rush_rate": 0
+      "rush_rate": 0.0
     }
   ],
   "verdict": "Career average 17% above expected \u2014 watch for regression.",

@@ -119,7 +119,7 @@ class Generator:
         ]
         hot  = [s for s in all_shooters if s["gax"] > 0][:10]
         cold = sorted([s for s in all_shooters if s["gax"] < 0], key=lambda x: x["gax"])[:10]
-        return {"hot_shooters": hot, "cold_shooters": cold, "teams": teams[:10]}
+        return {"hot_shooters": hot, "cold_shooters": cold, "teams": teams[:10], "all_teams": teams}
 
     def _query_story_data(self, teams: list) -> dict:
         unavailable = self._unavailable_players()
@@ -243,7 +243,7 @@ class Generator:
         plt.close()
         return chart_name
 
-    def _write_player_files(self, story_data: dict) -> None:
+    def _write_player_files(self, story_data: dict, rush_rates: dict[int, float]) -> None:
         out_dir = self.site_dir / "src/data/players"
         out_dir.mkdir(parents=True, exist_ok=True)
         for s in story_data["shooters"]:
@@ -259,27 +259,120 @@ class Generator:
             else:
                 verdict = ""
             status = story_data.get("unavailable", {}).get(s["player_id"], "HEALTHY")
+            # Override rush_rate with PBP-computed value if available
+            player_data = {**s}
+            if s["player_id"] in rush_rates:
+                player_data["rush_rate"] = rush_rates[s["player_id"]]
+                for season in career:
+                    # Apply season-level rush rate only to current season (PBP is current only)
+                    if season["season"] == "2025":
+                        season["rush_rate"] = rush_rates[s["player_id"]]
             (out_dir / f"{s['player_id']}.json").write_text(
-                json.dumps({**s, "seasons": career, "verdict": verdict, "injury_status": status}, indent=2)
+                json.dumps({**player_data, "seasons": career, "verdict": verdict, "injury_status": status}, indent=2)
             )
 
-    def _write_team_files(self) -> None:
+    def _compute_rush_rates(self) -> dict[int, float]:
+        """Compute rush shot rate per player from play-by-play data.
+
+        Rush = unblocked shot within 4 seconds of a neutral/defensive zone event,
+        with no stoppage in between. Returns {player_id: rush_rate_pct}.
+        """
+        with self._db() as conn:
+            # Pull all events for the current season's games, ordered for processing
+            rows = conn.execute("""
+                SELECT p.game_id, p.event_id, p.event_type, p.zone_code,
+                       p.time_in_period, p.period, p.player1_id
+                FROM play_by_play p
+                WHERE p.event_type IN (
+                    'shot-on-goal','missed-shot','goal',
+                    'faceoff','hit','giveaway','takeaway','stoppage',
+                    'blocked-shot','penalty'
+                )
+                ORDER BY p.game_id, p.period, p.event_id
+            """).fetchall()
+
+        def to_seconds(t: str | None) -> int:
+            if not t:
+                return 0
+            parts = t.split(":")
+            return int(parts[0]) * 60 + int(parts[1])
+
+        # Group events by game+period, walk sequentially
+        from collections import defaultdict
+        shot_types = {"shot-on-goal", "missed-shot", "goal"}
+        stop_types = {"stoppage", "faceoff", "period-start", "period-end"}
+
+        rush_shots: dict[int, int] = defaultdict(int)
+        total_shots: dict[int, int] = defaultdict(int)
+
+        # Build per-game-period event lists
+        game_period_events: dict[tuple, list] = defaultdict(list)
+        for r in rows:
+            game_period_events[(r["game_id"], r["period"])].append(r)
+
+        for events in game_period_events.values():
+            for i, ev in enumerate(events):
+                if ev["event_type"] not in shot_types:
+                    continue
+                shooter_id = ev["player1_id"]
+                if not shooter_id:
+                    continue
+                total_shots[shooter_id] += 1
+
+                # Look back for prior event (skip other shots, keep zone/stop events)
+                shot_time = to_seconds(ev["time_in_period"])
+                is_rush = False
+                for j in range(i - 1, max(i - 10, -1), -1):
+                    prev = events[j]
+                    if prev["event_type"] in stop_types:
+                        break  # stoppage resets rush
+                    if prev["event_type"] in shot_types:
+                        continue  # skip consecutive shots
+                    prev_time = to_seconds(prev["time_in_period"])
+                    if shot_time - prev_time > 4:
+                        break
+                    if prev["zone_code"] in ("N", "D"):
+                        is_rush = True
+                        break
+                if is_rush:
+                    rush_shots[shooter_id] += 1
+
+        return {
+            pid: round(100.0 * rush_shots[pid] / total_shots[pid], 1)
+            for pid in total_shots
+            if total_shots[pid] > 0
+        }
+
+    def _write_team_files(self, leaderboard_teams: list) -> None:
         out_dir = self.site_dir / "src/data/teams"
         out_dir.mkdir(parents=True, exist_ok=True)
+        # Build lookup from leaderboard xG data
+        xg_by_abbrev = {t["abbrev"]: t for t in leaderboard_teams}
         with self._db() as conn:
             try:
                 teams = conn.execute(
-                    "SELECT abbrev, name, conference, division FROM teams"
+                    "SELECT abbrev, name, conference, division, raw_data FROM teams"
                 ).fetchall()
             except sqlite3.OperationalError:
-                return  # teams table may not exist yet (e.g. empty test DB)
+                return
         for t in teams:
+            raw = json.loads(t["raw_data"]) if t["raw_data"] else {}
+            xg = xg_by_abbrev.get(t["abbrev"], {})
             (out_dir / f"{t['abbrev']}.json").write_text(json.dumps({
                 "abbrev": t["abbrev"],
                 "name": t["name"],
                 "conference": t["conference"],
                 "division": t["division"],
-                "current_season": {},
+                "current_season": {
+                    "wins": raw.get("wins"),
+                    "losses": raw.get("losses"),
+                    "ot_losses": raw.get("ot_losses"),
+                    "points": raw.get("points"),
+                    "games_played": raw.get("games_played"),
+                    "win_pct": xg.get("win_pct"),
+                    "xg_win_pct": xg.get("xg_win_pct"),
+                    "diff": xg.get("diff"),
+                },
             }, indent=2))
 
     def _cleanup_old_charts(self) -> None:
@@ -320,8 +413,9 @@ class Generator:
         )
         (pub_dir / "story.json").write_text(json.dumps(story, indent=2))
 
-        self._write_player_files(story_data)
-        self._write_team_files()
+        rush_rates = self._compute_rush_rates()
+        self._write_player_files(story_data, rush_rates)
+        self._write_team_files(leaderboard_teams=leaderboard["all_teams"])
         selector.record(story)
         self._cleanup_old_charts()
 

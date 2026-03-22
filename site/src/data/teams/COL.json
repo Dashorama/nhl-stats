@@ -3,5 +3,14 @@
   "name": "Colorado Avalanche",
   "conference": "Western",
   "division": "Central",
-  "current_season": {}
+  "current_season": {
+    "wins": 44,
+    "losses": 13,
+    "ot_losses": 10,
+    "points": 98,
+    "games_played": 67,
+    "win_pct": 0.676,
+    "xg_win_pct": 0.512,
+    "diff": 0.165
+  }
 }
