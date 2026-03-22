@@ -1,12 +1,17 @@
 {
   "headlines": [
     {
-      "title": "\u2018Got to respond better\u2019: Maple Leafs hang Woll out to dry after Stolarz accident",
+      "title": "NHL on Sportsnet: Avalanche vs. Capitals",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Oilers lose again but maintain spot in weak Pacific Division",
+      "title": "Sunday Overreactions: Are Blue Jackets legit Cup contenders?",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "\u2018Got to respond better\u2019: Maple Leafs hang Woll out to dry after Stolarz accident",
       "url": "",
       "source": "Sportsnet"
     },
@@ -16,77 +21,12 @@
       "source": "Sportsnet"
     },
     {
-      "title": "Saturday Headlines: Greer hit adds to frustration with DoPS",
+      "title": "Senators flip script on Maple Leafs as rivalry power shift takes hold",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Berrios building up to rejoin Blue Jays after WBC denials, \u2018weird\u2019 injury",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Takeaways: Canada rides huge first end to women\u2019s world championship final",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Oilers\u2019 McDavid: Struggling Pacific \u2018a bit of a pillow fight\u2019",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Caufield\u2019s third career hat trick powers Canadiens to win over Islanders",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Gausman\u2019s offseason focus aims to boost Blue Jays\u2019 in Opening Day start",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Jon Cooper reflects on journey to becoming NHL\u2019s longest-tenured coach",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Podkolzin, Cirelli drop gloves after Oilers levy big hit on Hagel",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Zimmerman gives Toronto FC late lead with spectacular header goal",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Einarson delivers takeout with weight to score three for Canada",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Kucherov overtakes McDavid in Art Ross race as Lightning down Oilers",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Maple Leafs\u2019 Stolarz released from hospital after warm-up injury",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Mariners\u2019 Arozarena apologizes to teammate Raleigh for WBC incident",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Durant passes Jordan on NBA scoring list as Thompson tips in game-winner",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Phillies sign opening-day starter Christopher Sanchez to six-year deal",
+      "title": "Oilers lose again but maintain spot in weak Pacific Division",
       "url": "",
       "source": "Sportsnet"
     },
@@ -96,12 +36,87 @@
       "source": "Sportsnet"
     },
     {
-      "title": "John Schneider announces Blue Jays\u2019 rotation for start of season",
+      "title": "Maple Leafs\u2019 Stolarz released from hospital after warm-up injury",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Lakers\u2019 LeBron James breaks NBA record for games played",
+      "title": "Penguins frustrated with goalie interference call",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Senators pounce on Leafs early to coast to victory",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "NHL Roundup: Bruins beat Red Wings for critical win in playoff race",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "NHL, CHL, AHL nearing agreement for 19-year-old players",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Senators\u2019 Dennis Gilbert leaves game after big hit from Maple Leafs\u2019 Ekman-Larsson",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Panthers\u2019 A.J. Greer to have hearing for boarding Flames\u2019 Zary",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Jon Cooper reflects on journey to becoming NHL\u2019s longest-tenured coach",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Caufield\u2019s third career hat trick powers Canadiens to win over Islanders",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Oilers\u2019 Samanski picks up odd first career goal on bad bounce for Lightning",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Kucherov finishes shorthanded break after Lightning lay out McDavid",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Podkolzin, Cirelli drop gloves after Oilers levy big hit on Hagel",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "\u2018I can go forever\u2019: Senators\u2019 Stutzle has lots in the tank for playoff run",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Islanders\u2019 Schaefer blasts one-timer for 22nd of season vs. Canadiens",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Maple Leafs\u2019 Cowan sets up Tavares for 25th goal vs. Senators",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Maple Leafs\u2019 Stolarz takes puck to neck in warmups, replaced by Woll",
+      "url": "",
+      "source": "Sportsnet"
+    },
+    {
+      "title": "Saturday Headlines: Greer hit adds to frustration with DoPS",
       "url": "",
       "source": "Sportsnet"
     },
@@ -161,225 +176,80 @@
       "source": "Sportsnet"
     },
     {
-      "title": "Sunday Overreactions: Are Blue Jackets legit Cup contenders?",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Senators flip script on Maple Leafs as rivalry power shift takes hold",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
       "title": "Canucks put forth another woeful effort on home ice",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Senators pounce on Leafs early to coast to victory",
+      "title": "Golden Knights stuck in rut after loss to Predators",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Oilers\u2019 Samanski picks up odd first career goal on bad bounce for Lightning",
+      "title": "Quick Shifts: Brady Tkachuk gives Battle of Ontario spicy new twist",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "How Blue Jays prospect Aaron Parker manages diabetes",
+      "title": "Bourne: Why NHL should go back to 1-vs.-8, conference-based playoff format",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Blue Jays\u2019 lineup vs. Skenes, Pirates hints at team\u2019s preferred batting order",
+      "title": "Maple Leafs\u2019 Morgan Rielly out vs. Senators with lower-body injury",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Blue Jays Spring Training",
+      "title": "Ex-Flames Tkachuk, Bennett still hold love for Calgary years after departures",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Blue Jays fall to Phillies in Spring Breakout game",
+      "title": "Taylor Hall explains why playing in Canadian market has different pressure to U.S.",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Blue Jays prospect JoJo Parker delivers single at MLB Spring Breakout",
+      "title": "Avalanche first to clinch playoff berth with win over Blackhawks",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Blue Jays\u2019 Sanchez clears bases with three-run double in ninth inning",
+      "title": "Free Agent Rumours (NHL page only)",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "MLB Highlights: Pirates 8, Blue Jays 3",
+      "title": "Maple Leafs\u2019 Berube on Woll: \u2018Just need a save there\u2019",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "NHL Roundup: Bruins beat Red Wings for critical win in playoff race",
+      "title": "Maple Leafs show some fight, fall short again as lost season sputters on",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Penguins frustrated with goalie interference call",
+      "title": "Oilers\u2019 Trent Frederic out with injury, no timeline for return",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "NHL, CHL, AHL nearing agreement for 19-year-old players",
+      "title": "Canucks, Victor Mancini agree to two-year contract extension",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Heide\u2019s clutch three clinches Texas upset over Gonzaga",
+      "title": "Linus Karlsson maintaining Game 7 intensity amid Canucks\u2019 lost season",
       "url": "",
       "source": "Sportsnet"
     },
     {
-      "title": "Men\u2019s March Madness (March 21)",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Texas goes from First Four to Sweet 16, upsetting No. 3 Gonzaga",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Frager\u2019s go-ahead layup seals Nebraska\u2019s first-ever Sweet 16 berth",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Boozer, No. 1 overall seed Duke get rolling after halftime to beat TCU, reach Sweet 16",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Acuff drops 36 as Arkansas holds off High Point to reach Sweet 16",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Michigan State reaches 17th Sweet 16 under Izzo in win over Louisville",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Top-seeded Michigan rolls to Sweet 16 with win over Saint Louis",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Zimmerman\u2019s late goal leads Toronto FC over Columbus Crew",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Whitecaps blanked by Earthquakes for first loss",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Evloev beats Murphy at UFC London to stay unbeaten, calls for title shot",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "UFC London preliminary card bout sees punches thrown after final horn",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights (March 21)",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Lakers 105, Magic 104",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Rockets 123, Heat 122",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Clippers 138, Mavericks 131 (OT)",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Hornets 124, Grizzlies 101",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Cavaliers 111, Pelicans 106",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Thunder 132, Wizards 111",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Spurs 134, Pacers 119",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Hawks 126, Warriors 110",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: Bucks 108, Suns 105",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Highlights: 76ers 126, Jazz 116",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Kennard drains clutch three in dying seconds to steal Lakers win",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NBA Roundup: SGA scores 40 as Thunder beat Wizards after early scuffle",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Doncic, Bitadze address mid-game incident leading to double technicals",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Altercation late in first half leads to four ejected from Thunder-Wizards",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "Clemson\u2019s Moore\u2019s wild buzzer beater waved off after review shows no time",
-      "url": "",
-      "source": "Sportsnet"
-    },
-    {
-      "title": "NCAA March Madness: Women\u2019s bracket",
+      "title": "Mammoth sign forward Michael Carcone to two-year contract extension",
       "url": "",
       "source": "Sportsnet"
     }
   ],
-  "fetched_at": "2026-03-22T14:26:05.656351"
+  "fetched_at": "2026-03-22T16:28:58.775351"
 }

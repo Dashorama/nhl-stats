@@ -9,7 +9,7 @@ import feedparser
 
 FEEDS = {
     "TSN":       "https://www.tsn.ca/rss/nhl",
-    "Sportsnet": "https://www.sportsnet.ca/feed/",
+    "Sportsnet": "https://www.sportsnet.ca/hockey/nhl/feed/",
     "NHL":       "https://www.nhl.com/rss/news.xml",
 }
 MAX_AGE_HOURS = 48
