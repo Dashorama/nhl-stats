@@ -6,7 +6,7 @@ set -euo pipefail
 
 MARKER="# nhl-stats-update"
 
-crontab -l 2>/dev/null | grep -v "$MARKER" | crontab - 2>/dev/null || true
+crontab -l 2>/dev/null | grep -v "$MARKER" | grep -v "# nhl-stats-publish" | crontab - 2>/dev/null || true
 
 echo "Removed nhl-stats cron jobs."
 echo "Current crontab:"
