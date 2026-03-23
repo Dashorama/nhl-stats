@@ -234,8 +234,48 @@ class Generator:
             ax.set_title(story["subject_name"])
             ax.set_ylabel("Goals")
         else:
-            ax.text(0.5, 0.5, story["headline"], ha="center", va="center", wrap=True)
-            ax.axis("off")
+            team_abbrev = story["subject_id"]
+            # Query team win% from games table
+            with self._db() as conn:
+                row = conn.execute("""
+                    SELECT
+                        SUM(CASE WHEN home_score > away_score THEN 1.0 ELSE 0.0 END) / COUNT(*) AS win_pct,
+                        COUNT(*) AS gp
+                    FROM games
+                    WHERE home_team=? AND game_type='2' AND game_state='OFF'
+                """, (team_abbrev,)).fetchone()
+
+                # Compute xG win% from shots table
+                xg_rows = conn.execute("""
+                    SELECT team, SUM(x_goal) AS xgf
+                    FROM shots WHERE season=?
+                    GROUP BY team
+                """, (MONEYPUCK_SEASON,)).fetchall()
+
+            xgf_map = {r["team"]: r["xgf"] for r in xg_rows}
+            total_xg = sum(xgf_map.values())
+            num_teams = max(len(xgf_map), 1)
+            team_xgf = xgf_map.get(team_abbrev, 0)
+            team_xga = (total_xg - team_xgf) / max(num_teams - 1, 1) if total_xg > 0 else 0
+            xg_win_pct = team_xgf / (team_xgf + team_xga) if (team_xgf + team_xga) > 0 else 0.5
+
+            win_pct = row["win_pct"] if row and row["win_pct"] is not None else 0.5
+
+            labels = ["Actual Win%", "Expected Win%"]
+            values = [round(win_pct * 100, 1), round(xg_win_pct * 100, 1)]
+            colors = ["#1a73e8", "#e8a21a"]
+            y_pos = [0, 1]
+
+            bars = ax.barh(y_pos, values, color=colors, height=0.5)
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels(labels, fontsize=12)
+            ax.set_xlim(0, max(values) * 1.25)
+            ax.set_xlabel("Win %", fontsize=11)
+            ax.set_title(f"{story.get('subject_name', team_abbrev)} — Actual vs Expected", fontsize=13)
+
+            for bar, val in zip(bars, values):
+                ax.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2,
+                        f"{val:.1f}%", va="center", fontsize=11, fontweight="bold")
 
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
