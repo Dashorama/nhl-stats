@@ -76,7 +76,7 @@ async def main() -> None:
     print(f"[scrape_edge] fetching EDGE data for {len(player_ids)} players...")
 
     sem = asyncio.Semaphore(CONCURRENCY)
-    async with httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0"}) as client:
+    async with httpx.AsyncClient(headers={"User-Agent": "Mozilla/5.0"}, follow_redirects=True) as client:
         tasks = [_fetch_one(client, sem, pid) for pid in player_ids]
         results = await asyncio.gather(*tasks)
 

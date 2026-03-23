@@ -1,4 +1,5 @@
 import { loadPlayer, loadAllPlayerIds } from "@/lib/data";
+import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   return loadAllPlayerIds().map(id => ({ id }));
@@ -7,6 +8,7 @@ export async function generateStaticParams() {
 export default async function PlayerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const player = loadPlayer(id);
+  if (!player) notFound();
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-10">

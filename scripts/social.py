@@ -9,7 +9,7 @@ from atproto import Client
 
 PROJECT_DIR = Path(__file__).parent.parent
 STORY_PATH  = PROJECT_DIR / "site/public/data/story.json"
-SITE_URL    = os.environ.get("SITE_URL", "https://your-site.vercel.app")
+SITE_URL    = os.environ.get("SITE_URL", "https://site-seven-delta-82.vercel.app")
 
 
 def build_post_text(story: dict, site_url: str) -> str:

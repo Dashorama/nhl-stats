@@ -127,8 +127,10 @@ export function loadAllPlayerIds(): string[] {
   return fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", ""));
 }
 
-export function loadPlayer(id: string): Player {
-  return readJson<Player>(path.join(SRC_DATA, "players", `${id}.json`));
+export function loadPlayer(id: string): Player | null {
+  const filePath = path.join(SRC_DATA, "players", `${id}.json`);
+  if (!fs.existsSync(filePath)) return null;
+  return readJson<Player>(filePath);
 }
 
 export function loadAllTeamAbbrevs(): string[] {
@@ -137,6 +139,8 @@ export function loadAllTeamAbbrevs(): string[] {
   return fs.readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", ""));
 }
 
-export function loadTeam(abbrev: string): Team {
-  return readJson<Team>(path.join(SRC_DATA, "teams", `${abbrev}.json`));
+export function loadTeam(abbrev: string): Team | null {
+  const filePath = path.join(SRC_DATA, "teams", `${abbrev}.json`);
+  if (!fs.existsSync(filePath)) return null;
+  return readJson<Team>(filePath);
 }

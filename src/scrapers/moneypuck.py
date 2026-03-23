@@ -270,7 +270,7 @@ class MoneyPuckScraper(BaseScraper):
         try:
             # Use httpx directly for the external URL (not our base_url)
             import httpx
-            async with httpx.AsyncClient(timeout=120.0) as client:
+            async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as client:
                 response = await client.get(zip_url)
                 response.raise_for_status()
         except Exception as e:

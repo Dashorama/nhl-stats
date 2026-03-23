@@ -8,6 +8,10 @@
 set -uo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+
+# Cron runs with a minimal PATH — ensure we can find node, vercel, etc.
+export PATH="${HOME}/.local/bin:/usr/local/bin:${PATH}"
+
 [ -f "${HOME}/.env.nhl-stats" ] && source "${HOME}/.env.nhl-stats"
 LOG_FILE="${PROJECT_DIR}/data/logs/publish-$(date +%Y-%m-%d).log"
 mkdir -p "${PROJECT_DIR}/data/logs"
@@ -22,7 +26,7 @@ log() { echo "[$(date -Iseconds)] $*" | tee -a "$LOG_FILE"; }
 : "${BLUESKY_APP_PASSWORD:?BLUESKY_APP_PASSWORD is required}"
 
 INJURIES_ARGS=()
-SKIP_SOCIAL=""
+INJURIES_FAILED=""
 
 log "=== Publish pipeline start ==="
 source "${PROJECT_DIR}/.venv/bin/activate"
@@ -32,9 +36,9 @@ log "Scraping injuries..."
 if python -m src.cli injuries >> "$LOG_FILE" 2>&1; then
     log "  injuries OK"
 else
-    log "  injuries FAILED — player stories and social post disabled"
+    log "  injuries FAILED — injury-dependent stories will skip social"
     INJURIES_ARGS=("--injuries-unavailable")
-    SKIP_SOCIAL="1"
+    INJURIES_FAILED="1"
 fi
 
 # Step 2: Fetch RSS (non-fatal)
@@ -62,9 +66,23 @@ if ! (cd "${PROJECT_DIR}/site" && vercel deploy --yes >> "$LOG_FILE" 2>&1); then
 fi
 log "  deploy OK"
 
-# Step 5: Post to Bluesky (non-fatal; skipped if injuries unavailable)
+# Step 5: Post to Bluesky (non-fatal; skipped if injuries failed AND story needs injury data)
+SKIP_SOCIAL=""
+if [ -n "$INJURIES_FAILED" ]; then
+    STORY_JSON="${PROJECT_DIR}/site/public/data/story.json"
+    STORY_TYPE=$(python -c "import json,sys;print(json.load(open(sys.argv[1]))['story_type'])" "$STORY_JSON" 2>/dev/null || echo "")
+    SUBJECT_TYPE=$(python -c "import json,sys;print(json.load(open(sys.argv[1])).get('subject_type',''))" "$STORY_JSON" 2>/dev/null || echo "")
+    case "$STORY_TYPE" in
+        StoryType.NEWS_COMBO|StoryType.EXTREME_SHOOTER)
+            SKIP_SOCIAL="1"
+            ;;
+        StoryType.FALLBACK)
+            [ "$SUBJECT_TYPE" = "player" ] && SKIP_SOCIAL="1"
+            ;;
+    esac
+fi
 if [ -n "$SKIP_SOCIAL" ]; then
-    log "  Bluesky skipped (injury data unavailable)"
+    log "  Bluesky skipped (injury data unavailable, story_type=${STORY_TYPE} needs it)"
 else
     log "Posting to Bluesky..."
     PYTHONPATH="${PROJECT_DIR}" SITE_URL="${SITE_URL:-}" \

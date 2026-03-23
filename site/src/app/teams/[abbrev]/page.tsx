@@ -1,4 +1,5 @@
 import { loadTeam, loadAllTeamAbbrevs } from "@/lib/data";
+import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
   return loadAllTeamAbbrevs().map(abbrev => ({ abbrev }));
@@ -7,6 +8,7 @@ export async function generateStaticParams() {
 export default async function TeamPage({ params }: { params: Promise<{ abbrev: string }> }) {
   const { abbrev } = await params;
   const team = loadTeam(abbrev);
+  if (!team) notFound();
   const s = team.current_season;
 
   const diff = s.win_pct != null && s.xg_win_pct != null ? s.win_pct - s.xg_win_pct : null;
