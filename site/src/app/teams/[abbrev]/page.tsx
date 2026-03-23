@@ -75,10 +75,10 @@ export default async function TeamPage({ params }: { params: Promise<{ abbrev: s
               <p className="text-xs text-gray-400 mt-1">xG-Implied</p>
             </div>
             <div>
-              <p className={`text-3xl font-black ${diff > 0 ? "text-emerald-600" : diff < 0 ? "text-red-500" : "text-gray-900"}`}>
+              <p className={`text-3xl font-black ${diff > 0 ? "text-blue-600" : diff < 0 ? "text-amber-600" : "text-gray-900"}`}>
                 {diff > 0 ? "+" : ""}{(diff * 100).toFixed(1)}%
               </p>
-              <p className="text-xs text-gray-400 mt-1">Difference</p>
+              <p className="text-xs text-gray-400 mt-1">Difference {diff > 0 ? "▲" : diff < 0 ? "▼" : ""}</p>
             </div>
           </div>
         </div>

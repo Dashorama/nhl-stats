@@ -72,10 +72,10 @@ export default async function PlayerPage({ params }: { params: Promise<{ id: str
               <p className="text-xs text-gray-500 mt-0.5">Overall</p>
             </div>
             <div>
-              <p className={`text-2xl font-black ${player.faceoffs.fo_oz_pct != null && player.faceoffs.fo_oz_pct >= 50 ? "text-emerald-600" : "text-red-500"}`}>
+              <p className={`text-2xl font-black ${player.faceoffs.fo_oz_pct != null && player.faceoffs.fo_oz_pct >= 50 ? "text-blue-600" : "text-amber-600"}`}>
                 {player.faceoffs.fo_oz_pct ?? "—"}<span className="text-base font-normal text-gray-400">%</span>
               </p>
-              <p className="text-xs text-gray-500 mt-0.5">Off. Zone</p>
+              <p className="text-xs text-gray-500 mt-0.5">Off. Zone {player.faceoffs.fo_oz_pct != null ? (player.faceoffs.fo_oz_pct >= 50 ? "▲" : "▼") : ""}</p>
             </div>
             <div>
               <p className="text-2xl font-black text-gray-900">

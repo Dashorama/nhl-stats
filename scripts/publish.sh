@@ -18,6 +18,10 @@ mkdir -p "${PROJECT_DIR}/data/logs"
 
 log() { echo "[$(date -Iseconds)] $*" | tee -a "$LOG_FILE"; }
 
+# Lightweight push notifications via ntfy.sh (configurable, non-fatal).
+: "${NTFY_TOPIC:=nhl-stats-alerts}"
+notify() { curl -s -d "$*" "ntfy.sh/${NTFY_TOPIC}" || true; }
+
 # NOTE: This script is scheduled 30 minutes after update.sh (10:00 UTC → 10:30 UTC).
 # The gap is a fixed delay, not a dependency lock. If update.sh ever takes >30 minutes,
 # this script will deploy stale data. Extend the gap in install-cron.sh if needed.
@@ -55,6 +59,7 @@ PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/scrape_edge.py" >> "$
 log "Generating data files..."
 if ! PYTHONPATH="${PROJECT_DIR}" python "${PROJECT_DIR}/scripts/generate.py" "${INJURIES_ARGS[@]}" >> "$LOG_FILE" 2>&1; then
     log "  generate FAILED — aborting"
+    notify "Publish pipeline: generate step failed"
     exit 1
 fi
 
@@ -62,6 +67,7 @@ fi
 log "Deploying to Vercel..."
 if ! (cd "${PROJECT_DIR}/site" && vercel deploy --yes >> "$LOG_FILE" 2>&1); then
     log "  deploy FAILED"
+    notify "Publish pipeline: deploy step failed"
     exit 1
 fi
 log "  deploy OK"
@@ -92,3 +98,4 @@ else
 fi
 
 log "=== Publish pipeline complete ==="
+notify "Publish pipeline completed successfully"
