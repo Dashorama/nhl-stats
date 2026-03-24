@@ -18,8 +18,8 @@ logger = logging.getLogger(__name__)
 
 # Default to the WSL→Windows host gateway; overridable via env
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://172.17.64.1:11434/v1")
-OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "phi4:14b")
-OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "90"))
+OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
+OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "300"))
 
 SYSTEM_PROMPT = """\
 You are a sharp, data-driven NHL analyst writing a daily feature for a stats website.
@@ -60,19 +60,31 @@ expectations" — be creative
 - Tone: confident, analytical, modern sports blog — not breathless hype
 - Do NOT repeat a subject from recent_stories
 
-Respond with ONLY valid JSON (no markdown, no commentary) in this exact schema:
+Respond with valid JSON matching the OUTPUT SCHEMA provided at the end of the user message."""
+
+
+OUTPUT_SCHEMA = """\
+
+=== OUTPUT SCHEMA (respond with ONLY this JSON, nothing else) ===
 {
   "subject_type": "player" or "team",
-  "subject_id": <int player_id or string team abbrev>,
-  "subject_name": "<full name>",
-  "headline": "<string, max 80 chars>",
-  "body": "<string, 2-4 sentences>",
-  "social_text": "<string, max 200 chars>",
-  "story_type": "<short label you invent, e.g. 'zone_split_faceoff', 'speed_vs_goals', etc>"
+  "subject_id": <int player_id or string team abbrev — MUST exist in the data above>,
+  "subject_name": "<full name from the data>",
+  "headline": "<string, max 80 chars, be creative>",
+  "body": "<string, 2-4 sentences with specific numbers>",
+  "social_text": "<string, max 200 chars for Bluesky>",
+  "story_type": "<short snake_case label you invent>"
 }"""
 
 
-def _trim_shooters(shooters: list[dict], career: dict, limit: int = 40) -> list[dict]:
+def _compact_career(seasons: list[dict]) -> list[dict]:
+    """Shrink career entries to only the fields that change meaningfully."""
+    keep = ("season", "goals", "xg", "gax", "sh_vs_expected",
+            "hd_shot_pct", "rush_rate", "rebound_rate")
+    return [{k: s[k] for k in keep if k in s} for s in seasons]
+
+
+def _trim_shooters(shooters: list[dict], career: dict, limit: int = 20) -> list[dict]:
     """Pick the most story-worthy players to fit in the context window.
 
     Selects from multiple axes (extreme GAx, high HD%, high rush%, etc.)
@@ -90,17 +102,27 @@ def _trim_shooters(shooters: list[dict], career: dict, limit: int = 40) -> list[
             pid = p["player_id"]
             if pid not in seen:
                 seen.add(pid)
-                entry = dict(p)
-                # Attach career inline so the LLM sees trends
-                if pid in career:
-                    entry["career"] = career[pid]
+                # Only keep the most useful fields for the LLM
+                entry = {
+                    "player_id": pid,
+                    "player_name": p["player_name"],
+                    "team": p.get("team_abbrev", ""),
+                    "goals": p["goals"], "xg": p["xg"], "gax": p["gax"],
+                    "shots": p["shots"],
+                    "hd%": p.get("hd_shot_pct"), "rush%": p.get("rush_rate"),
+                    "reb%": p.get("rebound_rate"),
+                    "pos": p.get("position"),
+                }
+                # Only attach career if there's a meaningful trend (last 3 seasons)
+                if pid in career and len(career[pid]) >= 2:
+                    entry["career"] = _compact_career(career[pid][-3:])
                 result.append(entry)
                 if len(result) >= limit:
                     return result
     return result
 
 
-def _trim_faceoffs(faceoff_stats: dict, limit: int = 15) -> list[dict]:
+def _trim_faceoffs(faceoff_stats: dict, limit: int = 10) -> list[dict]:
     """Pick the most interesting faceoff profiles."""
     if not faceoff_stats:
         return []
@@ -120,7 +142,7 @@ def _trim_faceoffs(faceoff_stats: dict, limit: int = 15) -> list[dict]:
     return entries[:limit]
 
 
-def _trim_tracking(edge_stats: dict, limit: int = 15) -> list[dict]:
+def _trim_tracking(edge_stats: dict, limit: int = 10) -> list[dict]:
     """Pick the most interesting EDGE tracking profiles."""
     if not edge_stats:
         return []
@@ -173,7 +195,11 @@ class LLMNarrator:
         payload = {
             "date": str(date.today()),
             "shooters": trimmed_shooters,
-            "teams": teams[:15],
+            "teams": [
+                {"abbrev": t["abbrev"], "name": t["name"],
+                 "win%": t["win_pct"], "xg_win%": t["xg_win_pct"], "diff": t["diff"]}
+                for t in teams[:10]
+            ],
             "faceoffs": _trim_faceoffs(faceoff_stats),
             "tracking": _trim_tracking(edge_stats),
             "headlines": [
@@ -193,81 +219,104 @@ class LLMNarrator:
                 if pid and pid in name_map:
                     entry["player_name"] = name_map[pid]
 
-        user_msg = json.dumps(payload, indent=2, default=str)
+        user_msg = json.dumps(payload, indent=2, default=str) + "\n" + OUTPUT_SCHEMA
         logger.info("LLM prompt size: %d chars, %d shooters, %d faceoffs, %d tracking",
                      len(user_msg), len(trimmed_shooters),
                      len(payload["faceoffs"]), len(payload["tracking"]))
 
+        # Build valid-ID sets for validation
+        valid_player_ids = {s["player_id"] for s in shooters}
+        valid_team_ids = {t["abbrev"] for t in teams}
+        if faceoff_stats:
+            valid_player_ids.update(faceoff_stats.keys())
+        if edge_stats:
+            valid_player_ids.update(int(k) for k in edge_stats.keys())
+        recent_ids = {s.get("subject_id") for s in recent_subjects}
+
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_msg},
+        ]
+
+        max_attempts = 2
         try:
             client = self._client()
-            resp = client.chat.completions.create(
-                model=self.model,
-                messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
-                    {"role": "user", "content": user_msg},
-                ],
-                temperature=0.8,
-                max_tokens=600,
-            )
-            raw = resp.choices[0].message.content.strip()
 
-            # Strip markdown fences if the model wraps them anyway
-            if raw.startswith("```"):
-                raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
-                if raw.endswith("```"):
-                    raw = raw[:-3]
-                raw = raw.strip()
+            for attempt in range(max_attempts):
+                resp = client.chat.completions.create(
+                    model=self.model,
+                    messages=messages,
+                    temperature=0.8,
+                    max_tokens=600,
+                    response_format={"type": "json_object"},
+                )
+                raw = (resp.choices[0].message.content or "").strip()
+                logger.info("LLM attempt %d raw (%d chars): %.300s",
+                            attempt + 1, len(raw), raw)
 
-            result = json.loads(raw)
+                # Strip markdown fences if the model wraps them anyway
+                if raw.startswith("```"):
+                    raw = raw.split("\n", 1)[1] if "\n" in raw else raw[3:]
+                    if raw.endswith("```"):
+                        raw = raw[:-3]
+                    raw = raw.strip()
 
-            # Validate required fields
-            for key in ("subject_type", "subject_id", "headline", "body", "social_text"):
-                if key not in result:
-                    logger.warning("LLM response missing key '%s', falling back", key)
-                    return None
-
-            # Validate subject exists in the data we gave it
-            sid = result["subject_id"]
-            valid_player_ids = {s["player_id"] for s in shooters}
-            valid_team_ids = {t["abbrev"] for t in teams}
-            if faceoff_stats:
-                valid_player_ids.update(faceoff_stats.keys())
-            if edge_stats:
-                valid_player_ids.update(int(k) for k in edge_stats.keys())
-
-            if result["subject_type"] == "player" and sid not in valid_player_ids:
-                # Try int coercion (JSON may stringify it)
                 try:
-                    sid = int(sid)
-                    result["subject_id"] = sid
-                except (ValueError, TypeError):
-                    pass
-                if sid not in valid_player_ids:
-                    logger.warning("LLM picked unknown player_id %s, falling back", sid)
+                    result = json.loads(raw)
+                except json.JSONDecodeError:
+                    logger.warning("LLM returned invalid JSON, falling back")
                     return None
-            elif result["subject_type"] == "team" and sid not in valid_team_ids:
-                logger.warning("LLM picked unknown team '%s', falling back", sid)
-                return None
 
-            # Check it didn't pick a recent subject
-            recent_ids = {s.get("subject_id") for s in recent_subjects}
-            if sid in recent_ids:
-                logger.warning("LLM picked recently covered subject %s, falling back", sid)
-                return None
+                # Validate required fields
+                missing = [k for k in ("subject_type", "subject_id", "headline", "body", "social_text")
+                           if k not in result]
+                if missing:
+                    logger.warning("LLM response missing keys %s, falling back", missing)
+                    return None
 
-            story = {
-                "story_type": result.get("story_type", "llm_original"),
-                "subject_type": result["subject_type"],
-                "subject_id": result["subject_id"],
-                "subject_name": result.get("subject_name", ""),
-                "headline": str(result["headline"])[:120],
-                "body": str(result["body"]),
-                "social_text": str(result["social_text"])[:250],
-                "headlines": [],
-            }
-            logger.info("LLM story (%s): %s — %s",
-                        story["story_type"], story["subject_name"], story["headline"])
-            return story
+                # Validate subject exists in the data we gave it
+                sid = result["subject_id"]
+                if result["subject_type"] == "player" and sid not in valid_player_ids:
+                    try:
+                        sid = int(sid)
+                        result["subject_id"] = sid
+                    except (ValueError, TypeError):
+                        pass
+                    if sid not in valid_player_ids:
+                        logger.warning("LLM picked unknown player_id %s, falling back", sid)
+                        return None
+
+                elif result["subject_type"] == "team" and sid not in valid_team_ids:
+                    logger.warning("LLM picked unknown team '%s', falling back", sid)
+                    return None
+
+                # Check dedup — if recent, retry with feedback instead of failing
+                if sid in recent_ids and attempt < max_attempts - 1:
+                    logger.info("LLM picked recently covered %s, asking for another pick", sid)
+                    messages.append({"role": "assistant", "content": raw})
+                    messages.append({"role": "user", "content":
+                        f"subject_id {sid} was already covered recently. "
+                        f"Pick a DIFFERENT subject and respond with the same JSON schema."
+                    })
+                    continue
+                elif sid in recent_ids:
+                    logger.warning("LLM picked recent subject %s on final attempt, falling back", sid)
+                    return None
+
+                # Success
+                story = {
+                    "story_type": result.get("story_type", "llm_original"),
+                    "subject_type": result["subject_type"],
+                    "subject_id": result["subject_id"],
+                    "subject_name": result.get("subject_name", ""),
+                    "headline": str(result["headline"])[:120],
+                    "body": str(result["body"]),
+                    "social_text": str(result["social_text"])[:250],
+                    "headlines": [],
+                }
+                logger.info("LLM story (%s): %s — %s",
+                            story["story_type"], story["subject_name"], story["headline"])
+                return story
 
         except Exception:
             logger.warning("LLM narration failed, falling back to deterministic selection",
