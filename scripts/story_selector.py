@@ -1,15 +1,21 @@
 """Daily story selection engine."""
 import json
-from dataclasses import dataclass
+import logging
+from dataclasses import dataclass, field
 from datetime import date, timedelta
 from enum import Enum
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 
 class StoryType(str, Enum):
     NEWS_COMBO      = "news_combo"
     EXTREME_SHOOTER = "extreme_shooter"
     MULTI_SEASON    = "multi_season"
+    FACEOFF_KING    = "faceoff_king"
+    STYLE_SHIFT     = "style_shift"
+    SPEED_DEMON     = "speed_demon"
     TEAM_RECORD     = "team_record"
     FALLBACK        = "fallback"
 
@@ -22,6 +28,8 @@ class StorySelector:
     headlines: list[dict]
     unavailable_players: set[int]
     history_path: str
+    faceoff_stats: dict[int, dict] | None = None
+    edge_stats: dict[int, dict] | None = None
 
     def _recent_subjects(self) -> set:
         try:
@@ -93,6 +101,177 @@ class StorySelector:
                 return self._player_story(player, StoryType.MULTI_SEASON)
         return None
 
+    def _try_faceoff_king(self, recent: set) -> dict | None:
+        """Find a player dominating (or struggling in) the faceoff circle."""
+        if not self.faceoff_stats:
+            return None
+        candidates = []
+        for pid, fo in self.faceoff_stats.items():
+            if pid in self.unavailable_players or pid in recent:
+                continue
+            total = fo.get("fo_wins", 0) + fo.get("fo_losses", 0)
+            pct = fo.get("fo_pct")
+            if total < 300 or pct is None:
+                continue
+            # Look for extreme zone splits or overall dominance
+            oz = fo.get("fo_oz_pct") or pct
+            dz = fo.get("fo_dz_pct") or pct
+            zone_gap = abs(oz - dz)
+            if pct >= 56.0 or pct <= 43.0 or zone_gap >= 12.0:
+                candidates.append((pid, fo, pct, zone_gap))
+        if not candidates:
+            return None
+        # Prefer most extreme overall, breaking ties with zone gap
+        best_pid, best_fo, best_pct, best_gap = max(
+            candidates, key=lambda x: (abs(x[2] - 50.0), x[3])
+        )
+        # Find player name from shooters list, or fall back
+        name = str(best_pid)
+        for s in self.shooters:
+            if s["player_id"] == best_pid:
+                name = s["player_name"]
+                break
+        direction = "dominating" if best_pct > 50 else "struggling in"
+        oz_pct = best_fo.get("fo_oz_pct")
+        dz_pct = best_fo.get("fo_dz_pct")
+        zone_detail = ""
+        if oz_pct is not None and dz_pct is not None and abs(oz_pct - dz_pct) >= 8:
+            stronger, weaker = ("offensive", "defensive") if oz_pct > dz_pct else ("defensive", "offensive")
+            zone_detail = (
+                f" Notably, he wins {max(oz_pct, dz_pct):.1f}% in the {stronger} zone "
+                f"but just {min(oz_pct, dz_pct):.1f}% in the {weaker} zone."
+            )
+        total = best_fo["fo_wins"] + best_fo["fo_losses"]
+        return {
+            "story_type": StoryType.FACEOFF_KING,
+            "subject_type": "player",
+            "subject_id": best_pid,
+            "subject_name": name,
+            "headline": f"{name} is {direction} the faceoff circle at {best_pct:.1f}%",
+            "body": (
+                f"{name} has won {best_fo['fo_wins']} of {total} faceoffs this season "
+                f"({best_pct:.1f}%).{zone_detail}"
+            ),
+            "social_text": (
+                f"{name} is winning {best_pct:.1f}% of faceoffs this season — "
+                f"{'one of the best rates in the NHL.' if best_pct > 50 else 'among the lowest in the league.'}"
+            ),
+            "headlines": [],
+        }
+
+    def _try_style_shift(self, available: list[dict]) -> dict | None:
+        """Find a player whose shooting style changed dramatically this season vs career."""
+        for player in sorted(available, key=lambda p: p["shots"], reverse=True):
+            if player["shots"] < 80:
+                continue
+            history = self.career_stats.get(player["player_id"], [])
+            if len(history) < 2:
+                continue
+            # Compare current season to career average for style metrics
+            prior = [s for s in history if s["season"] != history[-1]["season"]]
+            if not prior:
+                continue
+            current = history[-1]
+            for metric, label, unit in [
+                ("hd_shot_pct", "high-danger shot rate", "%"),
+                ("rush_rate", "rush shot rate", "%"),
+                ("rebound_rate", "rebound shot rate", "%"),
+            ]:
+                curr_val = current.get(metric)
+                prior_vals = [s.get(metric) for s in prior if s.get(metric) is not None]
+                if curr_val is None or not prior_vals:
+                    continue
+                avg_prior = sum(prior_vals) / len(prior_vals)
+                if avg_prior < 1.0:  # avoid division by near-zero
+                    continue
+                change_pct = ((curr_val - avg_prior) / avg_prior) * 100
+                if abs(change_pct) >= 30:
+                    direction = "up" if change_pct > 0 else "down"
+                    return {
+                        "story_type": StoryType.STYLE_SHIFT,
+                        "subject_type": "player",
+                        "subject_id": player["player_id"],
+                        "subject_name": player["player_name"],
+                        "headline": (
+                            f"{player['player_name']}'s {label} is way {direction} this season"
+                        ),
+                        "body": (
+                            f"{player['player_name']}'s {label} has shifted to {curr_val:.1f}{unit} "
+                            f"this season, {direction} from a career average of {avg_prior:.1f}{unit}. "
+                            f"That's a {abs(change_pct):.0f}% change in playing style."
+                        ),
+                        "social_text": (
+                            f"{player['player_name']}'s {label} is {direction} {abs(change_pct):.0f}% "
+                            f"from career norms. Something has changed."
+                        ),
+                        "headlines": [],
+                    }
+        return None
+
+    def _try_speed_demon(self, recent: set) -> dict | None:
+        """Find a player with elite or unusual EDGE tracking numbers."""
+        if not self.edge_stats:
+            return None
+        candidates = []
+        for pid, edge in self.edge_stats.items():
+            if pid in self.unavailable_players or pid in recent:
+                continue
+            speed_pct = edge.get("max_speed_pct", 0)
+            shot_speed_pct = edge.get("shot_speed_pct", 0)
+            oz_pctl = edge.get("oz_percentile", 0)
+            dist_pct = edge.get("distance_pct", 0)
+            # Look for elite speed + high shot speed, or extreme OZ presence
+            if speed_pct >= 85 and shot_speed_pct >= 80:
+                score = speed_pct + shot_speed_pct
+                candidates.append((pid, edge, "fast_shot", score))
+            elif oz_pctl >= 90 and dist_pct >= 80:
+                score = oz_pctl + dist_pct
+                candidates.append((pid, edge, "workload", score))
+        if not candidates:
+            return None
+        best_pid, best_edge, kind, _ = max(candidates, key=lambda x: x[3])
+        # Find player name
+        name = str(best_pid)
+        for s in self.shooters:
+            if s["player_id"] == best_pid:
+                name = s["player_name"]
+                break
+        if kind == "fast_shot":
+            headline = f"{name} combines elite speed with a lethal shot"
+            body = (
+                f"{name} hits {best_edge['max_speed_mph']:.1f} mph top speed "
+                f"({best_edge['max_speed_pct']:.0f}th percentile) and fires shots at "
+                f"{best_edge['shot_speed_mph']:.1f} mph ({best_edge['shot_speed_pct']:.0f}th percentile). "
+                f"That combination of skating and shooting is rare."
+            )
+            social = (
+                f"{name}: {best_edge['max_speed_mph']:.1f} mph skating "
+                f"+ {best_edge['shot_speed_mph']:.1f} mph shot. Elite at both."
+            )
+        else:
+            headline = f"{name} leads the league in offensive zone presence"
+            body = (
+                f"{name} spends {best_edge['oz_pct']:.1f}% of his time in the offensive zone "
+                f"({best_edge['oz_percentile']:.0f}th percentile) while covering "
+                f"{best_edge['distance_mi']:.1f} miles per game ({best_edge['distance_pct']:.0f}th percentile). "
+                f"That's an exceptional workload in the attacking end."
+            )
+            social = (
+                f"{name}: {best_edge['oz_pct']:.1f}% OZ time "
+                f"({best_edge['oz_percentile']:.0f}th %ile) and {best_edge['distance_mi']:.1f} mi/game. "
+                f"A true offensive zone presence."
+            )
+        return {
+            "story_type": StoryType.SPEED_DEMON,
+            "subject_type": "player",
+            "subject_id": best_pid,
+            "subject_name": name,
+            "headline": headline,
+            "body": body,
+            "social_text": social,
+            "headlines": [],
+        }
+
     def _try_team_record(self, recent: set) -> dict | None:
         candidates = [t for t in self.teams
                       if abs(t["diff"]) > 0.10 and t["abbrev"] not in recent]
@@ -159,12 +338,34 @@ class StorySelector:
             "headlines": [],
         }
 
+    def candidates(self) -> list[dict]:
+        """Gather all qualifying story candidates (used by LLM narrator)."""
+        recent = self._recent_subjects()
+        available = self._available(recent)
+        results = []
+        for fn in [
+            lambda: self._try_news_combo(available),
+            lambda: self._try_extreme_shooter(available),
+            lambda: self._try_faceoff_king(recent),
+            lambda: self._try_style_shift(available),
+            lambda: self._try_speed_demon(recent),
+            lambda: self._try_multi_season(available),
+            lambda: self._try_team_record(recent),
+        ]:
+            result = fn()
+            if result is not None:
+                results.append(result)
+        return results
+
     def select(self) -> dict:
         recent = self._recent_subjects()
         available = self._available(recent)
         return (
             self._try_news_combo(available)
             or self._try_extreme_shooter(available)
+            or self._try_faceoff_king(recent)
+            or self._try_style_shift(available)
+            or self._try_speed_demon(recent)
             or self._try_multi_season(available)
             or self._try_team_record(recent)
             or self._fallback(available, recent)

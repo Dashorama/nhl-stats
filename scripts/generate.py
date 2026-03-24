@@ -11,6 +11,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from scripts.llm_narrator import LLMNarrator
 from scripts.story_selector import StorySelector
 
 PROJECT_DIR = Path(__file__).parent.parent
@@ -492,6 +493,9 @@ class Generator:
         leaderboard = self._query_leaderboard()
         story_data  = self._query_story_data(teams=leaderboard["teams"])
 
+        edge_stats = self._load_edge_stats()
+        faceoff_stats = self._compute_faceoff_stats()
+
         selector = StorySelector(
             shooters=story_data["shooters"],
             teams=story_data["teams"],
@@ -499,8 +503,51 @@ class Generator:
             headlines=headlines if injuries_available else [],
             unavailable_players=set(story_data["unavailable"].keys()) if injuries_available else set(),
             history_path=self.history_path,
+            faceoff_stats=faceoff_stats,
+            edge_stats=edge_stats,
         )
-        story = selector.select()
+
+        # Try LLM-powered narration: give raw data, let the model find the story
+        story = None
+        narrator = LLMNarrator()
+
+        # Build recent-stories list for dedup
+        recent_subjects = []
+        try:
+            hist = json.loads(Path(self.history_path).read_text())
+            from datetime import timedelta
+            cutoff = date.today() - timedelta(days=7)
+            recent_subjects = [
+                e for e in hist.get("stories", [])
+                if date.fromisoformat(e["date"]) > cutoff
+            ]
+        except (FileNotFoundError, json.JSONDecodeError):
+            pass
+
+        # Player name lookup (faceoff/tracking entries may not be in shooters list)
+        name_map = {s["player_id"]: s["player_name"] for s in story_data["shooters"]}
+        with self._db() as conn:
+            for row in conn.execute("SELECT id, first_name, last_name FROM players").fetchall():
+                if row["id"] not in name_map:
+                    name_map[row["id"]] = f"{row['first_name']} {row['last_name']}".strip()
+
+        story = narrator.narrate(
+            shooters=story_data["shooters"],
+            teams=story_data["teams"],
+            career_stats=story_data["career_stats"],
+            faceoff_stats=faceoff_stats,
+            edge_stats=edge_stats,
+            headlines=headlines if injuries_available else [],
+            recent_subjects=recent_subjects,
+            player_names=name_map,
+        )
+        if story:
+            print(f"[generate] LLM story ({story['story_type']}): {story['headline']}")
+
+        # Fall back to deterministic selection if LLM is unavailable or fails
+        if story is None:
+            story = selector.select()
+
         chart_name = self._generate_chart(story)
 
         story["chart"]      = chart_name
@@ -513,8 +560,6 @@ class Generator:
         (pub_dir / "story.json").write_text(json.dumps(story, indent=2))
 
         rush_rates = self._compute_rush_rates()
-        edge_stats = self._load_edge_stats()
-        faceoff_stats = self._compute_faceoff_stats()
         self._write_player_files(story_data, rush_rates, edge_stats, faceoff_stats)
         self._write_team_files(leaderboard_teams=leaderboard["all_teams"])
         selector.record(story)
