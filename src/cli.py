@@ -8,6 +8,7 @@ from rich.console import Console
 from rich.table import Table
 
 from .scrapers import NHLAPIScraper, NHLRosterScraper, MoneyPuckScraper, PuckPediaScraper
+from .scrapers.yahoo_fantasy import YahooFantasyClient
 from .storage import Database, GameRecord, PlayerRecord, BoxscoreRecord, PlayByPlayRecord
 from .utils import setup_logging
 
@@ -778,6 +779,153 @@ def _print_summary(errors: list[str]) -> None:
         sys.exit(1)
     else:
         console.print("\n[bold green]✓ All updates complete![/bold green]")
+
+
+# ── Yahoo Fantasy Commands ─────────────────────────────────────────
+
+
+@main.group()
+@click.option("--league-id", "-l", envvar="YAHOO_LEAGUE_ID", required=True,
+              help="Yahoo Fantasy league ID (or set YAHOO_LEAGUE_ID env var)")
+@click.pass_context
+def fantasy(ctx: click.Context, league_id: str) -> None:
+    """Yahoo Fantasy hockey commands for managing your team."""
+    ctx.obj["yahoo"] = YahooFantasyClient(league_id=league_id)
+
+
+@fantasy.command()
+@click.pass_context
+def league_info(ctx: click.Context) -> None:
+    """Show league info and settings."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    info = yahoo.get_league_info()
+    settings = yahoo.get_league_settings()
+
+    console.print(f"\n[bold]{info.get('name', 'Unknown League')}[/bold]")
+    console.print(f"[dim]League ID: {yahoo.league_id}[/dim]\n")
+
+    if isinstance(settings, dict):
+        table = Table(title="League Settings", show_header=False)
+        table.add_column("Setting", style="cyan")
+        table.add_column("Value")
+        for k, v in settings.items():
+            if not isinstance(v, (dict, list)):
+                table.add_row(str(k), str(v))
+        console.print(table)
+
+
+@fantasy.command(name="standings")
+@click.pass_context
+def fantasy_standings(ctx: click.Context) -> None:
+    """Show fantasy league standings."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    standings = yahoo.get_league_standings()
+
+    console.print("\n[bold]League Standings[/bold]\n")
+    console.print(standings)
+
+
+@fantasy.command()
+@click.option("--team-id", "-t", type=str, help="Team ID (defaults to your team)")
+@click.option("--week", "-w", type=int, help="Week number")
+@click.pass_context
+def roster(ctx: click.Context, team_id: str | None, week: int | None) -> None:
+    """Show team roster with player stats."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    roster_data = yahoo.get_team_roster(team_id=team_id, week=week)
+
+    console.print("\n[bold]Team Roster[/bold]\n")
+
+    if isinstance(roster_data, list):
+        table = Table(title="Roster")
+        table.add_column("Player", style="cyan")
+        table.add_column("Pos", style="green")
+        table.add_column("NHL Team", style="dim")
+        table.add_column("Status", style="yellow")
+
+        for player in roster_data:
+            if isinstance(player, dict):
+                name = player.get("name", player.get("full", "Unknown"))
+                if isinstance(name, dict):
+                    name = name.get("full", "Unknown")
+                table.add_row(
+                    str(name),
+                    str(player.get("display_position", player.get("position_type", ""))),
+                    str(player.get("editorial_team_abbr", "")),
+                    str(player.get("status", "")),
+                )
+
+        console.print(table)
+    else:
+        console.print(roster_data)
+
+
+@fantasy.command()
+@click.option("--week", "-w", type=int, help="Week number (current if omitted)")
+@click.pass_context
+def matchup(ctx: click.Context, week: int | None) -> None:
+    """Show current matchup details and score."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    scoreboard = yahoo.get_league_scoreboard(week=week)
+
+    console.print("\n[bold]Matchups[/bold]\n")
+    console.print(scoreboard)
+
+
+@fantasy.command()
+@click.pass_context
+def teams(ctx: click.Context) -> None:
+    """List all teams in the league."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    teams_data = yahoo.get_my_team()
+
+    console.print("\n[bold]League Teams[/bold]\n")
+    console.print(teams_data)
+
+
+@fantasy.command()
+@click.option("--count", "-n", type=int, default=25, help="Number of players to show")
+@click.pass_context
+def free_agents(ctx: click.Context, count: int) -> None:
+    """Show available free agents on waiver wire."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    players = yahoo.get_league_players(status="FA", count=count)
+
+    console.print("\n[bold]Free Agents[/bold]\n")
+
+    if isinstance(players, list):
+        table = Table(title=f"Top {count} Available Players")
+        table.add_column("Player", style="cyan")
+        table.add_column("Pos", style="green")
+        table.add_column("NHL Team", style="dim")
+        table.add_column("% Owned", justify="right")
+
+        for player in players:
+            if isinstance(player, dict):
+                name = player.get("name", player.get("full", "Unknown"))
+                if isinstance(name, dict):
+                    name = name.get("full", "Unknown")
+                table.add_row(
+                    str(name),
+                    str(player.get("display_position", "")),
+                    str(player.get("editorial_team_abbr", "")),
+                    str(player.get("percent_owned", {}).get("value", "")),
+                )
+
+        console.print(table)
+    else:
+        console.print(players)
+
+
+@fantasy.command()
+@click.pass_context
+def transactions(ctx: click.Context) -> None:
+    """Show recent league transactions."""
+    yahoo: YahooFantasyClient = ctx.obj["yahoo"]
+    txns = yahoo.get_transactions()
+
+    console.print("\n[bold]Recent Transactions[/bold]\n")
+    console.print(txns)
 
 
 if __name__ == "__main__":

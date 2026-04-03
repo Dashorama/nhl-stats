@@ -65,5 +65,12 @@ Thumbs.db
 .env
 .env.local
 *.pem
+secrets.json
 .worktrees/
 .vercel
+
+# Local config (contains machine-specific paths/session IDs)
+.nexus-mcp.json
+
+# Build artifacts
+site/tsconfig.tsbuildinfo

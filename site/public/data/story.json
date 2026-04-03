@@ -1,30 +1,26 @@
 {
   "story_type": "StoryType.NEWS_COMBO",
   "subject_type": "player",
-  "subject_id": 8478398,
-  "subject_name": "Kyle Connor",
-  "headline": "Kyle Connor is scoring 35% above expectations",
-  "body": "Kyle Connor has scored 46 goals against an expected 34.2 this season (+11.8 goals above expected). Historical data suggests deviations this large tend to normalize.",
-  "social_text": "Kyle Connor is scoring at 1.35x expected (+11.8 GAx). History says this won't last.",
+  "subject_id": 8479420,
+  "subject_name": "Tage Thompson",
+  "headline": "Tage Thompson is scoring 87% above expectations",
+  "body": "Tage Thompson has scored 44 goals against an expected 23.5 this season (+20.5 goals above expected). Historical data suggests deviations this large tend to normalize.",
+  "social_text": "Tage Thompson is scoring at 1.87x expected (+20.5 GAx). History says this won't last.",
   "headlines": [
     {
-      "title": "NHL Predictions: Chicago Blackhawks vs Nashville Predators, March 22",
-      "url": "https://lastwordonsports.com/hockey/2026/03/22/nhl-predictions-chicago-blackhawks-nashville-predators-march-22/",
+      "title": "NHL Predictions: Washington Capitals vs New Jersey Devils",
+      "url": "https://lastwordonsports.com/hockey/2026/04/02/nhl-predictions-washington-capitals-vs-new-jersey-devils/",
       "source": "Last Word",
       "tags": [
-        "Chicago Blackhawks",
-        "Nashville Predators",
-        "Connor Bedard",
-        "Filip Forsberg"
+        "New Jersey Devils",
+        "Washington Capitals",
+        "Alex Ovechkin",
+        "Jack Hughes",
+        "Jacob Markstrom",
+        "Logan Thompson"
       ]
-    },
-    {
-      "title": "Tyson Gross set to make Flames debut vs. Lightning with Connor Zary day-to-day",
-      "url": "",
-      "source": "Sportsnet",
-      "tags": []
     }
   ],
-  "chart": "chart-2026-03-22.png",
-  "date": "2026-03-22"
+  "chart": "chart-2026-04-02.png",
+  "date": "2026-04-02"
 }

@@ -6,6 +6,7 @@ from .nhl_roster import NHLRosterScraper
 from .moneypuck import MoneyPuckScraper
 from .puckpedia import PuckPediaScraper
 from .nhl_injuries import NHLInjuriesScraper
+from .yahoo_fantasy import YahooFantasyClient
 
 __all__ = [
     "BaseScraper",
@@ -14,4 +15,5 @@ __all__ = [
     "MoneyPuckScraper",
     "PuckPediaScraper",
     "NHLInjuriesScraper",
+    "YahooFantasyClient",
 ]
