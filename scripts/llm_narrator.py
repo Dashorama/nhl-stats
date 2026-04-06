@@ -16,8 +16,8 @@ from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-# Default to the WSL→Windows host gateway; overridable via env
-OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://172.17.64.1:11434/v1")
+# Default to the Nexus Ollama Gateway; overridable via env
+OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11435/v1")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:12b")
 OLLAMA_TIMEOUT = float(os.environ.get("OLLAMA_TIMEOUT", "300"))
 
