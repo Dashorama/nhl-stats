@@ -4,13 +4,13 @@
   "conference": "Eastern",
   "division": "Metropolitan",
   "current_season": {
-    "wins": 34,
-    "losses": 18,
+    "wins": 41,
+    "losses": 25,
     "ot_losses": 16,
-    "points": 84,
-    "games_played": 68,
-    "win_pct": 0.485,
+    "points": 98,
+    "games_played": 82,
+    "win_pct": 0.613,
     "xg_win_pct": 0.489,
-    "diff": -0.004
+    "diff": 0.124
   }
 }

@@ -4,13 +4,13 @@
   "conference": "Western",
   "division": "Central",
   "current_season": {
-    "wins": 44,
-    "losses": 13,
-    "ot_losses": 10,
-    "points": 98,
-    "games_played": 67,
-    "win_pct": 0.676,
+    "wins": 55,
+    "losses": 16,
+    "ot_losses": 11,
+    "points": 121,
+    "games_played": 82,
+    "win_pct": 0.595,
     "xg_win_pct": 0.512,
-    "diff": 0.165
+    "diff": 0.084
   }
 }

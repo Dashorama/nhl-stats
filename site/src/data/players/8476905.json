@@ -9,7 +9,7 @@
   "sh_vs_expected": 1.54,
   "hd_shot_pct": 39.8,
   "rebound_rate": 5.8,
-  "rush_rate": 3.5,
+  "rush_rate": 3.1,
   "position": "C",
   "seasons": [
     {
@@ -91,14 +91,14 @@
     },
     {
       "season": "2025",
-      "goals": 14,
-      "xg": 9.2,
-      "gax": 4.8,
-      "shots": 112,
-      "sh_vs_expected": 1.52,
-      "hd_shot_pct": 42.9,
-      "rebound_rate": 3.6,
-      "rush_rate": 3.5
+      "goals": 16,
+      "xg": 10.4,
+      "gax": 5.6,
+      "shots": 128,
+      "sh_vs_expected": 1.54,
+      "hd_shot_pct": 45.3,
+      "rebound_rate": 3.9,
+      "rush_rate": 3.1
     }
   ],
   "verdict": "Career average 26% above expected \u2014 watch for regression.",
@@ -115,11 +115,11 @@
     "distance_pct": 92.3
   },
   "faceoffs": {
-    "fo_wins": 634,
-    "fo_losses": 578,
-    "fo_pct": 52.3,
-    "fo_oz_pct": 47.6,
-    "fo_dz_pct": 60.9,
-    "fo_nz_pct": 48.5
+    "fo_wins": 759,
+    "fo_losses": 698,
+    "fo_pct": 52.1,
+    "fo_oz_pct": 48.1,
+    "fo_dz_pct": 60.5,
+    "fo_nz_pct": 47.3
   }
 }

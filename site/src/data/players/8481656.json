@@ -9,7 +9,7 @@
   "sh_vs_expected": 1.42,
   "hd_shot_pct": 48.2,
   "rebound_rate": 7.5,
-  "rush_rate": 6.4,
+  "rush_rate": 7.1,
   "position": "L",
   "seasons": [
     {
@@ -58,17 +58,17 @@
     },
     {
       "season": "2025",
-      "goals": 22,
-      "xg": 18.7,
-      "gax": 3.3,
-      "shots": 225,
-      "sh_vs_expected": 1.17,
-      "hd_shot_pct": 43.6,
-      "rebound_rate": 9.3,
-      "rush_rate": 6.4
+      "goals": 25,
+      "xg": 22.9,
+      "gax": 2.1,
+      "shots": 265,
+      "sh_vs_expected": 1.09,
+      "hd_shot_pct": 46.0,
+      "rebound_rate": 10.2,
+      "rush_rate": 7.1
     }
   ],
-  "verdict": "Career average 17% below expected \u2014 due for improvement.",
+  "verdict": "Career average 18% below expected \u2014 due for improvement.",
   "injury_status": "HEALTHY",
   "tracking": {
     "player_id": 8481656,

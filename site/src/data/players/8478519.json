@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.96,
   "hd_shot_pct": 55.2,
   "rebound_rate": 10.8,
-  "rush_rate": 5.1,
+  "rush_rate": 5.4,
   "position": "C",
   "seasons": [
     {
@@ -91,17 +91,17 @@
     },
     {
       "season": "2025",
-      "goals": 16,
-      "xg": 18.7,
-      "gax": -2.7,
-      "shots": 158,
-      "sh_vs_expected": 0.86,
-      "hd_shot_pct": 65.8,
-      "rebound_rate": 19.6,
-      "rush_rate": 5.1
+      "goals": 22,
+      "xg": 22.7,
+      "gax": -0.7,
+      "shots": 188,
+      "sh_vs_expected": 0.97,
+      "hd_shot_pct": 64.4,
+      "rebound_rate": 19.1,
+      "rush_rate": 5.4
     }
   ],
-  "verdict": "Career average 8% below expected \u2014 due for improvement.",
+  "verdict": "Career average 7% below expected \u2014 due for improvement.",
   "injury_status": "HEALTHY",
   "tracking": {
     "player_id": 8478519,
@@ -115,11 +115,11 @@
     "distance_pct": 84.2
   },
   "faceoffs": {
-    "fo_wins": 435,
-    "fo_losses": 451,
-    "fo_pct": 49.1,
-    "fo_oz_pct": 44.6,
-    "fo_dz_pct": 53.1,
-    "fo_nz_pct": 51.1
+    "fo_wins": 518,
+    "fo_losses": 557,
+    "fo_pct": 48.2,
+    "fo_oz_pct": 44.4,
+    "fo_dz_pct": 51.6,
+    "fo_nz_pct": 49.7
   }
 }

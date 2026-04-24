@@ -36,17 +36,17 @@
     },
     {
       "season": "2025",
-      "goals": 2,
-      "xg": 1.6,
-      "gax": 0.4,
-      "shots": 49,
-      "sh_vs_expected": 1.26,
-      "hd_shot_pct": 12.2,
-      "rebound_rate": 4.1,
+      "goals": 4,
+      "xg": 2.6,
+      "gax": 1.4,
+      "shots": 74,
+      "sh_vs_expected": 1.53,
+      "hd_shot_pct": 13.5,
+      "rebound_rate": 5.4,
       "rush_rate": 0.0
     }
   ],
-  "verdict": "Career average 13% below expected \u2014 due for improvement.",
+  "verdict": "Career average 4% below expected \u2014 due for improvement.",
   "injury_status": "HEALTHY",
   "tracking": {
     "player_id": 8482929,

@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.22,
   "hd_shot_pct": 9.4,
   "rebound_rate": 8.7,
-  "rush_rate": 3.6,
+  "rush_rate": 3.4,
   "position": "D",
   "seasons": [
     {
@@ -94,11 +94,11 @@
       "goals": 1,
       "xg": 1.2,
       "gax": -0.2,
-      "shots": 56,
-      "sh_vs_expected": 0.82,
-      "hd_shot_pct": 5.4,
-      "rebound_rate": 1.8,
-      "rush_rate": 3.6
+      "shots": 58,
+      "sh_vs_expected": 0.81,
+      "hd_shot_pct": 5.2,
+      "rebound_rate": 1.7,
+      "rush_rate": 3.4
     }
   ],
   "verdict": "Career average 5% below expected \u2014 due for improvement.",

@@ -48,11 +48,11 @@
     {
       "season": "2025",
       "goals": 0,
-      "xg": 0.1,
-      "gax": -0.1,
-      "shots": 3,
+      "xg": 0.7,
+      "gax": -0.7,
+      "shots": 7,
       "sh_vs_expected": 1.0,
-      "hd_shot_pct": 33.3,
+      "hd_shot_pct": 57.1,
       "rebound_rate": 0,
       "rush_rate": 0.0
     }

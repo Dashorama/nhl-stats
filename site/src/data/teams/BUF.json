@@ -4,13 +4,13 @@
   "conference": "Eastern",
   "division": "Atlantic",
   "current_season": {
-    "wins": 43,
-    "losses": 20,
-    "ot_losses": 6,
-    "points": 92,
-    "games_played": 69,
-    "win_pct": 0.647,
+    "wins": 50,
+    "losses": 23,
+    "ot_losses": 9,
+    "points": 109,
+    "games_played": 82,
+    "win_pct": 0.463,
     "xg_win_pct": 0.482,
-    "diff": 0.165
+    "diff": -0.019
   }
 }

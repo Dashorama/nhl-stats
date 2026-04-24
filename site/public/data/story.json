@@ -1,26 +1,12 @@
 {
-  "story_type": "StoryType.NEWS_COMBO",
+  "story_type": "player_impact",
   "subject_type": "player",
-  "subject_id": 8479420,
-  "subject_name": "Tage Thompson",
-  "headline": "Tage Thompson is scoring 87% above expectations",
-  "body": "Tage Thompson has scored 44 goals against an expected 23.5 this season (+20.5 goals above expected). Historical data suggests deviations this large tend to normalize.",
-  "social_text": "Tage Thompson is scoring at 1.87x expected (+20.5 GAx). History says this won't last.",
-  "headlines": [
-    {
-      "title": "NHL Predictions: Washington Capitals vs New Jersey Devils",
-      "url": "https://lastwordonsports.com/hockey/2026/04/02/nhl-predictions-washington-capitals-vs-new-jersey-devils/",
-      "source": "Last Word",
-      "tags": [
-        "New Jersey Devils",
-        "Washington Capitals",
-        "Alex Ovechkin",
-        "Jack Hughes",
-        "Jacob Markstrom",
-        "Logan Thompson"
-      ]
-    }
-  ],
-  "chart": "chart-2026-04-02.png",
-  "date": "2026-04-02"
+  "subject_id": 8480800,
+  "subject_name": "Quinn Hughes",
+  "headline": "Hughes Drives Islanders Offense, Pushes for Playoff Success",
+  "body": "Islanders defenseman Quinn Hughes is a key contributor, showcasing impressive speed and vision on the ice.  He has recorded 257.6 distance on the ice, displaying elite athleticism. His 92.8% distance success rate demonstrates his ability to break past defenders.  With Hughes leading the charge, the Islanders aim for a deep playoff run.",
+  "social_text": "Quinn Hughes is a game-changer for the Islanders! \ud83d\ude80 His speed and skills are undeniable. Can he lead them to a playoff victory? #NHL #Islanders #QuinnHughes",
+  "headlines": [],
+  "chart": "chart-2026-04-24.png",
+  "date": "2026-04-24"
 }

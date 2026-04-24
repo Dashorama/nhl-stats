@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.87,
   "hd_shot_pct": 8.9,
   "rebound_rate": 3.7,
-  "rush_rate": 3.7,
+  "rush_rate": 3.6,
   "position": "D",
   "seasons": [
     {
@@ -72,14 +72,14 @@
       "goals": 4,
       "xg": 2.7,
       "gax": 1.3,
-      "shots": 82,
-      "sh_vs_expected": 1.5,
-      "hd_shot_pct": 11.0,
-      "rebound_rate": 3.7,
-      "rush_rate": 3.7
+      "shots": 84,
+      "sh_vs_expected": 1.48,
+      "hd_shot_pct": 10.7,
+      "rebound_rate": 3.6,
+      "rush_rate": 3.6
     }
   ],
-  "verdict": "Career average 21% above expected \u2014 watch for regression.",
+  "verdict": "Career average 20% above expected \u2014 watch for regression.",
   "injury_status": "HEALTHY",
   "tracking": {
     "player_id": 8480860,

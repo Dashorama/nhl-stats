@@ -47,13 +47,13 @@
     },
     {
       "season": "2025",
-      "goals": 3,
-      "xg": 2.2,
-      "gax": 0.8,
-      "shots": 22,
+      "goals": 5,
+      "xg": 3.6,
+      "gax": 1.4,
+      "shots": 42,
       "sh_vs_expected": 1.37,
-      "hd_shot_pct": 63.6,
-      "rebound_rate": 13.6,
+      "hd_shot_pct": 52.4,
+      "rebound_rate": 11.9,
       "rush_rate": 0.0
     }
   ],
@@ -71,11 +71,11 @@
     "distance_pct": 32.7
   },
   "faceoffs": {
-    "fo_wins": 60,
-    "fo_losses": 75,
-    "fo_pct": 44.4,
-    "fo_oz_pct": 51.7,
-    "fo_dz_pct": 34.1,
+    "fo_wins": 91,
+    "fo_losses": 115,
+    "fo_pct": 44.2,
+    "fo_oz_pct": 42.9,
+    "fo_dz_pct": 39.4,
     "fo_nz_pct": 48.4
   }
 }

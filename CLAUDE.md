@@ -19,21 +19,22 @@ You have MCP tools from `nexus-data-plane`. Project context is injected below fr
 ## Project Context (Nexus knowledge base)
 
 ### Active Topics
-- **Data Generator Code Quality** (5 events): The data generator code quality has been reviewed and improved, addressing several critical issues.
-- **Hockey Insights Site Design Review** (6 events): The Hockey Insights Site design spec has undergone two rounds of review, with all critical issues resolved and several i...
-- **Bluesky Social Poster Implementation** (8 events): The Bluesky social poster implementation has been completed, with scripts/social.py and tests/test_social.py created.
-- **Publish Pipeline Orchestration** (10 events): The publish pipeline orchestrator, implemented in scripts/publish.sh, has been completed and integrated into the project...
-- **Hockey Insights Site Implementation Issues** (25 events): The hockey-insights-site implementation has progressed through Tasks 1–9 with significant complexity.
-- **Cron Job Logging and Configuration** (3 events): The cron job logging configuration has been standardized by defining a LOG_DIR variable in install-cron.sh.
-- **RSS Feed Research and Verification** (2 events): RSS feed research has identified four live hockey news sources suitable for integration, while confirming that three pre...
+- **Data Generator Code Quality** (2 events): The data generator code quality was improved by addressing three issues in scripts/generate.py.
+- **Hockey Insights Site Implementation Issues** (13 events): The hockey-insights-site project encountered several critical issues during its initial review, including bugs in the da...
+- **Bluesky Social Poster Implementation** (3 events): The Bluesky social poster implementation has been completed and committed, including the creation of scripts/social.py w...
+- **Hockey Data Sources Research and Evaluation** (1 events): A comprehensive research of over 30 publicly accessible hockey data sources has been completed.
+- **Publish Pipeline Orchestration** (8 events): The NHL stats pipeline has been successfully implemented and deployed.
+- **Hockey Insights Site Design Review** (2 events): The Hockey Insights Site design spec underwent a second-pass review, confirming the resolution of all critical and impor...
+- **Hockey Insights Site Structure and Configuration** (3 events): The hockey-insights-site project uses a specific directory structure where scripts live in the scripts/ folder and tests...
 
-### Previous Session (2026-03-22)
-Completed comprehensive research of 30+ publicly accessible hockey data sources. Key findings:
+### Previous Session (2026-04-03)
+Session 2026-04-02: Committed and pushed all outstanding work to origin/main. Changes included: (1) Yahoo Fantasy Sports integration — new YahooFantasyClient scraper using yfpy, full CLI command group for league/team/roster/waiver management; (2) Daily chart PNGs for 2026-03-23 through 2026-04-02 ad...
 
-ALREADY USING: MoneyPuck (xG CSVs), NHL API, NHL EDGE (tracking), RSS feeds.
-
-HIGH-VALUE NEW SOURCES:
-- PuckPedia ($99/yr): Only viable source for contracts/cap data via JSON API
-- Natural Stat Trick (fre...
+### Open Threads
+- **Data Generator Code Quality** — Is there more work needed on Task 4 (Data generator)?
+- **Hockey Insights Site Implementation Issues** — Error handling in readJson needs improvement; loadPlayer/loadTeam need notFound() guards
+- **Bluesky Social Poster Implementation** — summary needs refresh; Vercel deploy PATH setup fix; Bluesky player/team tagging implementation
+- **Hockey Data Sources Research and Evaluation** — Evaluate ROI of PuckPedia subscription vs. free alternatives; Verify NHL API play-by-play events cover all faceoff/penalty data needed
+- **Publish Pipeline Orchestration** — summary needs refresh
 
 <!-- nexus-context:end -->

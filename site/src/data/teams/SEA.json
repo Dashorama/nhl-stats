@@ -4,13 +4,13 @@
   "conference": "Western",
   "division": "Pacific",
   "current_season": {
-    "wins": 31,
-    "losses": 28,
-    "ot_losses": 9,
-    "points": 71,
-    "games_played": 68,
-    "win_pct": 0.472,
+    "wins": 34,
+    "losses": 37,
+    "ot_losses": 11,
+    "points": 79,
+    "games_played": 82,
+    "win_pct": 0.439,
     "xg_win_pct": 0.468,
-    "diff": 0.004
+    "diff": -0.029
   }
 }

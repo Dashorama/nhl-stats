@@ -9,7 +9,7 @@
   "sh_vs_expected": 1.44,
   "hd_shot_pct": 41.1,
   "rebound_rate": 8.0,
-  "rush_rate": 5.1,
+  "rush_rate": 5.3,
   "position": "L",
   "seasons": [
     {
@@ -80,14 +80,14 @@
     },
     {
       "season": "2025",
-      "goals": 37,
-      "xg": 30.9,
-      "gax": 6.1,
-      "shots": 344,
-      "sh_vs_expected": 1.2,
-      "hd_shot_pct": 49.1,
-      "rebound_rate": 8.4,
-      "rush_rate": 5.1
+      "goals": 47,
+      "xg": 39.6,
+      "gax": 7.4,
+      "shots": 437,
+      "sh_vs_expected": 1.19,
+      "hd_shot_pct": 49.0,
+      "rebound_rate": 9.4,
+      "rush_rate": 5.3
     }
   ],
   "verdict": "Career average 31% above expected \u2014 watch for regression.",

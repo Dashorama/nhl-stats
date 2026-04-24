@@ -9,7 +9,7 @@
   "sh_vs_expected": 0.54,
   "hd_shot_pct": 60.1,
   "rebound_rate": 13.5,
-  "rush_rate": 6.9,
+  "rush_rate": 7.8,
   "position": "C",
   "seasons": [
     {
@@ -83,11 +83,11 @@
       "goals": 6,
       "xg": 10.0,
       "gax": -4.0,
-      "shots": 103,
+      "shots": 104,
       "sh_vs_expected": 0.6,
-      "hd_shot_pct": 61.2,
-      "rebound_rate": 9.7,
-      "rush_rate": 6.9
+      "hd_shot_pct": 60.6,
+      "rebound_rate": 9.6,
+      "rush_rate": 7.8
     }
   ],
   "verdict": "Career average 31% below expected \u2014 due for improvement.",
@@ -104,11 +104,11 @@
     "distance_pct": 55.3
   },
   "faceoffs": {
-    "fo_wins": 128,
-    "fo_losses": 144,
-    "fo_pct": 47.1,
-    "fo_oz_pct": 42.5,
-    "fo_dz_pct": 52.9,
-    "fo_nz_pct": 44.3
+    "fo_wins": 132,
+    "fo_losses": 154,
+    "fo_pct": 46.2,
+    "fo_oz_pct": 41.4,
+    "fo_dz_pct": 52.8,
+    "fo_nz_pct": 43.0
   }
 }
