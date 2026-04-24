@@ -19,11 +19,11 @@ You have MCP tools from `nexus-data-plane`. Project context is injected below fr
 ## Project Context (Nexus knowledge base)
 
 ### Active Topics
+- **Publish Pipeline Orchestration** (8 events): The publish pipeline orchestrator has been successfully implemented and tested.
 - **Data Generator Code Quality** (2 events): The data generator code quality was improved by addressing three issues in scripts/generate.py.
 - **Hockey Insights Site Implementation Issues** (13 events): The hockey-insights-site project encountered several critical issues during its initial review, including bugs in the da...
 - **Bluesky Social Poster Implementation** (3 events): The Bluesky social poster implementation has been completed and committed, including the creation of scripts/social.py w...
 - **Hockey Data Sources Research and Evaluation** (1 events): A comprehensive research of over 30 publicly accessible hockey data sources has been completed.
-- **Publish Pipeline Orchestration** (8 events): The NHL stats pipeline has been successfully implemented and deployed.
 - **Hockey Insights Site Design Review** (2 events): The Hockey Insights Site design spec underwent a second-pass review, confirming the resolution of all critical and impor...
 - **Hockey Insights Site Structure and Configuration** (3 events): The hockey-insights-site project uses a specific directory structure where scripts live in the scripts/ folder and tests...
 
@@ -35,6 +35,5 @@ Session 2026-04-02: Committed and pushed all outstanding work to origin/main. Ch
 - **Hockey Insights Site Implementation Issues** — Error handling in readJson needs improvement; loadPlayer/loadTeam need notFound() guards
 - **Bluesky Social Poster Implementation** — summary needs refresh; Vercel deploy PATH setup fix; Bluesky player/team tagging implementation
 - **Hockey Data Sources Research and Evaluation** — Evaluate ROI of PuckPedia subscription vs. free alternatives; Verify NHL API play-by-play events cover all faceoff/penalty data needed
-- **Publish Pipeline Orchestration** — summary needs refresh
 
 <!-- nexus-context:end -->
