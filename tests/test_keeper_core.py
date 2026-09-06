@@ -452,3 +452,23 @@ def test_trade_scanner_surfaces_fuzzy_identity_and_each_increment():
         "verify same person before trusting FYK/count",
         "keeper trade: Brand New Guyy A -> B; trade count 2 -> 3",
     ]
+
+
+def test_watermarked_trade_still_checks_current_ownership():
+    trade = {
+        "season": 2026,
+        "league_id": 5003,
+        "date": "Oct 1, 4:10 am",
+        "teams": [
+            {"team": "C", "received": ["Round 1"]},
+            {"team": "B", "received": ["Player One (BOS - G)"]},
+        ],
+    }
+    with pytest.raises(ValueError, match="ownership conflict"):
+        scanTrades(
+            [Keeper("A", "Player One", 2022, 0)],
+            [trade],
+            season=2026,
+            known_teams=["A", "B", "C"],
+            state={"season": 2026, "seen": []},
+        )

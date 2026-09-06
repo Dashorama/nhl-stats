@@ -1,0 +1,59 @@
+[
+  {
+    "requested": "/hockey/5003/draftresults",
+    "url": "https://hockey.fantasysports.yahoo.com/hockey/5003/draftresults",
+    "title": "Draft Results | Fantasy Hockey | Yahoo! Sports",
+    "current_label": [
+      "2026 draft order"
+    ],
+    "selected_label": [
+      "2026 draft order"
+    ],
+    "keepers": 0,
+    "trades": 0
+  },
+  {
+    "requested": "/hockey/17419/draftresults",
+    "url": "https://hockey.fantasysports.yahoo.com/hockey/17419/draftresults",
+    "title": "There was a problem | Fantasy Hockey | Yahoo! Sports",
+    "current_label": [],
+    "selected_label": [],
+    "keepers": 0,
+    "trades": 0
+  },
+  {
+    "requested": "/2024/hockey/17419/draftresults",
+    "url": "https://hockey.fantasysports.yahoo.com/2024/hockey/17419/draftresults",
+    "title": "Draft Results | Fantasy Hockey | Yahoo! Sports",
+    "current_label": [
+      "2024 draft order"
+    ],
+    "selected_label": [
+      "2024 draft order"
+    ],
+    "keepers": 60,
+    "trades": 0
+  },
+  {
+    "requested": "/hockey/26028/draftresults",
+    "url": "https://hockey.fantasysports.yahoo.com/hockey/26028/draftresults",
+    "title": "There was a problem | Fantasy Hockey | Yahoo! Sports",
+    "current_label": [],
+    "selected_label": [],
+    "keepers": 0,
+    "trades": 0
+  },
+  {
+    "requested": "/2025/hockey/26028/draftresults",
+    "url": "https://hockey.fantasysports.yahoo.com/2025/hockey/26028/draftresults",
+    "title": "Draft Results | Fantasy Hockey | Yahoo! Sports",
+    "current_label": [
+      "2025 draft order"
+    ],
+    "selected_label": [
+      "2025 draft order"
+    ],
+    "keepers": 60,
+    "trades": 0
+  }
+]
