@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from .collect import parse_draft, parse_trades
+from .collect import parse_collection
 from .core import from_snapshot, reconcile, scanTrades
 from .sheet import TEST_SHEET, Sheets, apply_plan, make_plan, verify
 
@@ -70,14 +70,7 @@ def main(argv: list[str] | None = None) -> None:
                 timeout=180,
             )
             collected = json.loads(output.stdout)
-            if args.command == "reconcile":
-                data = parse_draft(collected["pages"][0], args.season)
-            else:
-                data = [
-                    trade
-                    for html in collected["pages"]
-                    for trade in parse_trades(html, args.season, args.league_id)
-                ]
+            data = parse_collection(collected, args.command, args.season, args.league_id)
         api = Sheets(args.sheet_id)
         before = api.read()
         state_file = args.state_dir / f"watermark-{args.sheet_id}-{args.season}.json"

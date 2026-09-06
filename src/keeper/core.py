@@ -129,7 +129,7 @@ def trade_key(trade: dict[str, Any]) -> str:
 
 
 def trade_date(trade: dict[str, Any]) -> datetime:
-    date = datetime.strptime(trade["date"], "%b %d, %I:%M %p")
+    date = datetime.strptime(f"{trade['season'] + 1} {trade['date']}", "%Y %b %d, %I:%M %p")
     return date.replace(year=trade["season"] + (1 if date.month < 7 else 0))
 
 

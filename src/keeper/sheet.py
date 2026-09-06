@@ -18,6 +18,7 @@ from .core import Keeper, team_key
 
 TEST_SHEET = "1E8P5w5ensWavBPQBO66sMmqAmFBGP0c11AhT91FPxbk"
 FORMULA_COLUMNS = (0, 1, 3, 5)
+ERROR_PREFIXES = ("#REF!", "#ERROR!", "#N/A", "#VALUE!", "#DIV/0!", "#NAME?", "#NUM!", "#NULL!")
 
 
 def shifted(formula: str, offset: int) -> str:
@@ -135,7 +136,7 @@ def make_plan(snapshot: dict[str, Any], rows: list[Keeper]) -> dict[str, Any]:
             }
         )
         if not desired:
-            desired = [Keeper(block["team"], "", 0, 0)]
+            desired = [Keeper(block["team"], "", int(values[0][1]), 0)]
         for keeper in desired:
             row = list(values[source])
             frow = list(formulas[source])
@@ -178,11 +179,7 @@ def verify(actual: dict[str, Any], expected: dict[str, Any]) -> None:
         (r[0], r[1]) for r in expected["raw_values"][3:]
     ]:
         raise ValueError("post-write owner alignment verification failed")
-    if any(
-        str(v).startswith(("#REF!", "#ERROR!", "#N/A", "#VALUE!", "#DIV/0!"))
-        for r in actual["raw_values"]
-        for v in r
-    ):
+    if any(str(v).startswith(ERROR_PREFIXES) for r in actual["raw_values"] for v in r):
         raise ValueError("post-write formula error verification failed")
 
 
@@ -265,9 +262,5 @@ class Sheets:
         props = self.tabs["UI"]["gridProperties"]
         # Existing UI uses at most AB; read its metadata-grounded populated grid.
         rows = self.values(f"'UI'!A1:AB{props['rowCount']}")
-        if any(
-            str(v).startswith(("#REF!", "#ERROR!", "#N/A", "#VALUE!", "#DIV/0!"))
-            for row in rows
-            for v in row
-        ):
+        if any(str(v).startswith(ERROR_PREFIXES) for row in rows for v in row):
             raise ValueError("UI formula error verification failed")

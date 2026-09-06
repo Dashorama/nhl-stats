@@ -67,3 +67,22 @@ def parse_trades(html: str, season: int, league_id: int) -> list[dict[str, Any]]
     if pending or not trades:
         raise ValueError("incomplete trade page")
     return trades
+
+
+def parse_collection(
+    collected: dict[str, Any], command: str, season: int, league_id: int
+) -> dict[str, Any] | list[dict[str, Any]]:
+    from .core import trade_key
+
+    if collected["season"] != season or collected["league_id"] != league_id:
+        raise ValueError("collector scope mismatch")
+    if command == "reconcile":
+        return parse_draft(collected["pages"][0], season)
+    trades = [
+        trade for html in collected["pages"] for trade in parse_trades(html, season, league_id)
+    ]
+    if collected.get("complete") is not True or collected.get("transaction_count") != len(trades):
+        raise ValueError("incomplete transaction collection")
+    if len({trade_key(t) for t in trades}) != len(trades):
+        raise ValueError("overlapping transaction pages")
+    return trades
