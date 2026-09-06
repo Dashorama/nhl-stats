@@ -1,4 +1,5 @@
 """Tests for generate.py output."""
+
 import json
 import sqlite3
 import pytest
@@ -31,14 +32,16 @@ def gen(tmp_path):
             player2_id  INTEGER
         )
     """)
+    conn.execute("CREATE TABLE players (id INTEGER, first_name TEXT, last_name TEXT)")
     conn.commit()
     conn.close()
 
-    return Generator(
-        db_path=db_path,
-        site_dir=str(site_dir),
-        history_path=str(data_dir / "story_history.json"),
-    )
+    with patch("scripts.generate.LLMNarrator.narrate", return_value=None):
+        yield Generator(
+            db_path=db_path,
+            site_dir=str(site_dir),
+            history_path=str(data_dir / "story_history.json"),
+        )
 
 
 def _mock_gen(gen):

@@ -41,5 +41,12 @@ def test_live_markup_trade_sample_and_fail_closed():
 
 
 def test_empty_live_transaction_table():
-    assert parse_trades('<table class="Tst-transaction-table"><tr><td colspan="4">'
-                        '<div>No recent transactions</div></td></tr></table>',2026,5003) == []
+    assert (
+        parse_trades(
+            '<table class="Tst-transaction-table"><tr><td colspan="4">'
+            "<div>No recent transactions</div></td></tr></table>",
+            2026,
+            5003,
+        )
+        == []
+    )
