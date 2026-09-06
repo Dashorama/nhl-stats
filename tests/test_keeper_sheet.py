@@ -177,10 +177,13 @@ def call(path, **kwargs):
     assert api.read() == before
     calls = api.call.__globals__["calls"]
     assert all(path.startswith(TEST_SHEET + "/values/") for path, _ in calls[1:-1])
-    assert calls[-1] == (TEST_SHEET, {
-        "ranges": f"'Raw Data'!G4:G{len(before['raw_values'])}",
-        "fields": "sheets(data(rowData(values(dataValidation))))",
-    })
+    assert calls[-1] == (
+        TEST_SHEET,
+        {
+            "ranges": f"'Raw Data'!G4:G{len(before['raw_values'])}",
+            "fields": "sheets(data(rowData(values(dataValidation))))",
+        },
+    )
     with pytest.raises(ValueError, match="UI formula"):
         api.check_ui()
     state = api.call.__globals__["DATA"]
@@ -325,12 +328,33 @@ def test_count_validation_targets_only_keeper_g_cells_and_is_verified(tmp_path):
     board = json.loads((FIXTURES / "keepers_2025.json").read_text())
     plan = make_plan(before, reconcile(board, before))
     rules = [r["setDataValidation"] for r in plan["requests"] if "setDataValidation" in r]
-    assert rules == [{"range": {"sheetId": 0, "startRowIndex": i, "endRowIndex": i + 1,
-                                "startColumnIndex": 6, "endColumnIndex": 7},
-                      "rule": {"condition": {"type": "CUSTOM_FORMULA", "values": [
-                          {"userEnteredValue": f"=AND(ISNUMBER(G{i + 1}),G{i + 1}>=0,"
-                                                f"MOD(G{i + 1},1)=0)"}]}, "strict": True}}
-                     for i in range(3, 63)]
+    assert rules == [
+        {
+            "range": {
+                "sheetId": 0,
+                "startRowIndex": i,
+                "endRowIndex": i + 1,
+                "startColumnIndex": 6,
+                "endColumnIndex": 7,
+            },
+            "rule": {
+                "condition": {
+                    "type": "CUSTOM_FORMULA",
+                    "values": [
+                        {
+                            "userEnteredValue": f"=AND(ISNUMBER(G{i + 1}),G{i + 1}>=0,"
+                            f"MOD(G{i + 1},1)=0)"
+                        }
+                    ],
+                },
+                "strict": True,
+            },
+        }
+        for i in range(3, 63)
+    ]
+    validation_index = next(i for i, r in enumerate(plan["requests"]) if "setDataValidation" in r)
+    value_index = next(i for i, r in enumerate(plan["requests"]) if "updateCells" in r)
+    assert validation_index < value_index
     after = copy.deepcopy(plan["expected"])
     after["raw_validation"][0] = {"condition": {"type": "NUMBER_BETWEEN"}}
     with pytest.raises(ValueError, match="validation"):
@@ -339,4 +363,5 @@ def test_count_validation_targets_only_keeper_g_cells_and_is_verified(tmp_path):
     api = FakeSheet(before, plan["expected"])
     apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
     assert json.loads(next(tmp_path.glob("*.json")).read_text())["raw_validation"] == [
-        {"strict": True}]
+        {"strict": True}
+    ]
