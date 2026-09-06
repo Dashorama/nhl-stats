@@ -1984,3 +1984,11 @@ FAILED tests/test_keeper_collect.py::test_archived_2025_league_capture_has_its_o
 ```
 
 Green after restoring all mutations: `170 passed, 2 warnings`.
+
+
+Final live TEST COPY repeat on `22ebec6`: count2 after two synthetic trades,
+**two visible increment warnings**, and **zero replay deltas**. Original canonical
+values/formulas/validation snapshot restored and verified. Restoration backup:
+`/tmp/keeper-review-fixes-integration/backups/raw-data-20260906T142232.113820Z.json`.
+Wheel rebuilt; all seven keeper source/data files byte-match. Scoped format check:
+`10 files already formatted`. No live-sheet writes.
