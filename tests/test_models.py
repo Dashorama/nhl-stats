@@ -1,15 +1,12 @@
 """Tests for data models."""
 
-import pytest
-from datetime import date
-
 from src.models import (
-    PlayerContract,
+    AdvancedGoalieStats,
+    AdvancedSkaterStats,
     ContractClause,
+    PlayerContract,
     RosterPlayer,
     TeamRoster,
-    AdvancedSkaterStats,
-    AdvancedGoalieStats,
 )
 
 

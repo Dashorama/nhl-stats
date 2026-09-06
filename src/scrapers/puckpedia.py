@@ -18,7 +18,6 @@ from bs4 import BeautifulSoup
 
 from .base import BaseScraper
 
-
 # Team URL slugs on PuckPedia
 TEAM_SLUGS = {
     "ANA": "anaheim-ducks",
@@ -68,7 +67,7 @@ class PuckPediaScraper(BaseScraper):
         if not text:
             return 0
         text = text.strip().replace("$", "").replace(",", "")
-        
+
         # Handle M suffix (millions)
         if "M" in text.upper():
             text = text.upper().replace("M", "")
@@ -76,7 +75,7 @@ class PuckPediaScraper(BaseScraper):
                 return int(float(text) * 1_000_000)
             except ValueError:
                 return 0
-        
+
         # Handle K suffix (thousands)
         if "K" in text.upper():
             text = text.upper().replace("K", "")
@@ -84,7 +83,7 @@ class PuckPediaScraper(BaseScraper):
                 return int(float(text) * 1_000)
             except ValueError:
                 return 0
-        
+
         try:
             return int(float(text))
         except ValueError:
@@ -93,10 +92,10 @@ class PuckPediaScraper(BaseScraper):
     async def scrape_team_contracts(self, team_abbrev: str) -> list[dict[str, Any]]:
         """
         Scrape all contract data for a team.
-        
+
         Args:
             team_abbrev: Team abbreviation (e.g., 'TOR')
-            
+
         Returns:
             List of contract dicts for all players on the team
         """
@@ -145,9 +144,9 @@ class PuckPediaScraper(BaseScraper):
         """Parse a table row into contract data."""
         # This is a simplified parser - actual PuckPedia HTML structure varies
         # and may need adjustment based on their current layout
-        
+
         cell_texts = [c.get_text(strip=True) for c in cells]
-        
+
         # Skip header rows
         if any(h in cell_texts[0].lower() for h in ["player", "name", "pos"]):
             return None
@@ -201,7 +200,7 @@ class PuckPediaScraper(BaseScraper):
     async def scrape_all_contracts(self) -> list[dict[str, Any]]:
         """
         Scrape contract data for all NHL teams.
-        
+
         Returns:
             List of all contract dicts
         """
@@ -224,10 +223,10 @@ class PuckPediaScraper(BaseScraper):
     async def scrape_player_contract(self, player_name: str) -> dict[str, Any] | None:
         """
         Scrape detailed contract for a specific player.
-        
+
         Args:
             player_name: Player's name (e.g., "Connor McDavid")
-            
+
         Returns:
             Contract dict or None if not found
         """

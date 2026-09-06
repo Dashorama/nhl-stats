@@ -71,7 +71,7 @@ class YahooFantasyClient:
 
     def get_my_team(self) -> dict[str, Any]:
         """Get the authenticated user's team info."""
-        user = self.query.get_current_user()
+        self.query.get_current_user()
         teams = self.query.get_league_teams()
         return _to_dict(teams)
 
@@ -109,9 +109,7 @@ class YahooFantasyClient:
 
     # ── Player Info ──────────────────────────────────────────────
 
-    def get_player_stats(
-        self, player_key: str, week: int | None = None
-    ) -> dict[str, Any]:
+    def get_player_stats(self, player_key: str, week: int | None = None) -> dict[str, Any]:
         """Get stats for a specific player."""
         if week:
             stats = self.query.get_player_stats_by_week(player_key, chosen_week=week)

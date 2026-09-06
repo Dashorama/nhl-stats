@@ -46,7 +46,7 @@ class MoneyPuckScraper(BaseScraper):
     ) -> list[dict[str, Any]]:
         """
         Fetch advanced skater statistics.
-        
+
         Args:
             season: Season year (e.g., '2024' for 2024-25 season)
             situation: Game situation filter:
@@ -54,7 +54,7 @@ class MoneyPuckScraper(BaseScraper):
                 - "5on5": 5-on-5 only
                 - "5on4": Power play
                 - "4on5": Penalty kill
-                
+
         Returns:
             List of advanced stat dicts for each skater
         """
@@ -98,7 +98,7 @@ class MoneyPuckScraper(BaseScraper):
 
     def _parse_skater_row(self, row: dict[str, Any], season: str) -> dict[str, Any]:
         """Parse a single row from MoneyPuck skater CSV."""
-        
+
         def safe_int(val: Any, default: int = 0) -> int:
             try:
                 return int(float(val)) if val else default
@@ -116,12 +116,15 @@ class MoneyPuckScraper(BaseScraper):
             "player_name": row.get("name", ""),
             "team_abbrev": row.get("team", ""),
             "position": row.get("position", ""),
-            "season": f"{season}{int(season)+1}",  # Convert to YYYYYYYY format
+            "season": f"{season}{int(season) + 1}",  # Convert to YYYYYYYY format
             "situation": row.get("situation", "all"),
             "games_played": safe_int(row.get("games_played")),
             "toi_seconds": safe_int(row.get("icetime")),
             # Corsi
-            "corsi_for": safe_int(row.get("onIce_corsiPercentage")) if row.get("onIce_corsiPercentage") else safe_int(row.get("I_F_shotAttempts", 0)) + safe_int(row.get("OnIce_F_shotAttempts", 0)),
+            "corsi_for": safe_int(row.get("onIce_corsiPercentage"))
+            if row.get("onIce_corsiPercentage")
+            else safe_int(row.get("I_F_shotAttempts", 0))
+            + safe_int(row.get("OnIce_F_shotAttempts", 0)),
             "corsi_against": safe_int(row.get("OnIce_A_shotAttempts")),
             "corsi_pct": safe_float(row.get("onIce_corsiPercentage")),
             "corsi_rel": safe_float(row.get("offIce_corsiPercentage")),
@@ -134,7 +137,9 @@ class MoneyPuckScraper(BaseScraper):
             "xg_against": safe_float(row.get("OnIce_A_xGoals"), 0.0),
             "xg_pct": safe_float(row.get("onIce_xGoalsPercentage")),
             "individual_xg": safe_float(row.get("I_F_xGoals"), 0.0),
-            "goals_above_expected": safe_float(row.get("I_F_xGoals_with_rebounds_normalized_per_game")),
+            "goals_above_expected": safe_float(
+                row.get("I_F_xGoals_with_rebounds_normalized_per_game")
+            ),
             # Scoring Chances
             "scoring_chances_for": safe_int(row.get("OnIce_F_scoringChances")),
             "scoring_chances_against": safe_int(row.get("OnIce_A_scoringChances")),
@@ -163,10 +168,10 @@ class MoneyPuckScraper(BaseScraper):
     async def scrape_goalie_stats(self, season: str | None = None) -> list[dict[str, Any]]:
         """
         Fetch advanced goalie statistics.
-        
+
         Args:
             season: Season year (e.g., '2024' for 2024-25 season)
-            
+
         Returns:
             List of advanced stat dicts for each goalie
         """
@@ -200,7 +205,7 @@ class MoneyPuckScraper(BaseScraper):
 
     def _parse_goalie_row(self, row: dict[str, Any], season: str) -> dict[str, Any]:
         """Parse a single row from MoneyPuck goalie CSV."""
-        
+
         def safe_int(val: Any, default: int = 0) -> int:
             try:
                 return int(float(val)) if val else default
@@ -221,7 +226,7 @@ class MoneyPuckScraper(BaseScraper):
             "player_id": safe_int(row.get("playerId")),
             "player_name": row.get("name", ""),
             "team_abbrev": row.get("team", ""),
-            "season": f"{season}{int(season)+1}",
+            "season": f"{season}{int(season) + 1}",
             "situation": row.get("situation", "all"),
             "games_played": safe_int(row.get("games_played")),
             "toi_seconds": safe_int(row.get("icetime")),
@@ -270,6 +275,7 @@ class MoneyPuckScraper(BaseScraper):
         try:
             # Use httpx directly for the external URL (not our base_url)
             import httpx
+
             async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as client:
                 response = await client.get(zip_url)
                 response.raise_for_status()
@@ -299,29 +305,39 @@ class MoneyPuckScraper(BaseScraper):
         shots = []
         for row in reader:
             try:
-                shots.append({
-                    "season": season,
-                    "game_id": safe_int(row.get("game_id")),
-                    "team": row.get("teamCode", ""),
-                    "shooter_id": safe_int(row.get("shooterPlayerId")),
-                    "shooter_name": row.get("shooterName", ""),
-                    "goalie_id": safe_int(row.get("goalieIdForShot")),
-                    "goalie_name": row.get("goalieNameForShot", ""),
-                    "event": row.get("event", ""),
-                    "period": safe_int(row.get("period")),
-                    "time": safe_int(row.get("time")),
-                    "x_coord": float(row.get("xCordAdjusted", 0)) if row.get("xCordAdjusted") else None,
-                    "y_coord": float(row.get("yCordAdjusted", 0)) if row.get("yCordAdjusted") else None,
-                    "shot_type": row.get("shotType", ""),
-                    "x_goal": float(row.get("xGoal", 0)) if row.get("xGoal") else None,
-                    "goal": safe_int(row.get("goal")) or 0,
-                    "shot_angle": float(row.get("shotAngleAdjusted", 0)) if row.get("shotAngleAdjusted") else None,
-                    "shot_distance": float(row.get("shotDistance", 0)) if row.get("shotDistance") else None,
-                    "shot_rebound": safe_int(row.get("shotRebound")) or 0,
-                    "shot_rush": safe_int(row.get("shotRush")) or 0,
-                    "situation": row.get("situation", ""),
-                    "is_home": row.get("isHomeTeam") == "1",
-                })
+                shots.append(
+                    {
+                        "season": season,
+                        "game_id": safe_int(row.get("game_id")),
+                        "team": row.get("teamCode", ""),
+                        "shooter_id": safe_int(row.get("shooterPlayerId")),
+                        "shooter_name": row.get("shooterName", ""),
+                        "goalie_id": safe_int(row.get("goalieIdForShot")),
+                        "goalie_name": row.get("goalieNameForShot", ""),
+                        "event": row.get("event", ""),
+                        "period": safe_int(row.get("period")),
+                        "time": safe_int(row.get("time")),
+                        "x_coord": float(row.get("xCordAdjusted", 0))
+                        if row.get("xCordAdjusted")
+                        else None,
+                        "y_coord": float(row.get("yCordAdjusted", 0))
+                        if row.get("yCordAdjusted")
+                        else None,
+                        "shot_type": row.get("shotType", ""),
+                        "x_goal": float(row.get("xGoal", 0)) if row.get("xGoal") else None,
+                        "goal": safe_int(row.get("goal")) or 0,
+                        "shot_angle": float(row.get("shotAngleAdjusted", 0))
+                        if row.get("shotAngleAdjusted")
+                        else None,
+                        "shot_distance": float(row.get("shotDistance", 0))
+                        if row.get("shotDistance")
+                        else None,
+                        "shot_rebound": safe_int(row.get("shotRebound")) or 0,
+                        "shot_rush": safe_int(row.get("shotRush")) or 0,
+                        "situation": row.get("situation", ""),
+                        "is_home": row.get("isHomeTeam") == "1",
+                    }
+                )
             except (ValueError, TypeError):
                 continue
 

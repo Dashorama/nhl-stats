@@ -1,15 +1,14 @@
 """Command-line interface for NHL scraper."""
 
 import asyncio
-from pathlib import Path
 
 import click
 from rich.console import Console
 from rich.table import Table
 
-from .scrapers import NHLAPIScraper, NHLRosterScraper, MoneyPuckScraper, PuckPediaScraper
+from .scrapers import MoneyPuckScraper, NHLAPIScraper, NHLRosterScraper, PuckPediaScraper
 from .scrapers.yahoo_fantasy import YahooFantasyClient
-from .storage import Database, GameRecord, PlayerRecord, BoxscoreRecord, PlayByPlayRecord
+from .storage import BoxscoreRecord, Database, GameRecord, PlayByPlayRecord, PlayerRecord
 from .utils import setup_logging
 
 console = Console()
@@ -179,17 +178,25 @@ def scrape_rosters(ctx: click.Context, team: str | None, season: str | None) -> 
                 console.print(f"[bold]Scraping roster for {team}...[/bold]")
                 roster = await scraper.scrape_roster(team, season)
                 db.upsert_rosters([roster])
-                total = len(roster.get("forwards", [])) + len(roster.get("defensemen", [])) + len(roster.get("goalies", []))
+                total = (
+                    len(roster.get("forwards", []))
+                    + len(roster.get("defensemen", []))
+                    + len(roster.get("goalies", []))
+                )
                 console.print(f"[green]✓ Scraped {total} players for {team}[/green]")
             else:
                 console.print("[bold]Scraping all team rosters...[/bold]")
                 rosters = await scraper.scrape_all_rosters(season)
                 db.upsert_rosters(rosters)
                 total = sum(
-                    len(r.get("forwards", [])) + len(r.get("defensemen", [])) + len(r.get("goalies", []))
+                    len(r.get("forwards", []))
+                    + len(r.get("defensemen", []))
+                    + len(r.get("goalies", []))
                     for r in rosters
                 )
-                console.print(f"[green]✓ Scraped {total} players across {len(rosters)} teams[/green]")
+                console.print(
+                    f"[green]✓ Scraped {total} players across {len(rosters)} teams[/green]"
+                )
 
     asyncio.run(run())
 
@@ -234,7 +241,9 @@ def scrape_contracts(ctx: click.Context, team: str | None) -> None:
                 console.print(f"[green]✓ Scraped {len(contracts)} contracts[/green]")
             else:
                 console.print("[bold]Scraping all team contracts...[/bold]")
-                console.print("[dim](This may take a while to be respectful to PuckPedia's servers)[/dim]")
+                console.print(
+                    "[dim](This may take a while to be respectful to PuckPedia's servers)[/dim]"
+                )
                 contracts = await scraper.scrape_all_contracts()
                 db.upsert_contracts(contracts)
                 console.print(f"[green]✓ Scraped {len(contracts)} contracts[/green]")
@@ -259,6 +268,7 @@ def scrape_draft(ctx: click.Context, year: int | None) -> None:
             else:
                 # Scrape last 10 years
                 from datetime import datetime
+
                 current_year = datetime.now().year
                 all_picks = []
                 for y in range(current_year, current_year - 10, -1):
@@ -286,8 +296,7 @@ def scrape_boxscores(ctx: click.Context, limit: int | None) -> None:
         # Get completed regular season game IDs from DB
         with db.get_session() as session:
             query = session.query(GameRecord.id).filter(
-                GameRecord.game_type == "2",
-                GameRecord.game_state.in_(["OFF", "FINAL"])
+                GameRecord.game_type == "2", GameRecord.game_state.in_(["OFF", "FINAL"])
             )
             game_ids = [r[0] for r in query.all()]
 
@@ -323,8 +332,7 @@ def scrape_pbp(ctx: click.Context, limit: int | None) -> None:
     async def run():
         with db.get_session() as session:
             query = session.query(GameRecord.id).filter(
-                GameRecord.game_type == "2",
-                GameRecord.game_state.in_(["OFF", "FINAL"])
+                GameRecord.game_type == "2", GameRecord.game_state.in_(["OFF", "FINAL"])
             )
             game_ids = [r[0] for r in query.all()]
 
@@ -343,7 +351,10 @@ def scrape_pbp(ctx: click.Context, limit: int | None) -> None:
                     scraped += 1
                     total_events += len(events)
                     if (i + 1) % 50 == 0:
-                        console.print(f"  [dim]Progress: {i + 1}/{len(game_ids)} ({total_events} events)[/dim]")
+                        console.print(
+                            f"  [dim]Progress: {i + 1}/{len(game_ids)} "
+                            f"({total_events} events)[/dim]"
+                        )
                 except Exception as e:
                     console.print(f"  [yellow]⚠ Game {game_id}: {e}[/yellow]")
 
@@ -363,7 +374,7 @@ def scrape_full(ctx: click.Context, season: str | None) -> None:
         # NHL API - basic data
         async with NHLAPIScraper() as scraper:
             console.print("[bold cyan]═══ NHL API ═══[/bold cyan]")
-            
+
             console.print("  Scraping teams...")
             teams = await scraper.scrape_teams()
             db.upsert_teams(teams)
@@ -380,7 +391,9 @@ def scrape_full(ctx: click.Context, season: str | None) -> None:
             rosters = await scraper.scrape_all_rosters(season)
             db.upsert_rosters(rosters)
             total = sum(
-                len(r.get("forwards", [])) + len(r.get("defensemen", [])) + len(r.get("goalies", []))
+                len(r.get("forwards", []))
+                + len(r.get("defensemen", []))
+                + len(r.get("goalies", []))
                 for r in rosters
             )
             console.print(f"  [green]✓ {total} roster entries[/green]")
@@ -486,22 +499,36 @@ def show_player(ctx: click.Context, player_id: int) -> None:
             player = await scraper.scrape_player_details(player_id)
 
             console.print(f"\n[bold]{player['first_name']} {player['last_name']}[/bold]")
-            console.print(f"[dim]#{player.get('jersey_number', 'N/A')} • {player.get('position', 'N/A')} • {player.get('team_abbrev', 'N/A')}[/dim]\n")
+            console.print(
+                f"[dim]#{player.get('jersey_number', 'N/A')} • "
+                f"{player.get('position', 'N/A')} • "
+                f"{player.get('team_abbrev', 'N/A')}[/dim]\n"
+            )
 
             info_table = Table(show_header=False, box=None)
             info_table.add_column("Field", style="cyan")
             info_table.add_column("Value")
 
             info_table.add_row("Birth Date", player.get("birth_date", "N/A"))
-            info_table.add_row("Birthplace", f"{player.get('birth_city', '')}, {player.get('birth_country', '')}")
-            info_table.add_row("Height", f"{player.get('height_inches', 0) // 12}'{player.get('height_inches', 0) % 12}\"" if player.get("height_inches") else "N/A")
+            info_table.add_row(
+                "Birthplace", f"{player.get('birth_city', '')}, {player.get('birth_country', '')}"
+            )
+            info_table.add_row(
+                "Height",
+                f"{player.get('height_inches', 0) // 12}'{player.get('height_inches', 0) % 12}\""
+                if player.get("height_inches")
+                else "N/A",
+            )
             info_table.add_row("Weight", f"{player.get('weight_pounds', 'N/A')} lbs")
             info_table.add_row("Shoots/Catches", player.get("shoots_catches", "N/A"))
 
             if player.get("draft_year"):
                 info_table.add_row(
                     "Draft",
-                    f"{player['draft_year']} R{player.get('draft_round', '?')}, Pick {player.get('draft_pick', '?')} (#{player.get('draft_overall', '?')} overall) by {player.get('draft_team', 'N/A')}"
+                    f"{player['draft_year']} R{player.get('draft_round', '?')}, "
+                    f"Pick {player.get('draft_pick', '?')} "
+                    f"(#{player.get('draft_overall', '?')} overall) "
+                    f"by {player.get('draft_team', 'N/A')}",
                 )
 
             console.print(info_table)
@@ -512,7 +539,10 @@ def show_player(ctx: click.Context, player_id: int) -> None:
                 console.print("\n[bold]Career Stats[/bold]")
                 reg = career.get("regularSeason", {})
                 if reg:
-                    console.print(f"  GP: {reg.get('gamesPlayed', 0)} | G: {reg.get('goals', 0)} | A: {reg.get('assists', 0)} | P: {reg.get('points', 0)}")
+                    console.print(
+                        f"  GP: {reg.get('gamesPlayed', 0)} | G: {reg.get('goals', 0)} | "
+                        f"A: {reg.get('assists', 0)} | P: {reg.get('points', 0)}"
+                    )
 
     asyncio.run(run())
 
@@ -556,7 +586,9 @@ def scrape_game_logs(ctx: click.Context, season: str | None, limit: int | None) 
                 if (i + 1) % 100 == 0:
                     console.print(f"  [dim]Progress: {i + 1}/{len(player_ids)}[/dim]")
 
-        console.print(f"[green]✓ Scraped {total_logs} game log entries for {scraped} players[/green]")
+        console.print(
+            f"[green]✓ Scraped {total_logs} game log entries for {scraped} players[/green]"
+        )
 
     asyncio.run(run())
 
@@ -581,7 +613,9 @@ def scrape_shots(ctx: click.Context, season: str | None) -> None:
 
 
 @main.command()
-@click.option("--daily", is_flag=True, help="Only update daily data (games, boxscores, PBP, game logs)")
+@click.option(
+    "--daily", is_flag=True, help="Only update daily data (games, boxscores, PBP, game logs)"
+)
 @click.pass_context
 def update(ctx: click.Context, daily: bool) -> None:
     """Update all data from all sources.
@@ -613,10 +647,12 @@ def update(ctx: click.Context, daily: bool) -> None:
             try:
                 with db.get_session() as session:
                     all_finished = set(
-                        r[0] for r in session.query(GameRecord.id).filter(
-                            GameRecord.game_type == "2",
-                            GameRecord.game_state.in_(["OFF", "FINAL"])
-                        ).all()
+                        r[0]
+                        for r in session.query(GameRecord.id)
+                        .filter(
+                            GameRecord.game_type == "2", GameRecord.game_state.in_(["OFF", "FINAL"])
+                        )
+                        .all()
                     )
                     already_scraped = set(
                         r[0] for r in session.query(BoxscoreRecord.game_id).distinct().all()
@@ -717,7 +753,9 @@ def update(ctx: click.Context, daily: bool) -> None:
                 rosters = await scraper.scrape_all_rosters()
                 db.upsert_rosters(rosters)
                 total = sum(
-                    len(r.get("forwards", [])) + len(r.get("defensemen", [])) + len(r.get("goalies", []))
+                    len(r.get("forwards", []))
+                    + len(r.get("defensemen", []))
+                    + len(r.get("goalies", []))
                     for r in rosters
                 )
                 console.print(f"  [green]✓ {total} roster entries[/green]")
@@ -756,6 +794,7 @@ def update(ctx: click.Context, daily: bool) -> None:
 def injuries(ctx: click.Context) -> None:
     """Update player injury/availability status."""
     from .scrapers.nhl_injuries import NHLInjuriesScraper
+
     db: Database = ctx.obj["db"]
     errors = []
     try:
@@ -772,6 +811,7 @@ def injuries(ctx: click.Context) -> None:
 def _print_summary(errors: list[str]) -> None:
     """Print update summary and exit with appropriate code."""
     import sys
+
     if errors:
         console.print(f"\n[yellow]⚠ Completed with {len(errors)} error(s):[/yellow]")
         for err in errors:
@@ -785,8 +825,13 @@ def _print_summary(errors: list[str]) -> None:
 
 
 @main.group()
-@click.option("--league-id", "-l", envvar="YAHOO_LEAGUE_ID", required=True,
-              help="Yahoo Fantasy league ID (or set YAHOO_LEAGUE_ID env var)")
+@click.option(
+    "--league-id",
+    "-l",
+    envvar="YAHOO_LEAGUE_ID",
+    required=True,
+    help="Yahoo Fantasy league ID (or set YAHOO_LEAGUE_ID env var)",
+)
 @click.pass_context
 def fantasy(ctx: click.Context, league_id: str) -> None:
     """Yahoo Fantasy hockey commands for managing your team."""
