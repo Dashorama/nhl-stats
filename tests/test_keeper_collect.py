@@ -85,3 +85,20 @@ def test_incomplete_trade_pair():
     soup.select("tr")[-1].decompose()
     with pytest.raises(ValueError, match="incomplete trade"):
         parse_trades(str(soup), 2024, 17419)
+
+
+def test_collection_completeness_and_nonoverlapping_pages():
+    from src.keeper.collect import parse_collection
+    html=(FIXTURES/'transactions.html').read_text()
+    collection={'season':2024,'league_id':17419,'pages':[html],
+                'complete':True,'transaction_count':7}
+    assert len(parse_collection(collection,'scan-trades',2024,17419))==7
+    with pytest.raises(ValueError,match='collector scope'):
+        parse_collection(collection,'scan-trades',2025,17419)
+    with pytest.raises(ValueError,match='incomplete transaction collection'):
+        parse_collection({**collection,'complete':False},'scan-trades',2024,17419)
+    with pytest.raises(ValueError,match='incomplete transaction collection'):
+        parse_collection({**collection,'transaction_count':6},'scan-trades',2024,17419)
+    with pytest.raises(ValueError,match='overlapping transaction pages'):
+        parse_collection({**collection,'pages':[html,html],'transaction_count':14},
+                         'scan-trades',2024,17419)
