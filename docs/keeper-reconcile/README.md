@@ -46,11 +46,16 @@ timeout and parses its captured output before planning any write.
 The current/previous draft dropdown labels establish season identity. The browser
 uses the dropdown's `draft_results_period` URL parameter because delayed Yahoo
 YUI initialization can leave a programmatic selection without a change handler.
-Only explicit keeper badges count. Transactions use the Trades filter and follow
-Next links, with origin/path/filter checks. Unsupported markup fails closed.
-Collectors read the full available trade history; the pure scanner filters the
-selected season and already-seen fingerprints. This favors correctness after a
-missed week over minimizing a handful of page loads.
+Only explicit keeper badges count. Transactions use the Trades filter and Yahoo's
+structural `pagingnavlist` / `li.last` controls with `count` offsets, deduplicating
+identical top/bottom links. The observed contract is 25 trades per full page.
+A full page must provide a next offset or an explicit disabled terminal control;
+a short page terminates the crawl. Missing markers, inconsistent page sizes,
+wrong offsets, changed origins/paths/filters, and cycles are rejected. Parsed
+trade counts must match the browser's count and pages must not overlap. Yahoo
+exposes no global total here; a future change in page capacity needs a collector
+and fixture update. Within this supported contract the scanner reads the available
+history, then filters the selected season and already-seen fingerprints.
 
 ## Weekly operation and trade rule
 
@@ -61,17 +66,37 @@ python3 -m src.keeper.cli scan-trades --season 2026 \
   --profile "$KEEPER_YAHOO_PROFILE" --state-dir /home/david/.local/state/nhl-keepers
 ```
 
+For a reviewed, opt-in user crontab, this runs Mondays at 09:00 in the host's
+local timezone during October–April (fill in the durable profile path first):
+
+```cron
+KEEPER_YAHOO_PROFILE=/absolute/path/to/yahoo_profile
+0 9 * 1-4,10-12 1 cd /home/david/nhl-stats && python3 -m src.keeper.cli scan-trades --season 2026 --profile "$KEEPER_YAHOO_PROFILE" --dry-run
+```
+
+Rotate `--season` after each draft. Configure cron output delivery/log retention
+through the host's existing operations setup.
+
 This is a dry-run command; no scheduler is installed or enabled by this PR. Review
 its diff and use `--apply` on the test copy. Season, authenticated profile, and live
 rollout must be configured before enabling production automation. Do not put
 browser cookies or the profile in GitHub Actions secrets or publish collected
-HTML. No Yahoo API credentials are needed.
+HTML. No Yahoo API credentials are needed. `--league-id` selects an archived trade league;
+the draft collector always targets league 5003, as required for this single-league tool.
 
 The bonus is one-time: `Traded? = 1`, preserving FYK. A second trade does not add
 another year. David's open ruling is one-time versus cumulative; cumulative needs
 a separate column/formula change and must not be implemented silently. Keeper
 counts vary during the season; a team with zero keepers keeps one empty formula
-template row so its owner block can later receive a keeper.
+template row so its owner block can later receive a keeper. The placeholder's E
+input uses the sheet's current year, avoiding nonsensical year-zero calculations.
+
+Post-draft reconciliation follows the specified per-team rule: a player missing
+from the acquiring team's block is new there, so FYK resets to the draft year.
+If a stale sheet still holds that player under another team, run the appropriate
+trade scan first or review the proposed E/G values carefully. Carrying rights
+across teams during reconciliation is an open rule clarification sent to David;
+it is not inferred from the 2025 fixture, which has no such case.
 
 ## Backups, recovery, and shared editing
 
@@ -94,7 +119,12 @@ Verification checks every A/B/D/F formula, C/E/G value, owner alignment, and for
 errors in Raw Data and UI. For visual layout, existing formatting is retained;
 the integration pass inspects Sheets grid metadata rather than claiming a browser
 render. Human edits during the final API call cannot be locked by this local tool;
-use a quiet editing window. On verification failure keep the journal and backup,
+use a quiet editing window. The host's outer three-minute timeout can kill Node
+before Chromium closes; inspect and stop any collector browser still using the
+profile before retrying. Production timeout cleanup and friendlier lock/missing-tab
+diagnostics are follow-ups in issue #1. Fixture mode deliberately permits historical
+seasons; B1 alone is not a reliable season check during autumn, so review that input
+before apply. On verification failure keep the journal and backup,
 inspect the test sheet, and resolve the exact mismatch before retrying.
 
 ## Manual re-login (one persistent browser script)

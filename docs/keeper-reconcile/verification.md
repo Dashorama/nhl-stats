@@ -1,521 +1,1010 @@
-# Verification evidence
+# Keeper tool verification
 
-Baseline origin/main: 59 passed, 3 failed (`sqlite3.OperationalError: no such table: players`).
-The existing generator test fixture now creates its required players table and mocks
-LLM narration, so tests do not depend on an external narrator. No generator production
-code changed. Final full suite: `107 passed, 2 warnings in 4.35s`. Existing integration
-marker warnings remain. Scoped Ruff and strict mypy passed. Full-repo Ruff (69 errors) and mypy
-(139 errors) match independent origin/main baseline runs exactly; this feature
-adds no lint/type errors. `pip wheel . --no-deps` built nhl-stats.
+## Final checks
 
-Live read-only collector checks on 2026-09-06: 60 2025 keeper badges matched staged
-player lists; seven 2024 trade records matched the corresponding supplied sample.
-An empty 2026 transaction page is recognized explicitly.
+- `python3 -m pytest tests/ -q`: **143 passed**, 2 existing integration-marker warnings.
+- Clean-bytecode run with `PYTHONDONTWRITEBYTECODE=1` and a fresh
+  `PYTHONPYCACHEPREFIX`: **143 passed, 19 warnings in 6.94s**. The additional
+  warnings are existing `stringcase`/`rauth` invalid escape sequences revealed by recompilation.
+- `python3 -m ruff check src/keeper tests/test_keeper*.py`: all checks passed.
+- `python3 -m mypy src/keeper --follow-imports=silent`: success, 5 source files.
+- `python3 -m pip wheel . --no-deps -w /tmp/keeper-dist`: built successfully.
+  Every keeper `.py`/`.mjs` in that wheel was byte-compared to the final source.
+- `node --check src/keeper/collect.mjs`: passed.
 
-TEST COPY integration: dry-run of already reconciled copy produced no additions or
-removals. Inserted one synthetic nonkeeper into the first team through the backed-up
-atomic planner, verified its formulas and all UI formulas, then reconciled it away.
-Both operations verified every formula, literal, and owner block. Backups:
-`/tmp/keeper-integration/backups/raw-data-20260906T122121.413321Z.json` and
-`/tmp/keeper-integration/backups/raw-data-20260906T122123.730140Z.json`.
-No live-sheet writes. Existing Google grid formatting/validation was inspected by API.
+Independent origin/main baseline (`0f6e758`) reproduced **59 passed, 3 failed**
+with `sqlite3.OperationalError: no such table: players`. The existing generator
+fixture now creates that required table and mocks external LLM narration; production
+generator code is unchanged. Full-repo Ruff remains at 69 errors and strict mypy
+at 139 errors in 7 files, exactly matching independent baseline checks. Issue #2
+tracks that pre-existing debt; this change adds no lint/type errors.
+
+## Integration evidence
+
+- Staged reconcile matches all 60 ordered team/player/FYK/Traded records exactly.
+- Live authenticated 2025 draft scrape matched all 60 tagged keeper names. The
+  complete scrape-to-sheet CLI dry-run returned zero changed teams on the already
+  reconciled TEST COPY.
+- Final live 2024 archive collector returned seven trades equal to the seven
+  corresponding supplied records, with collection completeness confirmed against
+  the supported page contract. The other five sample records are from older seasons.
+- Live markup investigation confirmed **duplicated `Next 25` links**, using
+  `ul.pagingnavlist`, `li.last`, `count=25`, and disabled `F-shade` controls.
+- Real Chromium with intercepted local fixture responses (fresh unauthenticated
+  temporary profile, no Yahoo session) collected **2 pages / 26 trades**. The two
+  committed pages use the captured pager structure and synthetic dated copies of
+  a captured trade pair. The real-DOM smoke was rerun after independently breaking
+  its pager selector and trade-count selector; both went red and restoration passed
+  (`1 passed in 15.96s`). Local replay harness: `/tmp/test_keeper_browser_smoke.py`
+  and `/tmp/keeper-real-browser-shim.mjs`.
+- TEST COPY apply: inserted a synthetic nonkeeper into the first block, then
+  reconciled it away. Both backed-up atomic batches passed every formula/literal,
+  owner-alignment, and UI-error check. Backups are under `/tmp/keeper-integration/backups/`:
+  `raw-data-20260906T122121.413321Z.json` and `raw-data-20260906T122123.730140Z.json`.
+- TEST COPY trade round trip: moved Sam Reinhart from David's block to Steven's,
+  set Traded=1, and verified the shrink/grow and all formulas. Restored the original
+  rights; final formula snapshot matched the original exactly. Backups:
+  `raw-data-20260906T123059.249246Z.json` and `raw-data-20260906T123101.619702Z.json`.
+- No live-sheet writes. Native grid formatting/validation was inspected through
+  Sheets API; no browser-rendered Google Sheet visual check is claimed.
+
+## internal_review
+
+Independent parallel Sonnet (`claude-sonnet-5`) and Opus (`claude-opus-5`) reviews
+inspected pushed head `b8592a5` against `0f6e758` in separate disposable clones,
+using branch refs and offline experiments. No live checkout was modified.
+
+sonnet_summary: 1 Critical and 2 Important found; empty-team acquisition fixed,
+unapplied/conflicting journal branches tested, real adapter and CLI guards tested
+and individually mutated. Both Minor findings (formula offsets and compatibility
+wording) were also addressed; offline Node tests address its transport observation.
+
+opus_summary: 1 Critical and 3 Important found; exhaustive individual guard proof
+replaces the earlier incomplete batch evidence; zero-keeper team identity is fixed;
+real Yahoo structural pagination, duplicate controls, terminal evidence, page counts
+and overlap rejection are implemented; all eight Sheets error values are checked.
+Opus independently simulated four request-plan shapes with zero formula mismatches
+and corroborated the test-copy backup artifacts. All blocking findings have fixes
+and red/green evidence below; no author waiver or human deferral was used.
+
+blockers_resolved: true
+fix_commits: [5340930, 6c146c6, 9ad517c]
+test_commits: [8e19739, 314f3c3, edc14d1, 9c43145, 72e27b5]
+
+Non-blocking Opus observations also fixed: stable fingerprints across side-order
+and NHL-label changes; leap-day parsing; physical empty-template preservation;
+meaningful placeholder year. Remaining operational limits are documented in README
+and tracked in issue #1: timeout process cleanup before unattended production,
+friendlier held-lock/missing-tab diagnostics, historical fixture season selection,
+and David's cross-team FYK ruling. Split trade pairs across pages fail closed under
+the supported complete-pair page contract. The draft collector is deliberately
+single-league; `--league-id` selects archived trade collection only. Full UI work and
+production activation still need David's greenlight. One-time versus cumulative
+trade bonus was surfaced via Nexus; the dispatched one-time default is implemented.
+
+`bd onboard` was unavailable (`bd: command not found`); follow-ups are in GitHub
+issues #1 and #2. Work stayed in the requested isolated feature worktree.
 
 ## mutation_proof
 
-Tests were committed before implementation. Initial red evidence:
+Tests were committed before implementation (initial seven test commits precede
+`b8592a5`; subsequent bug regressions also have dedicated test commits). Initial
+red runs included missing core/adapter/parser modules, the missing recovery writer,
+seven structural-pagination failures, three missing error-code failures, and the
+leap-day/placeholder regressions. Ground-truth fixtures are unchanged.
+
+The earlier batch-only evidence was replaced after Opus exposed mutual masking.
+**106 individual mutation records follow; zero survivors.** Each guarded operation
+is removed or changed to the wrong behavior; thrown browser errors are independently
+changed to successful exit. Every anchor was checked, each source restored, and
+Python mutations used a fresh bytecode-cache prefix plus disabled bytecode writes
+so same-second `.pyc` reuse could not produce false results. Separate mutations
+cover each real Sheets adapter guard and the two real DOM selectors. Exact error
+messages distinguish neighboring guards; formula read-back cases retain the same
+owner geometry so owner validation cannot mask formula validation.
+
+**Green for every record after restoring all sources:**
 
 ```text
-ModuleNotFoundError: No module named 'src.keeper'
-ModuleNotFoundError: No module named 'src.keeper.sheet'
-ImportError: cannot import name 'cli' from 'src.keeper'
-ModuleNotFoundError: No module named 'src.keeper.collect'
-AttributeError: module 'src.keeper.cli' has no attribute 'save_json'
-FAILED test_empty_live_transaction_table - ValueError: unrecognized trade row
+143 passed, 19 warnings in 6.94s
 ```
 
-The following targeted implementation mutations were applied in the isolated
-worktree, tested, and reverted. All nineteen produced failures. Green after restoring
-all mutations: `45 keeper tests passed; full suite 107 passed in 4.35s` (keeper tests). The baseline generator fixture
-repair's red is the three missing-table failures above; green: `3 passed in 2.21s`.
+The records below paste actual failing-run output and name the tests that went red.
+The line numbers identify source locations when mutated; later formatting may move them.
 
+### src/keeper/core.py:51 — raise ValueError(f'ambiguous player: {name}')
 
-## Drop reconcile output
+```text
+..................F...........................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_duplicate_alias_candidates_are_ambiguous
+1 failed, 61 passed in 0.99s
+```
+
+### src/keeper/core.py:58 — raise ValueError(f'ambiguous player: {name}')
+
+```text
+........F.....................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_matching_ambiguity_is_an_error - Faile...
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/core.py:65 — raise ValueError('incomplete snapshot row')
+
+```text
+......F.......................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[malformed_sheet-snapshot]
+1 failed, 61 passed in 0.96s
+```
+
+### src/keeper/core.py:67 — raise ValueError('Traded must be 0 or 1')
+
+```text
+.......F......................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[invalid_flag-Traded]
+1 failed, 61 passed in 0.98s
+```
+
+### src/keeper/core.py:71 — raise ValueError('duplicate keeper on sheet')
+
+```text
+.....F........................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[duplicate_sheet-duplicate]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/core.py:86 — raise ValueError('draft and sheet team sets differ')
+
+```text
+.F............................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_tag_count_and_unknown_team
+1 failed, 61 passed in 1.03s
+```
+
+### src/keeper/core.py:88 — raise ValueError('unexpected keeper count; incomplete draft?')
+
+```text
+.F............................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_tag_count_and_unknown_team
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/core.py:91 — raise ValueError('duplicate drafted player')
+
+```text
+....F.........................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[duplicate_board-duplicate]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/core.py:146 — raise ValueError('watermark season mismatch')
+
+```text
+...F..........................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_chained_trades_chronology_one_time_and_watermark
+1 failed, 61 passed in 0.98s
+```
+
+### src/keeper/core.py:148 — raise ValueError('mixed league trade input')
+
+```text
+............F.................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[league-league]
+1 failed, 61 passed in 0.98s
+```
+
+### src/keeper/core.py:161 — raise ValueError('trade must contain two teams')
+
+```text
+.........F....................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[sides-two teams]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/core.py:172 — raise ValueError(f"unknown acquiring team: {side['team']}")
+
+```text
+..........F...................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[unknown-unknown acquiring]
+1 failed, 61 passed in 0.98s
+```
+
+### src/keeper/core.py:177 — raise ValueError(f'trade ownership conflict for {player}')
+
+```text
+...........F..................................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[owner-ownership conflict]
+1 failed, 61 passed in 0.99s
+```
+
+### src/keeper/sheet.py:49 — raise ValueError('invalid snapshot shape')
+
+```text
+.......................F......................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[length-snapshot]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/sheet.py:53 — raise ValueError('incomplete sheet row')
+
+```text
+........................F.....................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[partial-incomplete]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/sheet.py:58 — raise ValueError('missing formula in protected column')
+
+```text
+.....................F........................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_apply_rejects_live_stale_and_bad_formulas
+1 failed, 61 passed in 1.00s
+```
+
+### src/keeper/sheet.py:63 — raise ValueError('non-contiguous owner blocks')
+
+```text
+.........................F....................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[blocks-contiguous]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/sheet.py:65 — raise ValueError('unknown team in output')
+
+```text
+..........................F...................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[unknown-unknown team]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/sheet.py:177 — raise ValueError('post-write formula/value verification failed; backup retained')
+
+```text
+...................................FFFF.......................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_formula_value_comparison_cannot_hide_behind_owner_check[cell0]
+FAILED tests/test_keeper_sheet.py::test_formula_value_comparison_cannot_hide_behind_owner_check[cell1]
+FAILED tests/test_keeper_sheet.py::test_formula_value_comparison_cannot_hide_behind_owner_check[cell2]
+FAILED tests/test_keeper_sheet.py::test_formula_value_comparison_cannot_hide_behind_owner_check[cell3]
+4 failed, 58 passed in 0.96s
+```
+
+### src/keeper/sheet.py:181 — raise ValueError('post-write owner alignment verification failed')
+
+```text
+...........................F..................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_verification_owner_and_error_cells - ...
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/sheet.py:183 — raise ValueError('post-write formula error verification failed')
+
+```text
+...........................F...FFF............................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_verification_owner_and_error_cells - ...
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NAME?]
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NUM!]
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NULL!]
+4 failed, 58 passed in 0.98s
+```
+
+### src/keeper/sheet.py:198 — raise ValueError('apply is restricted to the TEST COPY')
+
+```text
+.....................F........................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_apply_rejects_live_stale_and_bad_formulas
+1 failed, 61 passed in 1.00s
+```
+
+### src/keeper/sheet.py:200 — raise ValueError('sheet changed since planning; rerun dry-run')
+
+```text
+.....................F........................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_apply_rejects_live_stale_and_bad_formulas
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/sheet.py:229 — raise ValueError('Raw Data sheetId must be 0')
+
+```text
+............................F.................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed, 61 passed in 0.99s
+```
+
+### src/keeper/sheet.py:249 — raise ValueError('owner blocks do not match List Of Teams And Owners')
+
+```text
+............................F.................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed, 61 passed in 0.96s
+```
+
+### src/keeper/sheet.py:253 — raise ValueError('owner formula points to wrong owner cell')
+
+```text
+............................F.................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed, 61 passed in 0.96s
+```
+
+### src/keeper/sheet.py:258 — raise ValueError('apply is restricted to the TEST COPY')
+
+```text
+............................F.................................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed, 61 passed in 0.99s
+```
+
+### src/keeper/sheet.py:266 — raise ValueError('UI formula error verification failed')
+
+```text
+............................F..FFF............................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NAME?]
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NUM!]
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NULL!]
+4 failed, 58 passed in 0.97s
+```
+
+### src/keeper/cli.py:46 — parser.error('--apply is restricted to the TEST COPY')
+
+```text
+...........................................F..................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_cli_rejects_missing_source_and_live_apply
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/cli.py:48 — parser.error('provide --input or --profile')
+
+```text
+...........................................F..................           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_cli_rejects_missing_source_and_live_apply
+1 failed, 61 passed in 1.02s
+```
+
+### src/keeper/cli.py:92 — raise ValueError('pending apply conflicts with current sheet; inspect backup')
+
+```text
+..............................................F...............           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_pending_conflict_retains_journal_and_backups
+1 failed, 61 passed in 1.00s
+```
+
+### src/keeper/collect.py:12 — raise ValueError('draft season selection not confirmed')
+
+```text
+....................................................F.........           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_live_markup_draft_matches_staged_keeper_board
+1 failed, 61 passed in 0.93s
+```
+
+### src/keeper/collect.py:19 — raise ValueError('unrecognized keeper row')
+
+```text
+.......................................................F......           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_changed_keeper_markup[class="name"-class="renamed"-keeper row]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/collect.py:24 — raise ValueError('incomplete keeper board')
+
+```text
+....................................................F.........           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_live_markup_draft_matches_staged_keeper_board
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/collect.py:32 — raise ValueError('transaction table missing; auth or markup changed')
+
+```text
+.....................................................F........           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_live_markup_trade_sample_and_fail_closed
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/collect.py:41 — raise ValueError('unrecognized trade row')
+
+```text
+.....................................................F........           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_live_markup_trade_sample_and_fail_closed
+1 failed, 61 passed in 0.99s
+```
+
+### src/keeper/collect.py:47 — raise ValueError('trade owner/date missing')
+
+```text
+........................................................F.....           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_changed_trade_markup[F-timestamp-removed-owner/date]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/collect.py:57 — raise ValueError('unrecognized trade asset')
+
+```text
+.........................................................F....           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_changed_trade_markup[Round 3-Mystery asset-asset]
+1 failed, 61 passed in 0.98s
+```
+
+### src/keeper/collect.py:62 — raise ValueError('trade pairing date mismatch')
+
+```text
+..........................................................F...           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_changed_trade_markup[Mar 1, 4:10 am-Mar 2, 4:10 am-pairing date]
+1 failed, 61 passed in 0.97s
+```
+
+### src/keeper/collect.py:68 — raise ValueError('incomplete trade page')
+
+```text
+...........................................................F..           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_incomplete_trade_pair - Failed: DID...
+1 failed, 61 passed in 0.98s
+```
+
+### src/keeper/collect.py:78 — raise ValueError('collector scope mismatch')
+
+```text
+............................................................F.           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_collection_completeness_and_nonoverlapping_pages
+1 failed, 61 passed in 0.95s
+```
+
+### src/keeper/collect.py:85 — raise ValueError('incomplete transaction collection')
+
+```text
+...................................................F........F.           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_profile_collection_is_validated_before_sheet_planning
+FAILED tests/test_keeper_collect.py::test_collection_completeness_and_nonoverlapping_pages
+2 failed, 60 passed in 0.96s
+```
+
+### src/keeper/collect.py:87 — raise ValueError('overlapping transaction pages')
+
+```text
+............................................................F.           [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_collection_completeness_and_nonoverlapping_pages
+1 failed, 61 passed in 0.97s
+```
+
+### Reconcile output equals ground-truth rows
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-_________________________ test_reconcile_ground_truth __________________________
-tests/test_keeper_core.py:24: in test_reconcile_ground_truth
-    assert [(k.team, k.player, str(k.first_year), str(k.traded)) for k in result] == [
-E   AssertionError: assert [] == [('Tage Again...4', '0'), ...]
-E     
-E     Right contains 60 more items, first extra item: ('Tage Against The Machine', 'Sam Reinhart', '2024', '0')
-E     Use -v to get more diff
 =========================== short test summary info ============================
 FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
 1 failed in 0.02s
 ```
 
-## Mutate caller snapshot
+### Reconcile does not mutate caller snapshot
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-_________________________ test_reconcile_ground_truth __________________________
-tests/test_keeper_core.py:27: in test_reconcile_ground_truth
-    assert (board, snapshot) == original
-E   AssertionError: assert ({'Bitch Slap..., ...], ...]}) == ({'Bitch Slap..., ...], ...]})
-E     
-E     At index 1 diff: {'raw_values': [['Current Year', 'MUTATED', '', '', '', 'Keeper Starting Term', '3'], [], ['Team Name', 'Owner Name', 'Player Name', 'Years Remaining', 'First Year Kept', 'Year Expiring', 'Traded?'], ['Tage Against The Machine', 'David Erner', 'Sam Reinhart', '1', '2024', '2027', '0'], ['Tage Against The Machine', 'David Erner', 'Tage Thompson', '0', '2023', '2026', '0'], ['Tage Against The Machine', 'David Erner', 'Brandon Hagel', '2', '2025', '2028', '0'], ['Tage Against The Machine', 'David Erner', 'Mitch Marner', '-1', '2022', '2025', '0'], ['Tage A...
-E     
-E     ...Full output truncated (2 lines hidden), use '-vv' to show
 =========================== short test summary info ============================
 FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
 1 failed in 0.02s
 ```
 
-## Make trade bonus cumulative
+### New keeper FYK uses season
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
+1 failed in 0.02s
+```
+
+### Retained keeper FYK and flag are preserved
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
+1 failed in 0.02s
+```
+
+### 2025 retained pair compatibility order
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
+1 failed in 0.02s
+```
+
+### One-time trade bonus
 
 ```text
 FF                                                                       [100%]
-=================================== FAILURES ===================================
-________________ test_trade_fixture_five_real_trades_and_replay ________________
-tests/test_keeper_core.py:47: in test_trade_fixture_five_real_trades_and_replay
-    assert result == rows
-E   AssertionError: assert [Keeper(team=...raded=0), ...] == [Keeper(team=...raded=0), ...]
-E     
-E     At index 9 diff: Keeper(team='Makings of a Varsity Athlete', player='Nathan MacKinnon', first_year=2022, traded=2) != Keeper(team='Makings of a Varsity Athlete', player='Nathan MacKinnon', first_year=2022, traded=1)
-E     Use -v to get more diff
-____________ test_chained_trades_chronology_one_time_and_watermark _____________
-tests/test_keeper_core.py:92: in test_chained_trades_chronology_one_time_and_watermark
-    assert next(r for r in result if r.player == "Player One") == Keeper("C", "Player One", 2022, 1)
-E   AssertionError: assert Keeper(team='...022, traded=2) == Keeper(team='...022, traded=1)
-E     
-E     Omitting 3 identical items, use -vv to show
-E     Differing attributes:
-E     ['traded']
-E     
-E     Drill down into differing attribute traded:
-E       traded: 2 != 1
 =========================== short test summary info ============================
 FAILED tests/test_keeper_core.py::test_trade_fixture_five_real_trades_and_replay
 FAILED tests/test_keeper_core.py::test_chained_trades_chronology_one_time_and_watermark
 2 failed in 0.03s
 ```
 
-## Disable seen transaction skip
+### Seen trade skip
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-____________ test_chained_trades_chronology_one_time_and_watermark _____________
-tests/test_keeper_core.py:93: in test_chained_trades_chronology_one_time_and_watermark
-    assert scanTrades(result, trades, season=2025, state=state) == (result, state)
-src/keeper/core.py:173: in scanTrades
-    raise ValueError(f"trade ownership conflict for {player}")
-E   ValueError: trade ownership conflict for Player One
 =========================== short test summary info ============================
 FAILED tests/test_keeper_core.py::test_chained_trades_chronology_one_time_and_watermark
 1 failed in 0.02s
 ```
 
-## Remove validation raises
-
-```text
-.F.FFFFFFFFFF..FF.FFFFFF.FF.FFFFF                                        [100%]
-=================================== FAILURES ===================================
-__________________ test_reconcile_tag_count_and_unknown_team ___________________
-tests/test_keeper_core.py:33: in test_reconcile_tag_count_and_unknown_team
-    with pytest.raises(ValueError, match="keeper count"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-____________ test_chained_trades_chronology_one_time_and_watermark _____________
-tests/test_keeper_core.py:94: in test_chained_trades_chronology_one_time_and_watermark
-    with pytest.raises(ValueError, match="season"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_______ test_reconcile_rejects_corrupt_inputs[duplicate_board-duplicate] _______
-tests/test_keeper_core.py:117: in test_reconcile_rejects_corrupt_inputs
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_______ test_reconcile_rejects_corrupt_inputs[duplicate_sheet-duplicate] _______
-tests/test_keeper_core.py:117: in test_reconcile_rejects_corrupt_inputs
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_______ test_reconcile_rejects_corrupt_inputs[malformed_sheet-snapshot] ________
-tests/test_keeper_core.py:118: in test_reconcile_rejects_corrupt_inputs
-    reconcile(board, snapshot)
-src/keeper/core.py:55: in reconcile
-    old = from_snapshot(snapshot)
-src/keeper/core.py:46: in from_snapshot
-    if any((str(r[6]) not in ('0', '1') for r in data)):
-src/keeper/core.py:46: in <genexpr>
-    if any((str(r[6]) not in ('0', '1') for r in data)):
-E   IndexError: list index out of range
-__________ test_reconcile_rejects_corrupt_inputs[invalid_flag-Traded] __________
-tests/test_keeper_core.py:117: in test_reconcile_rejects_corrupt_inputs
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_____________________ test_matching_ambiguity_is_an_error ______________________
-tests/test_keeper_core.py:124: in test_matching_ambiguity_is_an_error
-    with pytest.raises(ValueError, match="ambiguous"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-______________ test_trade_conflicts_fail_closed[sides-two teams] _______________
-tests/test_keeper_core.py:165: in test_trade_conflicts_fail_closed
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_________ test_trade_conflicts_fail_closed[unknown-unknown acquiring] __________
-tests/test_keeper_core.py:166: in test_trade_conflicts_fail_closed
-    scanTrades(rows, trades, season=2025)
-src/keeper/core.py:125: in scanTrades
-    if team_key(row.team) not in (team_key(source), team_key(target)):
-src/keeper/core.py:25: in team_key
-    key = normalize(name)
-src/keeper/core.py:20: in normalize
-    return ''.join((c for c in unicodedata.normalize('NFKD', value).casefold() if c.isalnum()))
-E   TypeError: normalize() argument 2 must be str, not None
-__________ test_trade_conflicts_fail_closed[owner-ownership conflict] __________
-tests/test_keeper_core.py:165: in test_trade_conflicts_fail_closed
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_______________ test_trade_conflicts_fail_closed[league-league] ________________
-tests/test_keeper_core.py:165: in test_trade_conflicts_fail_closed
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-__________________ test_dry_run_backup_apply_and_verification __________________
-tests/test_keeper_sheet.py:66: in test_dry_run_backup_apply_and_verification
-    with pytest.raises(ValueError, match="verification"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-________________ test_apply_rejects_live_stale_and_bad_formulas ________________
-tests/test_keeper_sheet.py:75: in test_apply_rejects_live_stale_and_bad_formulas
-    with pytest.raises(ValueError, match="TEST COPY"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-________________ test_bad_sheet_plan_rejected[length-snapshot] _________________
-tests/test_keeper_sheet.py:129: in test_bad_sheet_plan_rejected
-    make_plan(before, rows)
-src/keeper/sheet.py:33: in make_plan
-    if len(row) < 7 or len(formulas[i]) < 7:
-E   IndexError: list index out of range
-_______________ test_bad_sheet_plan_rejected[partial-incomplete] _______________
-tests/test_keeper_sheet.py:129: in test_bad_sheet_plan_rejected
-    make_plan(before, rows)
-src/keeper/sheet.py:35: in make_plan
-    if not all((isinstance(formulas[i][c], str) and formulas[i][c].startswith('=') for c in FORMULA_COLUMNS)):
-src/keeper/sheet.py:35: in <genexpr>
-    if not all((isinstance(formulas[i][c], str) and formulas[i][c].startswith('=') for c in FORMULA_COLUMNS)):
-E   IndexError: list index out of range
-_______________ test_bad_sheet_plan_rejected[blocks-contiguous] ________________
-tests/test_keeper_sheet.py:128: in test_bad_sheet_plan_rejected
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-______________ test_bad_sheet_plan_rejected[unknown-unknown team] ______________
-tests/test_keeper_sheet.py:128: in test_bad_sheet_plan_rejected
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-___________________ test_verification_owner_and_error_cells ____________________
-tests/test_keeper_sheet.py:138: in test_verification_owner_and_error_cells
-    with pytest.raises(ValueError, match="owner alignment"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
-tests/test_keeper_sheet.py:176: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    with pytest.raises(ValueError, match="UI formula"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-______________ test_live_markup_draft_matches_staged_keeper_board ______________
-tests/test_keeper_collect.py:18: in test_live_markup_draft_matches_staged_keeper_board
-    with pytest.raises(ValueError, match="season"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-________________ test_live_markup_trade_sample_and_fail_closed _________________
-tests/test_keeper_collect.py:32: in test_live_markup_trade_sample_and_fail_closed
-    parse_trades("<html>Login required</html>", 2024, 17419)
-src/keeper/collect.py:27: in parse_trades
-    rows = table.select('tr')
-E   AttributeError: 'NoneType' object has no attribute 'select'
-_____ test_changed_keeper_markup[class="name"-class="renamed"-keeper row] ______
-tests/test_keeper_collect.py:64: in test_changed_keeper_markup
-    parse_draft(html, 2025)
-src/keeper/collect.py:17: in parse_draft
-    result.setdefault(team.get_text(strip=True), []).append({'player': player.get_text(strip=True), 'keeper': True})
-E   AttributeError: 'NoneType' object has no attribute 'get_text'
-__________ test_changed_trade_markup[F-timestamp-removed-owner/date] ___________
-tests/test_keeper_collect.py:78: in test_changed_trade_markup
-    parse_trades(html, 2024, 17419)
-src/keeper/collect.py:53: in parse_trades
-    dates.append(stamp.get_text(strip=True))
-E   AttributeError: 'NoneType' object has no attribute 'get_text'
-____________ test_changed_trade_markup[Round 3-Mystery asset-asset] ____________
-tests/test_keeper_collect.py:77: in test_changed_trade_markup
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-____ test_changed_trade_markup[Mar 1, 4:10 am-Mar 2, 4:10 am-pairing date] _____
-tests/test_keeper_collect.py:77: in test_changed_trade_markup
-    with pytest.raises(ValueError, match=message):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-__________________________ test_incomplete_trade_pair __________________________
-tests/test_keeper_collect.py:86: in test_incomplete_trade_pair
-    with pytest.raises(ValueError, match="incomplete trade"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_core.py::test_reconcile_tag_count_and_unknown_team
-FAILED tests/test_keeper_core.py::test_chained_trades_chronology_one_time_and_watermark
-FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[duplicate_board-duplicate]
-FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[duplicate_sheet-duplicate]
-FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[malformed_sheet-snapshot]
-FAILED tests/test_keeper_core.py::test_reconcile_rejects_corrupt_inputs[invalid_flag-Traded]
-FAILED tests/test_keeper_core.py::test_matching_ambiguity_is_an_error - Faile...
-FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[sides-two teams]
-FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[unknown-unknown acquiring]
-FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[owner-ownership conflict]
-FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[league-league]
-FAILED tests/test_keeper_sheet.py::test_dry_run_backup_apply_and_verification
-FAILED tests/test_keeper_sheet.py::test_apply_rejects_live_stale_and_bad_formulas
-FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[length-snapshot]
-FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[partial-incomplete]
-FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[blocks-contiguous]
-FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[unknown-unknown team]
-FAILED tests/test_keeper_sheet.py::test_verification_owner_and_error_cells - ...
-FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
-FAILED tests/test_keeper_collect.py::test_live_markup_draft_matches_staged_keeper_board
-FAILED tests/test_keeper_collect.py::test_live_markup_trade_sample_and_fail_closed
-FAILED tests/test_keeper_collect.py::test_changed_keeper_markup[class="name"-class="renamed"-keeper row]
-FAILED tests/test_keeper_collect.py::test_changed_trade_markup[F-timestamp-removed-owner/date]
-FAILED tests/test_keeper_collect.py::test_changed_trade_markup[Round 3-Mystery asset-asset]
-FAILED tests/test_keeper_collect.py::test_changed_trade_markup[Mar 1, 4:10 am-Mar 2, 4:10 am-pairing date]
-FAILED tests/test_keeper_collect.py::test_incomplete_trade_pair - Failed: DID...
-26 failed, 7 passed in 0.42s
-```
-
-## Write into protected column
+### Trade fingerprint includes recipient identity
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________ test_plan_preserves_formula_columns_and_owner_blocks _____________
-tests/test_keeper_sheet.py:31: in test_plan_preserves_formula_columns_and_owner_blocks
-    assert {r["range"]["startColumnIndex"] for r in updates} == {2, 4, 6}
-E   assert {0, 4, 6} == {2, 4, 6}
-E     
-E     Extra items in the left set:
-E     0
-E     Extra items in the right set:
-E     2
-E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_identity_includes_receiving_teams
+1 failed in 0.02s
+```
+
+### Trade fingerprint ignores changing display labels and order
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_fingerprint_survives_current_nhl_position_labels
+1 failed in 0.02s
+```
+
+### Final trade rows grouped by owner
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_result_is_grouped_by_owner_order
+1 failed in 0.02s
+```
+
+### Empty teams retain identity
+
+```text
+FF                                                                       [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_team_with_zero_keepers_can_receive_keeper
+FAILED tests/test_keeper_cli.py::test_cli_preserves_empty_team_identity - Val...
+2 failed in 0.18s
+```
+
+### Leap-day parsing uses season year
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_leap_day_trade_date - ValueError: day ...
+1 failed in 0.02s
+```
+
+### Zero keeper block retains a physical template row
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_empty_block_keeps_one_physical_row_and_insert_structure
+1 failed in 0.03s
+```
+
+### Insert copies formatting
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_empty_block_keeps_one_physical_row_and_insert_structure
+1 failed in 0.03s
+```
+
+### Insert copies validation
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_empty_block_keeps_one_physical_row_and_insert_structure
+1 failed in 0.03s
+```
+
+### Insert copies formula columns
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_expand_and_zero_keeper_template - ass...
+1 failed in 0.03s
+```
+
+### Literal writes target only C E G
+
+```text
+F                                                                        [100%]
 =========================== short test summary info ============================
 FAILED tests/test_keeper_sheet.py::test_plan_preserves_formula_columns_and_owner_blocks
 1 failed in 0.03s
 ```
 
-## Disable dry-run gate
-
-```text
-FF                                                                       [100%]
-=================================== FAILURES ===================================
-__________________ test_dry_run_backup_apply_and_verification __________________
-tests/test_keeper_sheet.py:61: in test_dry_run_backup_apply_and_verification
-    assert api.writes == [] and list(tmp_path.iterdir()) == []
-E   AssertionError: assert ([[{'deleteDim... ...]}}, ...]] == []
-E     
-E     Left contains one more item: [{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimens..., {'values': [{...}]}, {'values': [{...}]}, {'values': [{...}]}, {'values': [{...}]}, {'values': [{...}]}, ...]}}, ...]
-E     Use -v to get more diff)
-_____________ test_cli_dry_run_and_watermark_after_verified_apply ______________
-tests/test_keeper_cli.py:25: in test_cli_dry_run_and_watermark_after_verified_apply
-    assert not api.writes
-E   AssertionError: assert not [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimen...': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}, ...]]
-E    +  where [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimen...': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}, ...]] = <tests.test_keeper_sheet.FakeSheet object at 0x78d7bd02a7a0>.writes
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_dry_run_backup_apply_and_verification
-FAILED tests/test_keeper_cli.py::test_cli_dry_run_and_watermark_after_verified_apply
-2 failed in 0.10s
-```
-
-## Skip backups
+### Literal update mask preserves formatting
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-__________________ test_dry_run_backup_apply_and_verification __________________
-tests/test_keeper_sheet.py:61: in test_dry_run_backup_apply_and_verification
-    assert api.writes == [] and list(tmp_path.iterdir()) == []
-E   AssertionError: assert ([[{'deleteDim... ...]}}, ...]] == []
-E     
-E     Left contains one more item: [{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimens..., {'values': [{...}]}, {'values': [{...}]}, {'values': [{...}]}, {'values': [{...}]}, {'values': [{...}]}, ...]}}, ...]
-E     Use -v to get more diff)
 =========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_dry_run_backup_apply_and_verification
+FAILED tests/test_keeper_sheet.py::test_plan_preserves_formula_columns_and_owner_blocks
 1 failed in 0.03s
 ```
 
-## Skip pending recovery
+### Content writes leave headers untouched
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-__________ test_recover_verified_sheet_after_watermark_write_failure ___________
-tests/test_keeper_cli.py:81: in test_recover_verified_sheet_after_watermark_write_failure
-    assert len(api.writes) == 1
-E   AssertionError: assert 2 == 1
-E    +  where 2 = len([[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 51, 'sheetId': 0, 'startIndex': 49}}}, {'deleteDimen...alues': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}]])
-E    +    where [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 51, 'sheetId': 0, 'startIndex': 49}}}, {'deleteDimen...alues': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}]] = <tests.test_keeper_sheet.FakeSheet object at 0x72cdc962b190>.writes
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_content_requests_never_target_headers
+1 failed in 0.03s
+```
+
+### Formula offset arithmetic
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_formula_offsets_match_sheet_row_references
+1 failed in 0.03s
+```
+
+### Empty template FYK is meaningful
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_empty_template_uses_current_year_input
+1 failed in 0.03s
+```
+
+### Apply defaults to dry-run
+
+```text
+FF                                                                       [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_dry_run_backup_apply_and_verification
+FAILED tests/test_keeper_cli.py::test_cli_dry_run_and_watermark_after_verified_apply
+2 failed in 0.20s
+```
+
+### Backup precedes write
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_backup_is_durable_before_first_write
+1 failed in 0.03s
+```
+
+### Backup contains original values and formulas
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_dry_run_backup_apply_and_verification
+1 failed in 0.04s
+```
+
+### Backup fsync failure blocks write
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_backup_is_durable_before_first_write
+1 failed in 0.04s
+```
+
+### Dependent UI is checked before success
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_apply_checks_dependent_ui_before_success
+1 failed in 0.04s
+```
+
+### All eight Sheets error values checked
+
+```text
+FFF                                                                      [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NAME?]
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NUM!]
+FAILED tests/test_keeper_sheet.py::test_all_sheet_formula_errors_fail_verification[#NULL!]
+3 failed in 0.03s
+```
+
+### Overlapping invocation is locked out
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_lock_excludes_overlapping_apply - Value...
+1 failed in 0.19s
+```
+
+### Pending recovery respects dry-run
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_pending_retry_writes_unchanged_source
+1 failed in 0.20s
+```
+
+### Already-written journal recovery is idempotent
+
+```text
+F                                                                        [100%]
 =========================== short test summary info ============================
 FAILED tests/test_keeper_cli.py::test_recover_verified_sheet_after_watermark_write_failure
-1 failed in 0.14s
+1 failed in 0.21s
 ```
 
-## Drop parsed draft player
+### Unapplied journal is actually retried
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-______________ test_live_markup_draft_matches_staged_keeper_board ______________
-tests/test_keeper_collect.py:15: in test_live_markup_draft_matches_staged_keeper_board
-    assert {t: [p["player"] for p in picks] for t, picks in result.items()} == {
-E   AssertionError: assert {'Bitch Slapp...ertson'], ...} == {'Bitch Slapp...ertson'], ...}
-E     
-E     Omitting 11 identical items, use -vv to show
-E     Differing items:
-E     {'Trou Trou Train': ['Mackenzie Blackwood', 'Radko Gudas', 'Jack Hughes', 'Kirill Kaprizov']} != {'Trou Trou Train': ['Mackenzie Blackwood', 'Radko Gudas', 'Jack Hughes', 'Kirill Kaprizov', 'Leon Draisaitl']}
-E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_pending_retry_writes_unchanged_source
+1 failed in 0.20s
+```
+
+### Persisted watermark is loaded
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_watermark_is_loaded_after_manual_correction
+1 failed in 0.21s
+```
+
+### State file fsync precedes replacement
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_save_json_atomic_durable_replacement - ...
+1 failed in 0.17s
+```
+
+### State directory is fsynced
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_save_json_atomic_durable_replacement - ...
+1 failed in 0.17s
+```
+
+### State replacement is atomic
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_save_json_atomic_durable_replacement - ...
+1 failed in 0.17s
+```
+
+### Watermark file is season scoped
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_watermark_season_and_pending_sheet_scopes
+1 failed in 0.19s
+```
+
+### Journal file is sheet scoped
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_watermark_season_and_pending_sheet_scopes
+1 failed in 0.23s
+```
+
+### Browser collection is validated before planning
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_profile_collection_is_validated_before_sheet_planning
+1 failed in 0.18s
+```
+
+### Parsed draft matches actual tagged players
+
+```text
+F                                                                        [100%]
 =========================== short test summary info ============================
 FAILED tests/test_keeper_collect.py::test_live_markup_draft_matches_staged_keeper_board
-1 failed in 0.10s
+1 failed in 0.18s
 ```
 
-## Drop parsed trade
+### Parsed trade rows match recorded transactions
 
 ```text
 F                                                                        [100%]
-=================================== FAILURES ===================================
-________________ test_live_markup_trade_sample_and_fail_closed _________________
-tests/test_keeper_collect.py:28: in test_live_markup_trade_sample_and_fail_closed
-    assert [{k: t[k] for k in ("season", "league_id", "date", "teams")} for t in result] == [
-E   AssertionError: assert [{'date': 'Fe...High Life'}]}] == [{'date': 'Ma...rain'}]}, ...]
-E     
-E     At index 0 diff: {'season': 2024, 'league_id': 17419, 'date': 'Feb 28, 4:10 am', 'teams': [{'team': 'JeanClaud VanDangles', 'received': ['Timo Meier (NJ - LW,RW)', 'Macklin Celebrini (SJ - C)', 'Round 1', 'Round 4 (traded from Miller’s High Life)']}, {'team': 'Trou Trou Train', 'received': ['Leon Draisaitl (EDM - C,LW)', 'Jack Eichel (VGK - C)', 'Round 5', 'Round 7']}]} != {'season': 2024, 'league_id': 17419, 'date': 'Mar 1, 4:10 am', 'teams': [{'team': 'Julie the Cat', 'received': ['Jeremy Swayman (BOS - G)', 'Round 3']}, {'team': 'The Bad Place', 'received': ['Artturi...
-E     
-E     ...Full output truncated (3 lines hidden), use '-vv' to show
 =========================== short test summary info ============================
 FAILED tests/test_keeper_collect.py::test_live_markup_trade_sample_and_fail_closed
-1 failed in 0.07s
+1 failed in 0.15s
 ```
 
-## Remove formula copies for inserts
+### collect.mjs — throw Error('invalid collector arguments');
 
 ```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________________ test_expand_and_zero_keeper_template _____________________
-tests/test_keeper_sheet.py:99: in test_expand_and_zero_keeper_template
-    assert {
-E   assert set() == {0, 1, 3, 5}
-E     
-E     Extra items in the right set:
-E     0
-E     1
-E     3
-E     5
-E     Use -v to get more diff
+.......F.........                                                        [100%]
 =========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_expand_and_zero_keeper_template - ass...
-1 failed in 0.02s
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario7-bad-command-2025-5003-invalid collector arguments]
+1 failed, 16 passed in 0.46s
 ```
 
-## Browser guards incorrectly exit successfully
+### collect.mjs — throw Error('Yahoo login or season metadata unavailable; re-login manually');
 
 ```text
-.FFFF.FF.                                                                [100%]
-=================================== FAILURES ===================================
-_ test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available] _
-tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
-    assert result.returncode != 0
-E   AssertionError: assert 0 != 0
-E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2000', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif1', '5003'], returncode=0, stdout='', stderr='').returncode
-_ test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id] _
-tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
-    assert result.returncode != 0
-E   AssertionError: assert 0 != 0
-E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2024', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif2', '5003'], returncode=0, stdout='', stderr='').returncode
-_ test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target] _
-tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
-    assert result.returncode != 0
-E   AssertionError: assert 0 != 0
-E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2026', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif3', '5003'], returncode=0, stdout='', stderr='').returncode
-_ test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination] _
-tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
-    assert result.returncode != 0
-E   AssertionError: assert 0 != 0
-E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2026', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif4', '5003'], returncode=0, stdout='', stderr='').returncode
-_ test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete] _
-tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
-    assert result.returncode != 0
-E   AssertionError: assert 0 != 0
-E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2026', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif6', '5003'], returncode=0, stdout='', stderr='').returncode
-_ test_transport_refuses_unverified_collection[scenario7-bad-command-2025-5003-invalid collector arguments] _
-tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
-    assert result.returncode != 0
-E   AssertionError: assert 0 != 0
-E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2025', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif7', '5003'], returncode=0, stdout='', stderr='').returncode
+F................                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario0-reconcile-2025-5003-season metadata]
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — throw Error('requested draft season is not available in dropdown');
+
+```text
+.F...............                                                        [100%]
 =========================== short test summary info ============================
 FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available]
-FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id]
-FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target]
-FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination]
-FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete]
-FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario7-bad-command-2025-5003-invalid collector arguments]
-6 failed, 3 passed in 0.25s
+1 failed, 16 passed in 0.47s
 ```
 
-## Browser fails to close profile
+### collect.mjs — throw Error('historical transactions require the archived --league-id');
 
 ```text
-FFFFFFF.F                                                                [100%]
-=================================== FAILURES ===================================
-_ test_transport_refuses_unverified_collection[scenario0-reconcile-2025-5003-season metadata] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif0/closed').exists
-_ test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif1/closed').exists
-_ test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif2/closed').exists
-_ test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif3/closed').exists
-_ test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif4/closed').exists
-_ test_transport_refuses_unverified_collection[scenario5-scan-trades-2026-5003-redirect] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif5/closed').exists
-_ test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete] _
-tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
-    assert closed.exists()
-E   AssertionError: assert False
-E    +  where False = exists()
-E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif6/closed').exists
-___________ test_transport_returns_captured_page_and_closes_profile ____________
-tests/test_keeper_transport.py:111: in test_transport_returns_captured_page_and_closes_profile
-    assert closed.read_text() == "closed"
-/usr/lib/python3.10/pathlib.py:1134: in read_text
-    with self.open(mode='r', encoding=encoding, errors=errors) as f:
-/usr/lib/python3.10/pathlib.py:1119: in open
-    return self._accessor.open(self, mode, buffering, encoding, errors,
-E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-david/pytest-275/test_transport_returns_capture0/closed'
+..F..............                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id]
+1 failed, 16 passed in 0.48s
+```
+
+### collect.mjs — throw Error('transaction pagination incomplete');
+
+```text
+...............F.                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario5-pagination incomplete]
+1 failed, 16 passed in 0.46s
+```
+
+### collect.mjs — throw Error('transaction season/league redirect; refusing mislabeled trades');
+
+```text
+.....F...........                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario5-scan-trades-2026-5003-redirect]
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — throw Error('unrecognized pagination marker');
+
+```text
+...........F.....                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario1-pagination marker]
+1 failed, 16 passed in 0.48s
+```
+
+### collect.mjs — throw Error('ambiguous pagination');
+
+```text
+....F............                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination]
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — throw Error('unsupported transaction page size');
+
+```text
+............FF...                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario2-page size]
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario3-page size]
+2 failed, 15 passed in 0.47s
+```
+
+### collect.mjs — throw Error('missing terminal pagination evidence on full page');
+
+```text
+..........F......                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario0-terminal pagination]
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — throw Error('unexpected transaction pagination target');
+
+```text
+...F.............                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target]
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — throw Error('transaction pagination incomplete: cycle');
+
+```text
+......F..........                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete]
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — throw Error('unexpected transaction pagination offset');
+
+```text
+..............F..                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario4-pagination offset]
+1 failed, 16 passed in 0.48s
+```
+
+### collect.mjs — Missing profile is rejected before opening browser
+
+```text
+................F                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_missing_profile_never_creates_browser_session
+1 failed, 16 passed in 0.47s
+```
+
+### collect.mjs — Browser profile is closed
+
+```text
+FFFFFFF.FF.......                                                        [100%]
 =========================== short test summary info ============================
 FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario0-reconcile-2025-5003-season metadata]
 FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available]
@@ -525,258 +1014,115 @@ FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collect
 FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario5-scan-trades-2026-5003-redirect]
 FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete]
 FAILED tests/test_keeper_transport.py::test_transport_returns_captured_page_and_closes_profile
-8 failed, 1 passed in 0.28s
+FAILED tests/test_keeper_transport.py::test_two_page_structural_pager_deduplicates_top_bottom_links
+9 failed, 8 passed in 0.47s
 ```
 
-## Ignore explicit empty transaction page
+### collect.mjs — Pagination continues past first page
 
 ```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-______________________ test_empty_live_transaction_table _______________________
-tests/test_keeper_collect.py:45: in test_empty_live_transaction_table
-    parse_trades(
-src/keeper/collect.py:35: in parse_trades
-    raise ValueError("empty page unsupported")
-E   ValueError: empty page unsupported
+...F..F..F....FF.                                                        [100%]
 =========================== short test summary info ============================
-FAILED tests/test_keeper_collect.py::test_empty_live_transaction_table - Valu...
-1 failed in 0.06s
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete]
+FAILED tests/test_keeper_transport.py::test_two_page_structural_pager_deduplicates_top_bottom_links
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario4-pagination offset]
+FAILED tests/test_keeper_transport.py::test_pagination_refuses_unproven_completeness[scenario5-pagination incomplete]
+5 failed, 12 passed in 0.46s
 ```
 
-## Fingerprint includes mutable NHL labels again
+### collect.mjs — Duplicate top/bottom next links are deduplicated
+
+```text
+.........F.......                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_two_page_structural_pager_deduplicates_top_bottom_links
+1 failed, 16 passed in 0.46s
+```
+
+### Exact identity wins over close fuzzy candidate
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_exact_match_wins_and_unrelated_names_do_not_match
+1 failed in 0.02s
+```
+
+### Fuzzy threshold excludes unrelated player
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_exact_match_wins_and_unrelated_names_do_not_match
+1 failed in 0.02s
+```
+
+### Empty candidate set safely returns no match
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_exact_match_wins_and_unrelated_names_do_not_match
+1 failed in 0.02s
+```
+
+### Draft uses explicit keeper flags
+
+```text
+F                                                                        [100%]
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_tag_count_and_unknown_team
+1 failed in 0.02s
+```
+
+### DOM pager selector
 
 ```text
 F                                                                        [100%]
 =================================== FAILURES ===================================
-_________ test_trade_fingerprint_survives_current_nhl_position_labels __________
-tests/test_keeper_core.py:176: in test_trade_fingerprint_survives_current_nhl_position_labels
-    assert trade_key(updated) == trade_key(trade)
-E   AssertionError: assert '31df662cc741...ebe569134f551' == 'e8d798b748d2...a0c14af1b057c'
+_____________________ test_real_browser_collects_two_pages _____________________
+/tmp/test_keeper_browser_smoke.py:7: in test_real_browser_collects_two_pages
+    assert result.returncode==0,result.stderr
+E   AssertionError: file:///home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs:65
+E             throw Error('missing terminal pagination evidence on full page');
+E                   ^
 E     
-E     - e8d798b748d21561aff1a9178b4420301d0cd916f243f3446b1a0c14af1b057c
-E     + 31df662cc741e21abf237b0e0848236dd9a7d67720014af7dd2ebe569134f551
-=========================== short test summary info ============================
-FAILED tests/test_keeper_core.py::test_trade_fingerprint_survives_current_nhl_position_labels
-1 failed in 0.02s
-```
-
-## Write before backup
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-__________________ test_backup_is_durable_before_first_write ___________________
-tests/test_keeper_sheet.py:208: in test_backup_is_durable_before_first_write
-    apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
-src/keeper/sheet.py:204: in apply_plan
-    api.write(plan["requests"])
-tests/test_keeper_sheet.py:204: in check_backup
-    assert json.loads(next(tmp_path.glob("*.json")).read_text()) == before
-E   StopIteration
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_backup_is_durable_before_first_write
-1 failed in 0.03s
-```
-
-## Ignore backup fsync
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-__________________ test_backup_is_durable_before_first_write ___________________
-tests/test_keeper_sheet.py:215: in test_backup_is_durable_before_first_write
-    with pytest.raises(OSError, match="backup fsync"):
-E   Failed: DID NOT RAISE <class 'OSError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_backup_is_durable_before_first_write
-1 failed in 0.03s
-```
-
-## Disable CLI argument safety errors
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-________________ test_cli_rejects_missing_source_and_live_apply ________________
-tests/test_keeper_cli.py:91: in test_cli_rejects_missing_source_and_live_apply
-    cli.main(["reconcile", "--season", "2025", "--state-dir", str(tmp_path)])
-src/keeper/cli.py:58: in main
-    output = subprocess.run(
-/usr/lib/python3.10/subprocess.py:526: in run
-    raise CalledProcessError(retcode, process.args,
-E   subprocess.CalledProcessError: Command '['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs', 'reconcile', '2025', 'None', '5003']' returned non-zero exit status 1.
-=========================== short test summary info ============================
-FAILED tests/test_keeper_cli.py::test_cli_rejects_missing_source_and_live_apply
-1 failed in 0.11s
-```
-
-## Additional live integration
-
-The complete `--profile` CLI scrape-to-sheet dry-run succeeded with zero changed
-teams. A synthetic 2026 keeper trade then moved Sam Reinhart from David's block
-to Steven's block, setting Traded=1 and resizing both blocks. All formula/owner/UI
-checks passed. Restoration to original rights also passed; the final formula
-snapshot matched the original exactly. Backups:
-`/tmp/keeper-integration/backups/raw-data-20260906T123059.249246Z.json` and
-`/tmp/keeper-integration/backups/raw-data-20260906T123101.619702Z.json`.
-
-Production activation and weekly scheduler follow-up: GitHub issue #1.
-`bd onboard` could not run (`bd: command not found`); tracking is on GitHub.
-
-## Sonnet review fixes
-
-Independent Sonnet review of b8592a5 completed: 1 Critical, 2 Important,
-2 Minor, 1 Info. C1 (empty team cannot acquire keeper) is fixed by passing the
-complete team list from the sheet to the pure scanner. I1 (uncovered pre-write
-crash retry and intervening-edit conflict) now has behavioral regression tests.
-I2 (uncovered real adapter/CLI guards) now has a stub-helper test that instantiates
-Sheets, plus independent mutations of each guard. M1 has independent formula-offset
-assertions. M2's documentation now accurately calls the order exception inline
-compatibility code. N1 is covered by nine offline Node-entrypoint tests.
-
-Each fix's proof follows. Restored keeper suite: `50 passed in 0.84s`.
-
-## C1 lose empty-team identity
-
-```text
-FF                                                                       [100%]
-=================================== FAILURES ===================================
-________________ test_team_with_zero_keepers_can_receive_keeper ________________
-tests/test_keeper_core.py:190: in test_team_with_zero_keepers_can_receive_keeper
-    result, _ = scanTrades(rows, [trade], season=2026, known_teams=["A", "B"])
-src/keeper/core.py:169: in scanTrades
-    raise ValueError(f"unknown acquiring team: {side['team']}")
-E   ValueError: unknown acquiring team: B
-____________________ test_cli_preserves_empty_team_identity ____________________
-tests/test_keeper_cli.py:131: in test_cli_preserves_empty_team_identity
-    cli.main(
-src/keeper/cli.py:114: in main
-    rows, state = scanTrades(
-src/keeper/core.py:169: in scanTrades
-    raise ValueError(f"unknown acquiring team: {side['team']}")
-E   ValueError: unknown acquiring team: Hanstuetzle and Guentzel
-=========================== short test summary info ============================
-FAILED tests/test_keeper_core.py::test_team_with_zero_keepers_can_receive_keeper
-FAILED tests/test_keeper_cli.py::test_cli_preserves_empty_team_identity - Val...
-2 failed in 0.09s
-```
-
-## I1 falsely declare journal recovered
-
-```text
-FF                                                                       [100%]
-=================================== FAILURES ===================================
-__________________ test_pending_retry_writes_unchanged_source __________________
-tests/test_keeper_cli.py:181: in test_pending_retry_writes_unchanged_source
-    assert len(api.writes) == 1
-E   assert 0 == 1
-E    +  where 0 = len([])
-E    +    where [] = <tests.test_keeper_sheet.FakeSheet object at 0x74c1ba934280>.writes
-______________ test_pending_conflict_retains_journal_and_backups _______________
-tests/test_keeper_cli.py:194: in test_pending_conflict_retains_journal_and_backups
-    with pytest.raises(ValueError, match="conflicts"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_cli.py::test_pending_retry_writes_unchanged_source
-FAILED tests/test_keeper_cli.py::test_pending_conflict_retains_journal_and_backups
-2 failed in 0.12s
-```
-
-## I2 disable Raw Data sheetId must be 0
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
-tests/test_keeper_sheet.py:190: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    with pytest.raises(ValueError, match="sheetId"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
-1 failed in 0.02s
-```
-
-## I2 disable owner blocks do not match List Of Teams And Owners
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
-tests/test_keeper_sheet.py:181: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    api.read()
-src/keeper/sheet.py:254: in read
-    owner_index = owners.index([row[0], row[1]]) + 2
-E   ValueError: ['Tage Against The Machine', 'David Erner'] is not in list
-
-During handling of the above exception, another exception occurred:
-tests/test_keeper_sheet.py:180: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    with pytest.raises(ValueError, match="owner blocks"):
-E   AssertionError: Regex pattern did not match.
-E     Expected regex: 'owner blocks'
-E     Actual message: "['Tage Against The Machine', 'David Erner'] is not in list"
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
-1 failed in 0.03s
-```
-
-## I2 disable owner formula points to wrong owner cell
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
-tests/test_keeper_sheet.py:184: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    with pytest.raises(ValueError, match="wrong owner cell"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
-1 failed in 0.02s
-```
-
-## I2 disable UI formula error verification failed
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
-tests/test_keeper_sheet.py:176: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    with pytest.raises(ValueError, match="UI formula"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
-1 failed in 0.02s
-```
-
-## I2 remove adapter live-sheet restriction
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
-tests/test_keeper_sheet.py:187: in test_sheets_helper_paths_owner_checks_and_ui_errors
-    with pytest.raises(ValueError, match="TEST COPY"):
-E   Failed: DID NOT RAISE <class 'ValueError'>
-=========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
-1 failed in 0.02s
-```
-
-## M1 incorrect formula offsets
-
-```text
-F                                                                        [100%]
-=================================== FAILURES ===================================
-_______________ test_formula_offsets_match_sheet_row_references ________________
-tests/test_keeper_sheet.py:223: in test_formula_offsets_match_sheet_row_references
-    assert shifted("=F10-$B$1-1", -3) == "=F7-$B$1-1"
-E   AssertionError: assert '=F10-$B$1-1' == '=F7-$B$1-1'
+E     Error: missing terminal pagination evidence on full page
+E         at file:///home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs:65:15
+E         at runNextTicks (node:internal/process/task_queues:60:5)
+E         at process.processImmediate (node:internal/timers:454:9)
+E         at process.callbackTrampoline (node:internal/async_hooks:130:17)
 E     
-E     - =F7-$B$1-1
-E     ?   ^
-E     + =F10-$B$1-1
-E     ?   ^^
+E     Node.js v20.20.2
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...de:internal/timers:454:9)\n    at process.callbackTrampoline (node:internal/async_hooks:130:17)\n\nNode.js v20.20.2\n").returncode
 =========================== short test summary info ============================
-FAILED tests/test_keeper_sheet.py::test_formula_offsets_match_sheet_row_references
-1 failed in 0.02s
+FAILED ../../../../../../tmp/test_keeper_browser_smoke.py::test_real_browser_collects_two_pages
+1 failed in 20.83s
+```
+
+### DOM transaction counter
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________________ test_real_browser_collects_two_pages _____________________
+/tmp/test_keeper_browser_smoke.py:7: in test_real_browser_collects_two_pages
+    assert result.returncode==0,result.stderr
+E   AssertionError: file:///home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs:63
+E             throw Error('unsupported transaction page size');
+E                   ^
+E     
+E     Error: unsupported transaction page size
+E         at file:///home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs:63:15
+E     
+E     Node.js v20.20.2
+E     
+E   assert 1 == 0
+E    +  where 1 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...///home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs:63:15\n\nNode.js v20.20.2\n").returncode
+=========================== short test summary info ============================
+FAILED ../../../../../../tmp/test_keeper_browser_smoke.py::test_real_browser_collects_two_pages
+1 failed in 16.02s
 ```
