@@ -1,5 +1,7 @@
 """Scraper for NHL player injury/availability status."""
 
+from typing import Any
+
 import httpx
 import structlog
 
@@ -57,7 +59,7 @@ STATUS_MAP = {
 
 
 class NHLInjuriesScraper:
-    async def scrape_all(self, db: Database) -> dict:
+    async def scrape_all(self, db: Database) -> dict[str, Any]:
         records = []
         errors = []
 

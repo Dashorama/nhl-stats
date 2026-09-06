@@ -138,7 +138,7 @@ class PuckPediaScraper(BaseScraper):
 
     def _parse_contract_row(
         self,
-        cells: list,
+        cells: list[Any],
         team_abbrev: str,
     ) -> dict[str, Any] | None:
         """Parse a table row into contract data."""
@@ -241,7 +241,7 @@ class PuckPediaScraper(BaseScraper):
             self.logger.warning("player_lookup_failed", player=player_name, error=str(e))
             return None
 
-        contract = {
+        contract: dict[str, Any] = {
             "player_name": player_name,
             "source": "puckpedia",
             "scraped_at": datetime.now().isoformat(),

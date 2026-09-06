@@ -73,7 +73,7 @@ class NHLRosterScraper(BaseScraper):
         # Fetch roster from NHL API
         data = await self.get_json(f"/roster/{team_abbrev}/current")
 
-        roster = {
+        roster: dict[str, Any] = {
             "team_abbrev": team_abbrev,
             "season": season,
             "as_of_date": datetime.now().isoformat(),
@@ -213,7 +213,7 @@ class NHLRosterScraper(BaseScraper):
         limit = 100
 
         while True:
-            params = {
+            params: dict[str, str | int] = {
                 "isAggregate": "false",
                 "isGame": "false",
                 "sort": '[{"property":"points","direction":"DESC"}]',
@@ -221,6 +221,9 @@ class NHLRosterScraper(BaseScraper):
                 "limit": limit,
                 "cayenneExp": f"seasonId={season} and gameTypeId=2",
             }
+
+            if not self.client:
+                raise RuntimeError("Scraper not initialized - use async with")
 
             # Need to use full URL since it's a different base
             response = await self.client.get(stats_url, params=params)
@@ -285,7 +288,7 @@ class NHLRosterScraper(BaseScraper):
         limit = 100
 
         while True:
-            params = {
+            params: dict[str, str | int] = {
                 "isAggregate": "false",
                 "isGame": "false",
                 "sort": '[{"property":"wins","direction":"DESC"}]',
@@ -293,6 +296,9 @@ class NHLRosterScraper(BaseScraper):
                 "limit": limit,
                 "cayenneExp": f"seasonId={season} and gameTypeId=2",
             }
+
+            if not self.client:
+                raise RuntimeError("Scraper not initialized - use async with")
 
             response = await self.client.get(stats_url, params=params)
             response.raise_for_status()
