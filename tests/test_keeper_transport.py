@@ -8,16 +8,21 @@ from pathlib import Path
 import pytest
 
 SCRIPT = Path(__file__).parents[1] / "src/keeper/collect.mjs"
-BROWSER = """
+BROWSER = r"""
 import {writeFileSync} from 'node:fs';
 const s=JSON.parse(process.env.KEEPER_TEST_SCENARIO);
 let url='', step=0, visits=[];
 const page={
  setDefaultTimeout(){},
- async goto(next){visits.push(next); writeFileSync(process.env.KEEPER_TEST_CLOSED+'.visits',JSON.stringify(visits)); url=s.redirect && next.includes('transactions') ? s.redirect : next; step++;},
+ async goto(next){
+   visits.push(next);
+   writeFileSync(process.env.KEEPER_TEST_CLOSED+'.visits',JSON.stringify(visits));
+   url=s.redirect && next.includes('transactions') ? s.redirect : next; step++;
+ },
  url(){return url;},
  locator(selector){return {async evaluateAll(){
-   return selector.includes('option') ? (s.bareUnavailable && !new URL(url).pathname.match(/^\/\d{4}\//) ? [] : s.options) : (s.next || []);
+   const missing = s.bareUnavailable && !new URL(url).pathname.match(/^\/\d{4}\//);
+   return selector.includes('option') ? (missing ? [] : s.options) : (s.next || []);
  }, async evaluate(){
    if(s.pages) return s.pages[step-2];
    if(s.loop) return {tradeCount:25,pagers:[{href:`https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=${(step-1)*25}`,terminal:false}]};
@@ -37,10 +42,20 @@ export const chromium={async launchPersistentContext(){return {
     "scenario,command,season,league,error",
     [
         ({"options": []}, "reconcile", "2025", "5003", "season metadata"),
-        ({"options": [{"value": "current", "text": "2026 draft order"}]},
-         "reconcile", "2000", "5003", "season metadata"),
-        ({"options": [{"value": "current", "text": "2026 draft order"}]},
-         "scan-trades", "2024", "5003", "season metadata"),
+        (
+            {"options": [{"value": "current", "text": "2026 draft order"}]},
+            "reconcile",
+            "2000",
+            "5003",
+            "season metadata",
+        ),
+        (
+            {"options": [{"value": "current", "text": "2026 draft order"}]},
+            "scan-trades",
+            "2024",
+            "5003",
+            "season metadata",
+        ),
         (
             {"next": ["https://evil.example/transactions"]},
             "scan-trades",
@@ -190,6 +205,9 @@ def test_season_specific_league_bare_first_and_archive_fallback(tmp_path, comman
     if fallback:
         expected.append(root + "/2024/hockey/17419/draftresults")
     if command == "scan-trades":
-        expected.append(root + ("/2024" if fallback else "") +
-                        "/hockey/17419/transactions?transactionsfilter=trade")
+        expected.append(
+            root
+            + ("/2024" if fallback else "")
+            + "/hockey/17419/transactions?transactionsfilter=trade"
+        )
     assert visits == expected
