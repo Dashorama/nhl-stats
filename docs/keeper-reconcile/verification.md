@@ -623,3 +623,160 @@ snapshot matched the original exactly. Backups:
 
 Production activation and weekly scheduler follow-up: GitHub issue #1.
 `bd onboard` could not run (`bd: command not found`); tracking is on GitHub.
+
+## Sonnet review fixes
+
+Independent Sonnet review of b8592a5 completed: 1 Critical, 2 Important,
+2 Minor, 1 Info. C1 (empty team cannot acquire keeper) is fixed by passing the
+complete team list from the sheet to the pure scanner. I1 (uncovered pre-write
+crash retry and intervening-edit conflict) now has behavioral regression tests.
+I2 (uncovered real adapter/CLI guards) now has a stub-helper test that instantiates
+Sheets, plus independent mutations of each guard. M1 has independent formula-offset
+assertions. M2's documentation now accurately calls the order exception inline
+compatibility code. N1 is covered by nine offline Node-entrypoint tests.
+
+Each fix's proof follows. Restored keeper suite: `50 passed in 0.84s`.
+
+## C1 lose empty-team identity
+
+```text
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________________ test_team_with_zero_keepers_can_receive_keeper ________________
+tests/test_keeper_core.py:190: in test_team_with_zero_keepers_can_receive_keeper
+    result, _ = scanTrades(rows, [trade], season=2026, known_teams=["A", "B"])
+src/keeper/core.py:169: in scanTrades
+    raise ValueError(f"unknown acquiring team: {side['team']}")
+E   ValueError: unknown acquiring team: B
+____________________ test_cli_preserves_empty_team_identity ____________________
+tests/test_keeper_cli.py:131: in test_cli_preserves_empty_team_identity
+    cli.main(
+src/keeper/cli.py:114: in main
+    rows, state = scanTrades(
+src/keeper/core.py:169: in scanTrades
+    raise ValueError(f"unknown acquiring team: {side['team']}")
+E   ValueError: unknown acquiring team: Hanstuetzle and Guentzel
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_team_with_zero_keepers_can_receive_keeper
+FAILED tests/test_keeper_cli.py::test_cli_preserves_empty_team_identity - Val...
+2 failed in 0.09s
+```
+
+## I1 falsely declare journal recovered
+
+```text
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+__________________ test_pending_retry_writes_unchanged_source __________________
+tests/test_keeper_cli.py:181: in test_pending_retry_writes_unchanged_source
+    assert len(api.writes) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+E    +    where [] = <tests.test_keeper_sheet.FakeSheet object at 0x74c1ba934280>.writes
+______________ test_pending_conflict_retains_journal_and_backups _______________
+tests/test_keeper_cli.py:194: in test_pending_conflict_retains_journal_and_backups
+    with pytest.raises(ValueError, match="conflicts"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_pending_retry_writes_unchanged_source
+FAILED tests/test_keeper_cli.py::test_pending_conflict_retains_journal_and_backups
+2 failed in 0.12s
+```
+
+## I2 disable Raw Data sheetId must be 0
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
+tests/test_keeper_sheet.py:190: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    with pytest.raises(ValueError, match="sheetId"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed in 0.02s
+```
+
+## I2 disable owner blocks do not match List Of Teams And Owners
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
+tests/test_keeper_sheet.py:181: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    api.read()
+src/keeper/sheet.py:254: in read
+    owner_index = owners.index([row[0], row[1]]) + 2
+E   ValueError: ['Tage Against The Machine', 'David Erner'] is not in list
+
+During handling of the above exception, another exception occurred:
+tests/test_keeper_sheet.py:180: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    with pytest.raises(ValueError, match="owner blocks"):
+E   AssertionError: Regex pattern did not match.
+E     Expected regex: 'owner blocks'
+E     Actual message: "['Tage Against The Machine', 'David Erner'] is not in list"
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed in 0.03s
+```
+
+## I2 disable owner formula points to wrong owner cell
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
+tests/test_keeper_sheet.py:184: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    with pytest.raises(ValueError, match="wrong owner cell"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed in 0.02s
+```
+
+## I2 disable UI formula error verification failed
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
+tests/test_keeper_sheet.py:176: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    with pytest.raises(ValueError, match="UI formula"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed in 0.02s
+```
+
+## I2 remove adapter live-sheet restriction
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
+tests/test_keeper_sheet.py:187: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    with pytest.raises(ValueError, match="TEST COPY"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed in 0.02s
+```
+
+## M1 incorrect formula offsets
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_______________ test_formula_offsets_match_sheet_row_references ________________
+tests/test_keeper_sheet.py:223: in test_formula_offsets_match_sheet_row_references
+    assert shifted("=F10-$B$1-1", -3) == "=F7-$B$1-1"
+E   AssertionError: assert '=F10-$B$1-1' == '=F7-$B$1-1'
+E     
+E     - =F7-$B$1-1
+E     ?   ^
+E     + =F10-$B$1-1
+E     ?   ^^
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_formula_offsets_match_sheet_row_references
+1 failed in 0.02s
+```

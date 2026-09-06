@@ -111,7 +111,13 @@ def main(argv: list[str] | None = None) -> None:
             rows = reconcile(data, before, season=args.season)
         else:
             state = json.loads(state_file.read_text()) if state_file.exists() else None
-            rows, state = scanTrades(from_snapshot(before), data, season=args.season, state=state)
+            rows, state = scanTrades(
+                from_snapshot(before),
+                data,
+                season=args.season,
+                state=state,
+                known_teams=list(dict.fromkeys(r[0] for r in before["raw_values"][3:])),
+            )
         plan = make_plan(before, rows)
         print(
             json.dumps(

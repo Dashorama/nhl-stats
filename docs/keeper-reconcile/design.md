@@ -46,5 +46,5 @@ expiry values. Its selective spelling corrections are explicit aliases; it keeps
 `JT Miller` and `Mathew Tkachuk`. `Bitch Slappers` maps to the sheet's
 `Jean Claude VanDangles`. The 2025 fixture places Jack Hughes before Leon
 Draisaitl despite their opposite source order; this narrow presentation override
-is recorded in league configuration rather than inferred as a universal rule.
+is explicit compatibility code rather than inferred as a universal rule.
 The snapshot's B1 formula differs from the prose spec; preserve it verbatim.

@@ -139,6 +139,7 @@ def scanTrades(  # noqa: N802
     *,
     season: int,  # noqa: N802
     state: dict[str, Any] | None = None,
+    known_teams: list[str] | None = None,
 ) -> tuple[list[Keeper], dict[str, Any]]:
     """Process only this season. Return new rows and a persist-after-verify watermark."""
     if state is not None and state["season"] != season:
@@ -148,7 +149,10 @@ def scanTrades(  # noqa: N802
     seen = set(state["seen"] if state else [])
     watermark = state.get("last_seen", "") if state else ""
     result = list(rows)
-    teams = {team_key(r.team): r.team for r in rows}
+    teams = {
+        team_key(name): name
+        for name in (known_teams if known_teams is not None else [r.team for r in rows])
+    }
     for trade in sorted((t for t in trades if t["season"] == season), key=trade_date):
         key = trade_key(trade)
         if key in seen:

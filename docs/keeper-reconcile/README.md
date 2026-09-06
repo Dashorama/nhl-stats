@@ -109,7 +109,8 @@ import { chromium } from '/home/david/DrillDeck/node_modules/playwright/index.mj
 import { createInterface } from 'node:readline/promises';
 const browser = await chromium.launchPersistentContext(process.env.KEEPER_YAHOO_PROFILE, {
   headless: false,
-  executablePath: process.env.KEEPER_CHROMIUM,
+  executablePath: process.env.KEEPER_CHROMIUM ||
+    '/home/david/.cache/ms-playwright/chromium-1217/chrome-linux64/chrome',
 });
 try {
   const page = await browser.newPage();
