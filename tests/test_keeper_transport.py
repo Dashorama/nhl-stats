@@ -11,13 +11,13 @@ SCRIPT = Path(__file__).parents[1] / "src/keeper/collect.mjs"
 BROWSER = """
 import {writeFileSync} from 'node:fs';
 const s=JSON.parse(process.env.KEEPER_TEST_SCENARIO);
-let url='', step=0;
+let url='', step=0, visits=[];
 const page={
  setDefaultTimeout(){},
- async goto(next){url=s.redirect && next.includes('transactions') ? s.redirect : next; step++;},
+ async goto(next){visits.push(next); writeFileSync(process.env.KEEPER_TEST_CLOSED+'.visits',JSON.stringify(visits)); url=s.redirect && next.includes('transactions') ? s.redirect : next; step++;},
  url(){return url;},
  locator(selector){return {async evaluateAll(){
-   return selector.includes('option') ? s.options : (s.next || []);
+   return selector.includes('option') ? (s.bareUnavailable && !new URL(url).pathname.match(/^\/\d{4}\//) ? [] : s.options) : (s.next || []);
  }, async evaluate(){
    if(s.pages) return s.pages[step-2];
    if(s.loop) return {tradeCount:25,pagers:[{href:`https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=${(step-1)*25}`,terminal:false}]};
@@ -37,8 +37,10 @@ export const chromium={async launchPersistentContext(){return {
     "scenario,command,season,league,error",
     [
         ({"options": []}, "reconcile", "2025", "5003", "season metadata"),
-        ({}, "reconcile", "2000", "5003", "not available"),
-        ({}, "scan-trades", "2024", "5003", "archived --league-id"),
+        ({"options": [{"value": "current", "text": "2026 draft order"}]},
+         "reconcile", "2000", "5003", "season metadata"),
+        ({"options": [{"value": "current", "text": "2026 draft order"}]},
+         "scan-trades", "2024", "5003", "season metadata"),
         (
             {"next": ["https://evil.example/transactions"]},
             "scan-trades",
@@ -79,12 +81,12 @@ def test_transport_refuses_unverified_collection(
         assert closed.exists()
 
 
-def invoke(tmp_path, scenario, command="reconcile", season="2025", league="5003", profile=None):
+def invoke(tmp_path, scenario, command="reconcile", season="2025", league="26028", profile=None):
     scenario.setdefault(
         "options",
         [
-            {"value": "current", "text": "2026 draft order"},
-            {"value": "previous", "text": "2025 season draft results"},
+            {"value": "current", "text": f"{season} draft order"},
+            {"value": "previous", "text": f"{int(season) - 1} season draft results"},
         ],
     )
     module = tmp_path / "browser.mjs"
@@ -111,7 +113,7 @@ def test_transport_returns_captured_page_and_closes_profile(tmp_path):
     assert json.loads(result.stdout) == {
         "pages": ["<html>captured page</html>"],
         "season": 2025,
-        "league_id": 5003,
+        "league_id": 26028,
     }
     assert closed.read_text() == "closed"
 
@@ -175,3 +177,19 @@ def test_missing_profile_never_creates_browser_session(tmp_path):
     assert result.returncode != 0
     assert "ENOENT" in result.stderr
     assert not closed.exists()
+
+
+@pytest.mark.parametrize("command", ["reconcile", "scan-trades"])
+@pytest.mark.parametrize("fallback", [False, True])
+def test_season_specific_league_bare_first_and_archive_fallback(tmp_path, command, fallback):
+    result, closed = invoke(tmp_path, {"bareUnavailable": fallback}, command, "2024", "17419")
+    assert result.returncode == 0, result.stderr
+    visits = json.loads(Path(str(closed) + ".visits").read_text())
+    root = "https://hockey.fantasysports.yahoo.com"
+    expected = [root + "/hockey/17419/draftresults"]
+    if fallback:
+        expected.append(root + "/2024/hockey/17419/draftresults")
+    if command == "scan-trades":
+        expected.append(root + ("/2024" if fallback else "") +
+                        "/hockey/17419/transactions?transactionsfilter=trade")
+    assert visits == expected

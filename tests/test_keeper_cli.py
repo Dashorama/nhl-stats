@@ -354,8 +354,6 @@ def test_profile_collection_is_validated_before_sheet_planning(tmp_path, monkeyp
         "scan-trades",
         "--season",
         "2024",
-        "--league-id",
-        "17419",
         "--profile",
         str(tmp_path),
         "--state-dir",

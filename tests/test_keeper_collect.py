@@ -132,3 +132,14 @@ def test_two_page_fixture_reconciles_collected_count():
     )
     assert len(result) == 26
     assert result[-1]["date"] == "Oct 26, 4:10 am"
+
+
+def test_season_league_map_and_unknown_season():
+    from src.keeper.collect import resolve_league
+
+    assert [resolve_league(year) for year in range(2014, 2027)] == [
+        107861, 49434, 69011, 78662, 26937, 20403, 29812, 21085,
+        13632, 23870, 17419, 26028, 5003]
+    with pytest.raises(ValueError, match="unknown season"):
+        resolve_league(2027)
+    assert resolve_league(2027, 12345) == 12345
