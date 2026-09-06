@@ -1,6 +1,11 @@
 # Keeper tool verification
 
-## Final checks
+The historical ledger below records the initial implementation. NOVA-KRT-1/2/3
+supersede its CSV cosmetics, per-team contract matching, one-time flag, and
+current-league dropdown assumptions. See the revision section for current behavior
+and fresh mutation proofs; removed compatibility rules are no longer requirements.
+
+## Prior implementation checks (before NOVA-KRT-1/2/3)
 
 - `python3 -m pytest tests/ -q`: **143 passed**, 2 existing integration-marker warnings.
 - Clean-bytecode run with `PYTHONDONTWRITEBYTECODE=1` and a fresh
@@ -21,7 +26,8 @@ tracks that pre-existing debt; this change adds no lint/type errors.
 
 ## Integration evidence
 
-- Staged reconcile matches all 60 ordered team/player/FYK/Traded records exactly.
+- Prior acceptance matched all 60 ordered fixture records. NOVA-KRT-1 supersedes
+  this with per-owner set equality and canonical draft spelling/source order.
 - Live authenticated 2025 draft scrape matched all 60 tagged keeper names. The
   complete scrape-to-sheet CLI dry-run returned zero changed teams on the already
   reconciled TEST COPY.
@@ -1126,3 +1132,377 @@ E    +  where 1 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktre
 FAILED ../../../../../../tmp/test_keeper_browser_smoke.py::test_real_browser_collects_two_pages
 1 failed in 16.02s
 ```
+
+
+## NOVA-KRT-1/2/3 revision
+
+Acceptance is now per-owner normalized SET equality. Canonical board spelling,
+original-sheet retained order and board-order additions replace CSV cosmetics.
+Global contracts carry FYK/count on moves with explicit warnings. G is a cumulative
+trade count, incremented only on a newly applied transfer; duplicate receipts fail.
+Season-specific IDs use the supplied 2014–2026 map, bare URLs first, with verified
+archive fallback. No formula/header changes.
+
+TDD commits `a975831`, `edc98fe`, `c7b6caa`, `095812e` precede production edits.
+Initial changed-rule run: **7 failed, 34 passed**; collector run: **8 failed, 36 passed**;
+duplicate receipt run: **2 failed**. Restored final suite: **161 passed, 2 warnings**.
+The 22 independent mutation records below each use fresh bytecode directories.
+After restoring every mutation, the full suite passes; scoped Ruff/mypy pass.
+
+### revision mutation_proof
+
+### canonical board spelling
+
+Mutation in `src/keeper/core.py`: `replace(row, team=team, player=player)` → `replace(row, team=team, player=row.player)`.
+
+```text
+E         'Jakob Markstron'
+E         'MIkhail Sergachev'...
+E         
+E         ...Full output truncated (9 lines hidden), use '-vv' to show
+
+tests/test_keeper_core.py:255: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_board_spelling_and_original_sheet_order_replace_csv_cosmetics
+1 failed in 0.07s
+```
+
+### original sheet order
+
+Mutation in `src/keeper/core.py`: `key=lambda p: old.index(contracts[p])` → `key=lambda p: -old.index(contracts[p])`.
+
+```text
+E        +  where 1 = <built-in method index of list object at 0x71f4047edb00>('Leon Draisaitl')
+E        +    where <built-in method index of list object at 0x71f4047edb00> = ['Jack Hughes', 'Leon Draisaitl', 'Mackenzie Blackwood', 'Radko Gudas', 'Kirill Kaprizov'].index
+E        +  and   0 = <built-in method index of list object at 0x71f4047edb00>('Jack Hughes')
+E        +    where <built-in method index of list object at 0x71f4047edb00> = ['Jack Hughes', 'Leon Draisaitl', 'Mackenzie Blackwood', 'Radko Gudas', 'Kirill Kaprizov'].index
+
+tests/test_keeper_core.py:257: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_board_spelling_and_original_sheet_order_replace_csv_cosmetics
+1 failed in 0.07s
+```
+
+### new keeper board order
+
+Mutation in `src/keeper/core.py`: `for p in picks if p not in contracts` → `for p in reversed(picks) if p not in contracts`.
+
+```text
+E       AssertionError: assert [Keeper(team=...26, traded=0)] == [Keeper(team=...26, traded=0)]
+E         
+E         At index 1 diff: Keeper(team='A', player='New Beta', first_year=2026, traded=0) != Keeper(team='A', player='New Alpha', first_year=2026, traded=0)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:282: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.04s
+```
+
+### global FYK carry
+
+Mutation in `src/keeper/core.py`: `replace(row, team=team, player=player)` → `replace(row, team=team, player=player, first_year=season)`.
+
+```text
+E       AssertionError: assert [Keeper(team=...26, traded=0)] == [Keeper(team=...26, traded=0)]
+E         
+E         At index 0 diff: Keeper(team='A', player='Matthew Tkachuk', first_year=2026, traded=2) != Keeper(team='A', player='Matthew Tkachuk', first_year=2022, traded=2)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:282: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.04s
+```
+
+### global count carry
+
+Mutation in `src/keeper/core.py`: `replace(row, team=team, player=player)` → `replace(row, team=team, player=player, traded=0)`.
+
+```text
+E       AssertionError: assert [Keeper(team=...26, traded=0)] == [Keeper(team=...26, traded=0)]
+E         
+E         At index 0 diff: Keeper(team='A', player='Matthew Tkachuk', first_year=2022, traded=0) != Keeper(team='A', player='Matthew Tkachuk', first_year=2022, traded=2)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:282: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.04s
+```
+
+### board team assignment
+
+Mutation in `src/keeper/core.py`: `replace(row, team=team, player=player)` → `replace(row, player=player)`.
+
+```text
+E       AssertionError: assert [Keeper(team=...26, traded=0)] == [Keeper(team=...26, traded=0)]
+E         
+E         At index 0 diff: Keeper(team='B', player='Matthew Tkachuk', first_year=2022, traded=2) != Keeper(team='A', player='Matthew Tkachuk', first_year=2022, traded=2)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:282: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.03s
+```
+
+### global source match
+
+Mutation in `src/keeper/core.py`: `[row.player for row in old])` → `[row.player for row in old if row.team == next(iter(board))])`.
+
+```text
+E       AssertionError: assert [Keeper(team=...26, traded=0)] == [Keeper(team=...26, traded=0)]
+E         
+E         At index 0 diff: Keeper(team='A', player='New Alpha', first_year=2026, traded=0) != Keeper(team='A', player='Matthew Tkachuk', first_year=2022, traded=2)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:282: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.04s
+```
+
+### move warnings
+
+Mutation in `src/keeper/core.py`: `if team_key(row.team) != team_key(team) and warnings is not None:` → `if False:`.
+
+```text
+E       AssertionError: assert [] == ['possible un...verify bonus']
+E         
+E         Right contains one more item: 'possible unrecorded trade: Matthew Tkachuk sheet-team B -> draft-team A; FYK/count carried, verify bonus'
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:290: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.04s
+```
+
+### CLI warning display
+
+Mutation in `src/keeper/cli.py`: `"warnings": warnings` → `"warnings": []`.
+
+```text
+            "possible unrecorded trade:" in w and "FYK/count carried" in w for w in output["warnings"]
+        )
+E       assert False
+E        +  where False = any(<generator object test_cli_surfaces_global_move_warning.<locals>.<genexpr> at 0x7ca1dd343d80>)
+
+tests/test_keeper_cli.py:389: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_cli_surfaces_global_move_warning - asse...
+1 failed in 0.22s
+```
+
+### single contract assignment guard
+
+Mutation in `src/keeper/core.py`: `if found in used:` → `if False:`.
+
+```text
+        snapshot["raw_values"][4][6] = "0"
+        board["A"][0]["player"] = "Matthew Tkachuks"
+>       with pytest.raises(ValueError, match="same sheet keeper"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_core.py:310: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_two_board_players_cannot_share_one_global_contract
+1 failed in 0.03s
+```
+
+### nonnegative integer count validation
+
+Mutation in `src/keeper/core.py`: `if any(re.fullmatch(r"[0-9]+", str(r[6])) is None for r in data):` → `if False:`.
+
+```text
+
+tests/test_keeper_core.py:302: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_count_rejects_invalid_values[-1]
+FAILED tests/test_keeper_core.py::test_trade_count_rejects_invalid_values[1.5]
+FAILED tests/test_keeper_core.py::test_trade_count_rejects_invalid_values[True0]
+FAILED tests/test_keeper_core.py::test_trade_count_rejects_invalid_values[]
+FAILED tests/test_keeper_core.py::test_trade_count_rejects_invalid_values[True1]
+5 failed in 0.07s
+```
+
+### cumulative increments
+
+Mutation in `src/keeper/core.py`: `traded=row.traded + 1` → `traded=1`.
+
+```text
+E         
+E         At index 0 diff: Keeper(team='B', player='Player One', first_year=2020, traded=1) != Keeper(team='B', player='Player One', first_year=2020, traded=3)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:326: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_chained_trades_chronology_cumulative_and_watermark
+FAILED tests/test_keeper_core.py::test_cumulative_trade_from_existing_count_and_already_reflected_trade
+2 failed in 0.04s
+```
+
+### already reflected trades
+
+Mutation in `src/keeper/core.py`: `if team_key(row.team) != team_key(target):` → `if True:`.
+
+```text
+E       AssertionError: assert [Keeper(team=...20, traded=4)] == [Keeper(team=...20, traded=3)]
+E         
+E         At index 0 diff: Keeper(team='B', player='Player One', first_year=2020, traded=4) != Keeper(team='B', player='Player One', first_year=2020, traded=3)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:331: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_cumulative_trade_from_existing_count_and_already_reflected_trade
+1 failed in 0.04s
+```
+
+### one receipt per trade
+
+Mutation in `src/keeper/core.py`: `if found in transferred:` → `if False:`.
+
+```text
+        trade["teams"][duplicate_side]["received"].append("Player One (BOS - G)")
+>       with pytest.raises(ValueError, match="duplicate keeper in trade"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_core.py:346: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_one_keeper_cannot_be_received_twice_in_one_trade[0]
+FAILED tests/test_keeper_core.py::test_one_keeper_cannot_be_received_twice_in_one_trade[1]
+2 failed in 0.04s
+```
+
+### season map value
+
+Mutation in `src/keeper/seasons.json`: `"2025": 26028` → `"2025": 5003`.
+
+```text
+E       assert [107861, 4943...7, 20403, ...] == [107861, 4943...7, 20403, ...]
+E         
+E         At index 11 diff: 5003 != 26028
+E         Use -v to get more diff
+
+tests/test_keeper_collect.py:140: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_season_league_map_and_unknown_season
+1 failed in 0.16s
+```
+
+### unknown season rejection
+
+Mutation in `src/keeper/collect.py`: `if str(season) not in seasons:` → `if False:`.
+
+```text
+        if False:
+            raise ValueError("unknown season; supply a verified --league-id")
+>       return int(seasons[str(season)])
+E       KeyError: '2027'
+
+src/keeper/collect.py:16: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_season_league_map_and_unknown_season
+1 failed in 0.16s
+```
+
+### explicit league override
+
+Mutation in `src/keeper/collect.py`: `return override` → `return 5003`.
+
+```text
+            resolve_league(2027)
+>       assert resolve_league(2027, 12345) == 12345
+E       assert 5003 == 12345
+E        +  where 5003 = <function resolve_league at 0x7eed01c728c0>(2027, 12345)
+
+tests/test_keeper_collect.py:157: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_season_league_map_and_unknown_season
+1 failed in 0.15s
+```
+
+### CLI mapped league routing
+
+Mutation in `src/keeper/cli.py`: `args.league_id = resolve_league(args.season, args.league_id)` → `args.league_id = 5003`.
+
+```text
+    
+        if collected["season"] != season or collected["league_id"] != league_id:
+>           raise ValueError("collector scope mismatch")
+E           ValueError: collector scope mismatch
+
+src/keeper/collect.py:89: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_profile_collection_is_validated_before_sheet_planning
+1 failed in 0.19s
+```
+
+### direct collector mapping
+
+Mutation in `src/keeper/collect.mjs`: `leagueText ?? seasons[seasonText]` → `leagueText ?? '5003'`.
+
+```text
+        result, _ = invoke(tmp_path, {}, league=None)
+        assert result.returncode == 0, result.stderr
+>       assert json.loads(result.stdout)["league_id"] == 26028
+E       assert 5003 == 26028
+
+tests/test_keeper_transport.py:226: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_direct_collector_uses_season_map_when_id_omitted
+1 failed in 0.05s
+```
+
+### bare season league URL
+
+Mutation in `src/keeper/collect.mjs`: `let root = `${origin}/hockey/${league}`` → `let root = `${origin}/hockey/5003``.
+
+```text
+E         Use -v to get more diff
+
+tests/test_keeper_transport.py:220: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_season_specific_league_bare_first_and_archive_fallback[False-reconcile]
+FAILED tests/test_keeper_transport.py::test_season_specific_league_bare_first_and_archive_fallback[False-scan-trades]
+FAILED tests/test_keeper_transport.py::test_season_specific_league_bare_first_and_archive_fallback[True-reconcile]
+FAILED tests/test_keeper_transport.py::test_season_specific_league_bare_first_and_archive_fallback[True-scan-trades]
+4 failed in 0.14s
+```
+
+### archive fallback URL
+
+Mutation in `src/keeper/collect.mjs`: `root = `${origin}/${season}/hockey/${league}`` → `root = `${origin}/hockey/${league}``.
+
+```text
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...///home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs:35:13\n\nNode.js v20.20.2\n").returncode
+
+tests/test_keeper_transport.py:208: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_season_specific_league_bare_first_and_archive_fallback[True-reconcile]
+FAILED tests/test_keeper_transport.py::test_season_specific_league_bare_first_and_archive_fallback[True-scan-trades]
+2 failed, 2 passed in 0.14s
+```
+
+### requested season validation
+
+Mutation in `src/keeper/collect.mjs`: `if (await draftSeason() !== season)
+      throw` → `if (false)
+      throw`.
+
+```text
+E       assert 0 != 0
+E        +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...ages":["<html>captured page</html>"],"season":2024,"league_id":5003,"complete":true,"transaction_count":0}', stderr='').returncode
+
+tests/test_keeper_transport.py:92: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario0-reconcile-2025-5003-season metadata]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-season metadata]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-season metadata]
+3 failed, 5 passed in 0.25s
+```
+
+Green after all mutations reverted: `161 passed, 2 warnings` (full suite).

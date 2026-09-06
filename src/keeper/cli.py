@@ -10,7 +10,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
-from .collect import parse_collection
+from .collect import parse_collection, resolve_league
 from .core import from_snapshot, reconcile, scanTrades
 from .sheet import TEST_SHEET, Sheets, apply_plan, make_plan, verify
 
@@ -35,7 +35,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--season", type=int, required=True)
     parser.add_argument("--input", type=Path, help="Fixture or previously collected JSON")
     parser.add_argument("--profile", type=Path, help="Existing authenticated Yahoo profile")
-    parser.add_argument("--league-id", type=int, default=5003)
+    parser.add_argument("--league-id", type=int, help="Override the verified season-to-league map")
     parser.add_argument("--sheet-id", default=TEST_SHEET)
     parser.add_argument("--state-dir", type=Path, default=Path.home() / ".local/state/nhl-keepers")
     mode = parser.add_mutually_exclusive_group()
@@ -54,6 +54,7 @@ def main(argv: list[str] | None = None) -> None:
         if args.input:
             data = json.loads(args.input.read_text())
         else:
+            args.league_id = resolve_league(args.season, args.league_id)
             scraper = Path(__file__).with_name("collect.mjs")
             output = subprocess.run(
                 [
@@ -100,8 +101,9 @@ def main(argv: list[str] | None = None) -> None:
             print("Recovered pending apply; run again for new work")
             return
         state = None
+        warnings: list[str] = []
         if args.command == "reconcile":
-            rows = reconcile(data, before, season=args.season)
+            rows = reconcile(data, before, season=args.season, warnings=warnings)
         else:
             state = json.loads(state_file.read_text()) if state_file.exists() else None
             rows, state = scanTrades(
@@ -118,6 +120,7 @@ def main(argv: list[str] | None = None) -> None:
                     "dry_run": not args.apply,
                     "sheet_id": args.sheet_id,
                     "diff": plan["diff"],
+                    "warnings": warnings,
                     "proposed_writes": plan["requests"],
                 },
                 indent=2,

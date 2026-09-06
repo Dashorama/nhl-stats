@@ -1,8 +1,19 @@
 """Parse bounded Yahoo page content, rejecting incomplete or changed markup."""
 
+import json
+from pathlib import Path
 from typing import Any
 
 from bs4 import BeautifulSoup
+
+
+def resolve_league(season: int, override: int | None = None) -> int:
+    if override is not None:
+        return override
+    seasons = json.loads(Path(__file__).with_name("seasons.json").read_text())
+    if str(season) not in seasons:
+        raise ValueError("unknown season; supply a verified --league-id")
+    return int(seasons[str(season)])
 
 
 def parse_draft(html: str, season: int) -> dict[str, Any]:

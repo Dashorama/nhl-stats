@@ -21,8 +21,9 @@ python3 -m src.keeper.cli scan-trades --season 2024 \
 ```
 
 No `--apply` means dry-run; explicit `--dry-run` is also supported. Output contains
-per-team additions/removals plus every proposed Sheets request. Spelling corrections
-appear as removal/addition pairs. The pure functions return team/player/FYK/Traded;
+per-team additions/removals, possible-unrecorded-trade warnings, and every proposed
+Sheets request. Spelling corrections
+appear as removal/addition pairs. The pure functions return team/player/FYK/trade-count;
 expiry and remaining years stay spreadsheet formulas, never computed by the tool.
 
 For authenticated browser collection, replace `--input` with `--profile PATH`:
@@ -30,8 +31,8 @@ For authenticated browser collection, replace `--input` with `--profile PATH`:
 ```bash
 python3 -m src.keeper.cli reconcile --season 2025 --profile "$KEEPER_YAHOO_PROFILE"
 python3 -m src.keeper.cli scan-trades --season 2026 --profile "$KEEPER_YAHOO_PROFILE"
-# Archived league IDs differ; the recorded 2024 league is 17419:
-python3 -m src.keeper.cli scan-trades --season 2024 --league-id 17419 \
+# Season-specific league IDs are resolved automatically (2024 = 17419):
+python3 -m src.keeper.cli scan-trades --season 2024 \
   --profile "$KEEPER_YAHOO_PROFILE"
 ```
 
@@ -43,9 +44,15 @@ other users of that same profile before running. The collector defaults to
 `KEEPER_PLAYWRIGHT` and `KEEPER_CHROMIUM`. Python invokes Node with a three-minute
 timeout and parses its captured output before planning any write.
 
-The current/previous draft dropdown labels establish season identity. The browser
-uses the dropdown's `draft_results_period` URL parameter because delayed Yahoo
-YUI initialization can leave a programmatic selection without a change handler.
+The collector uses the verified season-to-league map in `src/keeper/seasons.json`
+for BOTH commands (2026=5003, 2025=26028, 2024=17419; complete through 2014).
+An unknown season requires a verified `--league-id` override. It first visits
+`/hockey/ID/draftresults` and checks that league's current draft-season metadata.
+If unavailable or mismatched, it retries `/YEAR/hockey/ID/draftresults` and verifies
+again. On this host, the bare 2024/2025 URLs returned Yahoo error pages while the
+archive forms returned the expected seven trades / sixty keepers. Transactions
+use the successfully verified URL root. No current-league previous-season dropdown
+navigation is needed; the archived league's own current draft is authoritative.
 Only explicit keeper badges count. Transactions use the Trades filter and Yahoo's
 structural `pagingnavlist` / `li.last` controls with `count` offsets, deduplicating
 identical top/bottom links. The observed contract is 25 trades per full page.
@@ -81,22 +88,36 @@ This is a dry-run command; no scheduler is installed or enabled by this PR. Revi
 its diff and use `--apply` on the test copy. Season, authenticated profile, and live
 rollout must be configured before enabling production automation. Do not put
 browser cookies or the profile in GitHub Actions secrets or publish collected
-HTML. No Yahoo API credentials are needed. `--league-id` selects an archived trade league;
-the draft collector always targets league 5003, as required for this single-league tool.
+HTML. No Yahoo API credentials are needed.
 
-The bonus is one-time: `Traded? = 1`, preserving FYK. A second trade does not add
-another year. David's open ruling is one-time versus cumulative; cumulative needs
-a separate column/formula change and must not be implemented silently. Keeper
-counts vary during the season; a team with zero keepers keeps one empty formula
-template row so its owner block can later receive a keeper. The placeholder's E
-input uses the sheet's current year, avoiding nonsensical year-zero calculations.
+The confirmed bonus is **cumulative**: each newly applied keeper trade adds one to
+column G, carrying FYK unchanged. A keeper with count 2 becomes count 3 after the
+next trade. `Traded?` remains the column label for compatibility, but values are
+nonnegative integer counts. The existing `F = E + term + G` formula already adds
+that many years; no formula/header change is made.
 
-Post-draft reconciliation follows the specified per-team rule: a player missing
-from the acquiring team's block is new there, so FYK resets to the draft year.
-If a stale sheet still holds that player under another team, run the appropriate
-trade scan first or review the proposed E/G values carefully. Carrying rights
-across teams during reconciliation is an open rule clarification sent to David;
-it is not inferred from the 2025 fixture, which has no such case.
+Known fingerprints are skipped. For a previously unseen transaction whose keeper
+is already under the acquiring owner, the scanner treats the row as already
+reflected and preserves its count. This allows starting from a manually maintained
+sheet without awarding the same bonus again. It cannot infer missing historical
+bonuses from ownership alone: verify counts before bootstrapping, keep the durable
+watermark, and do not replay old history onto a different roster. Chained new trades
+are processed chronologically and increment once each. Duplicate keeper receipts
+within one transaction are rejected.
+
+Keeper counts vary during the season; a team with zero keepers keeps one empty
+formula template row so its owner block can later receive a keeper. The placeholder's
+E input uses the sheet's current year, avoiding nonsensical year-zero calculations.
+
+Post-draft reconciliation matches players globally across the sheet. It carries
+FYK/count through a team move and emits `possible unrecorded trade: PLAYER sheet-team
+B -> draft-team A; FYK/count carried, verify bonus`. It does not increment G:
+that belongs to the scanner, and guessing could double-count. Prefer scanning
+outstanding trades before reconciling; after a flagged move, verify the bonus
+manually because ownership alone now looks reflected. Output uses canonical draft
+names, retains existing contracts in source-sheet order, then appends genuinely new
+keepers in board order. The 2025 CSV is graded by per-owner set equality, not its
+cosmetic spelling or order artifacts.
 
 ## Backups, recovery, and shared editing
 

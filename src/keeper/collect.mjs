@@ -1,10 +1,11 @@
 // Browser transport only. Pure parsers and keeper rules live in Python.
-import { access } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { homedir } from 'node:os';
 
-const [command, seasonText, profile, leagueText = '5003'] = process.argv.slice(2);
-const season = Number(seasonText), league = Number(leagueText);
+const [command, seasonText, profile, leagueText] = process.argv.slice(2);
+const seasons = JSON.parse(await readFile(new URL('./seasons.json', import.meta.url), 'utf8'));
+const season = Number(seasonText), league = Number(leagueText ?? seasons[seasonText]);
 if (!['reconcile', 'scan-trades'].includes(command) || !Number.isInteger(season) ||
     !Number.isInteger(league) || !profile) throw Error('invalid collector arguments');
 await access(profile); // Never silently create an unauthenticated profile.
@@ -18,26 +19,27 @@ const context = await chromium.launchPersistentContext(profile, {
 try {
   const page = await context.newPage();
   page.setDefaultTimeout(30000);
-  await page.goto('https://hockey.fantasysports.yahoo.com/hockey/5003/draftresults',
-    {waitUntil: 'domcontentloaded'});
-  const options = await page.locator('#yfa-draftresults-select option').evaluateAll(
-    es => es.map(e => ({value:e.value, text:e.textContent})));
-  const current = Number(options.find(o => o.value === 'current')?.text.match(/\d{4}/)?.[0]);
-  if (!current) throw Error('Yahoo login or season metadata unavailable; re-login manually');
+  const origin = 'https://hockey.fantasysports.yahoo.com';
+  let root = `${origin}/hockey/${league}`;
+  async function draftSeason() {
+    await page.goto(`${root}/draftresults`, {waitUntil: 'domcontentloaded'});
+    const options = await page.locator('#yfa-draftresults-select option').evaluateAll(
+      es => es.map(e => ({value:e.value, text:e.textContent})));
+    return Number(options.find(o => o.value === 'current')?.text.match(/\d{4}/)?.[0]);
+  }
+  // Prefer the season-specific bare ID. Yahoo currently requires the year-prefixed
+  // archive on this authenticated host; validate that archive's own draft season.
+  if (await draftSeason() !== season) {
+    root = `${origin}/${season}/hockey/${league}`;
+    if (await draftSeason() !== season)
+      throw Error('Yahoo login or requested season metadata unavailable; re-login manually');
+  }
   const pages = [];
   let transactionCount = 0;
   if (command === 'reconcile') {
-    const option = options.find(o => o.text.includes(String(season)));
-    if (!option) throw Error('requested draft season is not available in dropdown');
-    // Same URL parameter used by the dropdown's change listener. Yahoo's delayed
-    // YUI init can leave selectOption() without an attached event handler.
-    await page.goto(`https://hockey.fantasysports.yahoo.com/hockey/5003/draftresults?draft_results_period=${option.value}`,
-      {waitUntil:'domcontentloaded'});
     pages.push(await page.content());
   } else {
-    if (season !== current && league === 5003)
-      throw Error('historical transactions require the archived --league-id');
-    let url = `https://hockey.fantasysports.yahoo.com/${season === current ? '' : `${season}/`}hockey/${league}/transactions?transactionsfilter=trade`;
+    let url = `${root}/transactions?transactionsfilter=trade`;
     const visited = new Set();
     while (url) {
       if (visited.size >= 100) throw Error('transaction pagination incomplete');

@@ -28,8 +28,8 @@ TEAM_ALIASES = {
     normalize("Bitch Slappers"): normalize("Jean Claude VanDangles"),
     normalize("JeanClaud VanDangles"): normalize("Jean Claude VanDangles"),
 }
-# Display corrections made in the authoritative hand-reconciled fixture.
-DISPLAY_ALIASES = {
+# Known misspellings for matching only; output always uses the draft board.
+NAME_ALIASES = {
     "JeremySwayman": "Jeremy Swayman",
     "David Pasternak": "David Pastrnak",
     "MIkhail Sergachev": "Mikhail Sergachev",
@@ -43,8 +43,8 @@ def team_key(name: str) -> str:
 
 
 def match(name: str, candidates: list[str]) -> str | None:
-    key = normalize(DISPLAY_ALIASES.get(name, name))
-    exact = [p for p in candidates if normalize(DISPLAY_ALIASES.get(p, p)) == key]
+    key = normalize(NAME_ALIASES.get(name, name))
+    exact = [p for p in candidates if normalize(NAME_ALIASES.get(p, p)) == key]
     if len(exact) == 1:
         return exact[0]
     if len(exact) > 1:
@@ -63,17 +63,22 @@ def from_snapshot(snapshot: dict[str, Any]) -> list[Keeper]:
     data = snapshot["raw_values"][3:]
     if any(len(r) < 7 for r in data):
         raise ValueError("incomplete snapshot row")
-    if any(str(r[6]) not in ("0", "1") for r in data):
-        raise ValueError("Traded must be 0 or 1")
+    if any(re.fullmatch(r"[0-9]+", str(r[6])) is None for r in data):
+        raise ValueError("Traded count must be a nonnegative integer")
     rows = [Keeper(r[0], r[2].strip(), int(r[4]), int(r[6])) for r in data if r[2].strip()]
-    names = [normalize(DISPLAY_ALIASES.get(r.player, r.player)) for r in rows]
+    names = [normalize(NAME_ALIASES.get(r.player, r.player)) for r in rows]
     if len(names) != len(set(names)):
         raise ValueError("duplicate keeper on sheet")
     return rows
 
 
 def reconcile(
-    board: dict[str, Any], snapshot: dict[str, Any], season: int = 2025, expected_count: int = 5
+    board: dict[str, Any],
+    snapshot: dict[str, Any],
+    season: int = 2025,
+    expected_count: int = 5,
+    *,
+    warnings: list[str] | None = None,
 ) -> list[Keeper]:
     old = from_snapshot(snapshot)
     teams = list(dict.fromkeys(r[0] for r in snapshot["raw_values"][3:] if r))
@@ -89,28 +94,33 @@ def reconcile(
     names = [normalize(p) for picks in drafted.values() for p in picks]
     if len(names) != len(set(names)):
         raise ValueError("duplicate drafted player")
+    # Resolve globally before assignment: ownership changes never restart a contract.
+    contracts = {}
+    used = set()
+    for picks in drafted.values():
+        for player in picks:
+            found = match(player, [row.player for row in old])
+            if found is not None:
+                if found in used:
+                    raise ValueError("multiple drafted players match the same sheet keeper")
+                used.add(found)
+                contracts[player] = next(row for row in old if row.player == found)
     result = []
     for team in teams:
-        remaining = list(drafted[team_key(team)])
-        retained = []
-        for row in old:
-            if row.team != team:
-                continue
-            found = match(row.player, remaining)
-            if found is not None:
-                remaining.remove(found)
-                retained.append(replace(row, player=DISPLAY_ALIASES.get(row.player, row.player)))
-        # Explicit 2025 hand-sheet presentation exception; unrelated rows are stable.
-        if season == 2025 and team_key(team) == normalize("Trou Trou Train"):
-            pair = [
-                i for i, r in enumerate(retained) if r.player in ("Jack Hughes", "Leon Draisaitl")
-            ]
-            if len(pair) == 2:
-                ordered = sorted((retained[i] for i in pair), key=lambda r: r.player)
-                for i, row in zip(pair, ordered):
-                    retained[i] = row
-        result.extend(retained)
-        result.extend(Keeper(team, p, season, 0) for p in remaining)
+        picks = drafted[team_key(team)]
+        # Existing contracts follow original sheet order, including incoming keepers.
+        retained = sorted(
+            (p for p in picks if p in contracts), key=lambda p: old.index(contracts[p])
+        )
+        for player in retained:
+            row = contracts[player]
+            if team_key(row.team) != team_key(team) and warnings is not None:
+                warnings.append(
+                    f"possible unrecorded trade: {player} sheet-team {row.team} -> "
+                    f"draft-team {team}; FYK/count carried, verify bonus"
+                )
+            result.append(replace(row, team=team, player=player))
+        result.extend(Keeper(team, p, season, 0) for p in picks if p not in contracts)
     return result
 
 
@@ -159,6 +169,7 @@ def scanTrades(  # noqa: N802
             continue
         if len(trade["teams"]) != 2:
             raise ValueError("trade must contain two teams")
+        transferred: set[str] = set()
         for side in trade["teams"]:
             for item in side["received"]:
                 if item.startswith("Round "):
@@ -167,6 +178,9 @@ def scanTrades(  # noqa: N802
                 found = match(player, [r.player for r in result])
                 if found is None:
                     continue
+                if found in transferred:
+                    raise ValueError("duplicate keeper in trade")
+                transferred.add(found)
                 target = teams.get(team_key(side["team"]))
                 if target is None:
                     raise ValueError(f"unknown acquiring team: {side['team']}")
@@ -175,7 +189,10 @@ def scanTrades(  # noqa: N802
                 row = result[index]
                 if team_key(row.team) not in (team_key(source), team_key(target)):
                     raise ValueError(f"trade ownership conflict for {player}")
-                result[index] = replace(row, team=target, traded=1)
+                # A target-owned row is already reflected (e.g. bootstrap from a
+                # manually maintained sheet). Never count it a second time.
+                if team_key(row.team) != team_key(target):
+                    result[index] = replace(row, team=target, traded=row.traded + 1)
         seen.add(key)
         watermark = max(watermark, trade_date(trade).isoformat())
     # Stable within each owner block; scan does not force five keepers per team.
