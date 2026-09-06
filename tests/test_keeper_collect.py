@@ -137,6 +137,7 @@ def test_two_page_fixture_reconciles_collected_count():
 def test_season_league_map_and_unknown_season():
     from src.keeper.collect import resolve_league
 
+    # Change detector for the full map supplied in NOVA-KRT-2; not live ID discovery.
     assert [resolve_league(year) for year in range(2014, 2027)] == [
         107861,
         49434,
@@ -155,3 +156,17 @@ def test_season_league_map_and_unknown_season():
     with pytest.raises(ValueError, match="unknown season"):
         resolve_league(2027)
     assert resolve_league(2027, 12345) == 12345
+
+
+def test_archived_2025_league_capture_has_its_own_current_draft():
+    from bs4 import BeautifulSoup
+
+    html = (FIXTURES / "draft-2025-26028.html").read_text()
+    soup = BeautifulSoup(html, "html.parser")
+    assert soup.select_one('option[value="current"]').get_text(strip=True) == "2025 draft order"
+    assert soup.select_one("option[selected]").get_text(strip=True) == "2025 draft order"
+    result = parse_draft(html, 2025)
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    assert {t: [p["player"] for p in picks] for t, picks in result.items()} == {
+        t: [p["player"] for p in picks] for t, picks in board.items() if t != "raw_full_draft"
+    }

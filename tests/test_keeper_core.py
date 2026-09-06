@@ -382,21 +382,73 @@ def test_fuzzy_contract_match_warns_about_identity_not_just_bonus():
     snapshot["raw_values"][4][2] = "Brand New Guyy"
     warnings = []
     reconcile(board, snapshot, expected_count=3, warnings=warnings)
-    assert any("fuzzy player-name match: Brand New Guy -> Brand New Guyy" in w
-               and "verify same person" in w for w in warnings)
+    assert any(
+        "fuzzy player-name match: Brand New Guy -> Brand New Guyy" in w
+        and "verify same person" in w
+        for w in warnings
+    )
 
 
 def test_unwatermarked_linear_history_recognizes_reflected_prefix():
-    trade = lambda i, source, target: {"season": 2026, "league_id": 5003,
-        "date": f"Oct {i}, 4:10 am", "teams": [
-            {"team": source, "received": ["Round 1"]},
-            {"team": target, "received": ["Player One (BOS - G)"]}]}
+    def trade(i, source, target):
+        return {
+            "season": 2026,
+            "league_id": 5003,
+            "date": f"Oct {i}, 4:10 am",
+            "teams": [
+                {"team": source, "received": ["Round 1"]},
+                {"team": target, "received": ["Player One (BOS - G)"]},
+            ],
+        }
+
     trades = [trade(1, "A", "B"), trade(2, "B", "C")]
     for owner, count in [("A", 0), ("B", 1), ("C", 2)]:
-        result, _ = scanTrades([Keeper(owner, "Player One", 2022, count)], trades,
-                              season=2026, known_teams=["A", "B", "C"])
+        result, _ = scanTrades(
+            [Keeper(owner, "Player One", 2022, count)],
+            trades,
+            season=2026,
+            known_teams=["A", "B", "C"],
+        )
         assert result == [Keeper("C", "Player One", 2022, 2)]
     broken = [trade(1, "A", "B"), trade(2, "A", "C")]
     with pytest.raises(ValueError, match="ownership conflict"):
-        scanTrades([Keeper("C", "Player One", 2022, 2)], broken,
-                   season=2026, known_teams=["A", "B", "C"])
+        scanTrades(
+            [Keeper("C", "Player One", 2022, 2)], broken, season=2026, known_teams=["A", "B", "C"]
+        )
+
+
+def test_seen_duplicates_and_explicit_state_target_owned_rows_do_not_recount():
+    trade = {
+        "season": 2026,
+        "league_id": 5003,
+        "date": "Oct 1, 4:10 am",
+        "teams": [
+            {"team": "A", "received": ["Round 1"]},
+            {"team": "B", "received": ["Player One (BOS - G)"]},
+        ],
+    }
+    rows = [Keeper("A", "Player One", 2022, 0)]
+    moved, _ = scanTrades(rows, [trade, trade], season=2026, known_teams=["A", "B"])
+    assert moved == [Keeper("B", "Player One", 2022, 1)]
+    state = {"season": 2026, "seen": [], "last_seen": ""}
+    assert scanTrades(moved, [trade], season=2026, known_teams=["A", "B"], state=state)[0] == moved
+
+
+def test_trade_scanner_surfaces_fuzzy_identity_and_each_increment():
+    rows = [Keeper("A", "Brand New Guyy", 2022, 2)]
+    trade = {
+        "season": 2026,
+        "league_id": 5003,
+        "date": "Oct 1, 4:10 am",
+        "teams": [
+            {"team": "A", "received": ["Round 1"]},
+            {"team": "B", "received": ["Brand New Guy (BOS - G)"]},
+        ],
+    }
+    warnings = []
+    scanTrades(rows, [trade], season=2026, known_teams=["A", "B"], warnings=warnings)
+    assert warnings == [
+        "fuzzy player-name match: Brand New Guy -> Brand New Guyy; "
+        "verify same person before trusting FYK/count",
+        "keeper trade: Brand New Guyy A -> B; trade count 2 -> 3",
+    ]
