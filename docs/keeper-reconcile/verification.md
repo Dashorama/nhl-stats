@@ -1588,3 +1588,35 @@ tests/test_keeper_sheet.py:180: AssertionError
 FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
 1 failed, 23 deselected in 0.04s
 ```
+
+### Backup includes original validation
+
+Mutation: omit `raw_validation` from the JSON backup.
+
+```text
+        ]
+E       KeyError: 'raw_validation'
+
+tests/test_keeper_sheet.py:365: KeyError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_count_validation_targets_only_keeper_g_cells_and_is_verified
+1 failed, 23 deselected in 0.08s
+```
+
+Final validation-change green: `162 passed, 2 warnings in 5.85s`. Live CLI
+scrape→reconcile→TEST COPY dry-run: zero changed teams, no warnings. All seven
+keeper source/data files, including seasons.json, byte-match the built wheel.
+
+Initial rule-revision red output (the CSV SET guard is included):
+
+```text
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
+FAILED tests/test_keeper_core.py::test_chained_trades_chronology_cumulative_and_watermark
+FAILED tests/test_keeper_core.py::test_board_spelling_and_original_sheet_order_replace_csv_cosmetics
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+FAILED tests/test_keeper_core.py::test_two_board_players_cannot_share_one_global_contract
+FAILED tests/test_keeper_core.py::test_cumulative_trade_from_existing_count_and_already_reflected_trade
+FAILED tests/test_keeper_cli.py::test_cli_surfaces_global_move_warning - KeyE...
+7 failed, 34 passed in 0.57s
+```
