@@ -424,7 +424,11 @@ class Database:
                 .filter(InjuryRecord.status.in_(["IR", "LTIR", "SUSPENDED"]))
                 .all()
             )
-            return {r.player_id for r in rows if r.player_id is not None}
+            ids: set[int] = set()
+            for r in rows:
+                assert r.player_id is not None, "player_id is the injuries table's primary key"
+                ids.add(r.player_id)
+            return ids
 
     def upsert_players(self, players: list[dict[str, Any]]) -> int:
         """Insert or update player records."""

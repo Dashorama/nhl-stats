@@ -57,10 +57,10 @@ class YahooFantasyClient:
         settings = self.query.get_league_settings()
         return cast("dict[str, Any]", _to_dict(settings))
 
-    def get_league_standings(self) -> list[dict[str, Any]]:
+    def get_league_standings(self) -> dict[str, Any]:
         """Get current league standings."""
         standings = self.query.get_league_standings()
-        return cast("list[dict[str, Any]]", _to_dict(standings))
+        return cast("dict[str, Any]", _to_dict(standings))
 
     def get_league_scoreboard(self, week: int | None = None) -> dict[str, Any]:
         """Get scoreboard for a given week (current week if None)."""
@@ -69,11 +69,10 @@ class YahooFantasyClient:
 
     # ── Team Info ────────────────────────────────────────────────
 
-    def get_my_team(self) -> dict[str, Any]:
+    def get_my_team(self) -> list[dict[str, Any]]:
         """Get the authenticated user's team info."""
-        self.query.get_current_user()
         teams = self.query.get_league_teams()
-        return cast("dict[str, Any]", _to_dict(teams))
+        return cast("list[dict[str, Any]]", _to_dict(teams))
 
     def get_team_info(self, team_id: int | str | None = None) -> dict[str, Any]:
         """Get info for a specific team."""
