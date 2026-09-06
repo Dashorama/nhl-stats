@@ -370,3 +370,21 @@ def test_profile_collection_is_validated_before_sheet_planning(tmp_path, monkeyp
     with pytest.raises(ValueError, match="incomplete transaction collection"):
         cli.main(args)
     assert api.writes == []
+
+
+def test_cli_surfaces_global_move_warning(tmp_path, monkeypatch, capsys):
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    # Exchange draft ownership while keeping five slots under each owner.
+    board["Julie the Cat"][0], board["Cuylle-O"][0] = (
+        board["Cuylle-O"][0], board["Julie the Cat"][0])
+    source = tmp_path / "board.json"
+    source.write_text(json.dumps(board))
+    api = FakeSheet(before, before)
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    cli.main(["reconcile", "--season", "2025", "--input", str(source),
+              "--state-dir", str(tmp_path)])
+    output = json.loads(capsys.readouterr().out)
+    assert any("possible unrecorded trade:" in w and "FYK/count carried" in w
+               for w in output["warnings"])
+    assert not api.writes
