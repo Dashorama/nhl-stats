@@ -105,3 +105,95 @@ def test_cli_rejects_missing_source_and_live_apply(tmp_path):
             ]
         )
     assert list(tmp_path.iterdir()) == []
+
+
+def test_cli_preserves_empty_team_identity(tmp_path, monkeypatch, capsys):
+    before = snapshot()
+    rows = from_snapshot(before)
+    empty_team = rows[-1].team
+    source = rows[0]
+    before = make_plan(before, [r for r in rows if r.team != empty_team])["expected"]
+    api = FakeSheet(before, before)
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    data = [
+        {
+            "season": 2026,
+            "league_id": 5003,
+            "date": "Oct 1, 4:10 am",
+            "teams": [
+                {"team": source.team, "received": ["Round 1"]},
+                {"team": empty_team, "received": [source.player + " (FLA - RW)"]},
+            ],
+        }
+    ]
+    input_file = tmp_path / "trade.json"
+    input_file.write_text(json.dumps(data))
+    cli.main(
+        [
+            "scan-trades",
+            "--season",
+            "2026",
+            "--input",
+            str(input_file),
+            "--state-dir",
+            str(tmp_path),
+        ]
+    )
+    output = json.loads(capsys.readouterr().out)
+    assert next(t for t in output["diff"] if t["team"] == empty_team)["added"] == [source.player]
+
+
+def pending_before_write(tmp_path, monkeypatch):
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    api = FakeSheet(before, make_plan(before, reconcile(board, before))["expected"])
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    write = api.write
+
+    def fail_write(_):
+        raise OSError("write never landed")
+
+    api.write = fail_write
+    args = [
+        "reconcile",
+        "--season",
+        "2025",
+        "--input",
+        str(FIXTURES / "keepers_2025.json"),
+        "--state-dir",
+        str(tmp_path),
+        "--apply",
+    ]
+    import pytest
+
+    with pytest.raises(OSError, match="never landed"):
+        cli.main(args)
+    api.write = write
+    return api, args
+
+
+def test_pending_retry_writes_unchanged_source(tmp_path, monkeypatch, capsys):
+    api, args = pending_before_write(tmp_path, monkeypatch)
+    cli.main(args[:-1])
+    assert api.writes == []
+    assert list(tmp_path.glob("pending*.json"))
+    cli.main(args)
+    assert len(api.writes) == 1
+    assert not list(tmp_path.glob("pending*.json"))
+    capsys.readouterr()
+
+
+def test_pending_conflict_retains_journal_and_backups(tmp_path, monkeypatch, capsys):
+    api, args = pending_before_write(tmp_path, monkeypatch)
+    api.before["raw_formulas"][3][2] = "Owner edited this keeper"
+    pending = next(tmp_path.glob("pending*.json"))
+    prior = pending.read_text()
+    backups = list((tmp_path / "backups").glob("*.json"))
+    import pytest
+
+    with pytest.raises(ValueError, match="conflicts"):
+        cli.main(args)
+    assert api.writes == []
+    assert pending.read_text() == prior
+    assert list((tmp_path / "backups").glob("*.json")) == backups
+    capsys.readouterr()

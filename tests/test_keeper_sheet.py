@@ -215,3 +215,12 @@ def test_backup_is_durable_before_first_write(tmp_path, monkeypatch):
     with pytest.raises(OSError, match="backup fsync"):
         apply_plan(failed, TEST_SHEET, before, plan, tmp_path, apply=True)
     assert failed.writes == []
+
+
+def test_formula_offsets_match_sheet_row_references():
+    from src.keeper.sheet import shifted
+
+    assert shifted("=F10-$B$1-1", -3) == "=F7-$B$1-1"
+    assert shifted("=E10+$G$1+G10", 3) == "=E13+$G$1+G13"
+    formula = "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B10,'List Of Teams And Owners'!$B$2:$B$13,0),1)"
+    assert shifted(formula, -2) == formula.replace("B10", "B8")
