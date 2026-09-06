@@ -108,7 +108,14 @@ def invoke(tmp_path, scenario, command="reconcile", season="2025", league="26028
     module.write_text(BROWSER)
     closed = tmp_path / "closed"
     result = subprocess.run(
-        ["node", str(SCRIPT), command, season, str(profile or tmp_path), league],
+        [
+            "node",
+            str(SCRIPT),
+            command,
+            season,
+            str(profile or tmp_path),
+            *([league] if league is not None else []),
+        ],
         env={
             **os.environ,
             "KEEPER_PLAYWRIGHT": str(module),
@@ -211,3 +218,9 @@ def test_season_specific_league_bare_first_and_archive_fallback(tmp_path, comman
             + "/hockey/17419/transactions?transactionsfilter=trade"
         )
     assert visits == expected
+
+
+def test_direct_collector_uses_season_map_when_id_omitted(tmp_path):
+    result, _ = invoke(tmp_path, {}, league=None)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["league_id"] == 26028

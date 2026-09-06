@@ -333,10 +333,17 @@ def test_cumulative_trade_from_existing_count_and_already_reflected_trade():
 
 @pytest.mark.parametrize("duplicate_side", [0, 1])
 def test_one_keeper_cannot_be_received_twice_in_one_trade(duplicate_side):
-    trade = {"season": 2026, "league_id": 5003, "date": "Oct 1, 4:10 am",
-             "teams": [{"team": "A", "received": ["Player One (BOS - G)"]},
-                       {"team": "B", "received": ["Round 1"]}]}
+    trade = {
+        "season": 2026,
+        "league_id": 5003,
+        "date": "Oct 1, 4:10 am",
+        "teams": [
+            {"team": "A", "received": ["Player One (BOS - G)"]},
+            {"team": "B", "received": ["Round 1"]},
+        ],
+    }
     trade["teams"][duplicate_side]["received"].append("Player One (BOS - G)")
     with pytest.raises(ValueError, match="duplicate keeper in trade"):
-        scanTrades([Keeper("B", "Player One", 2022, 2)], [trade],
-                   season=2026, known_teams=["A", "B"])
+        scanTrades(
+            [Keeper("B", "Player One", 2022, 2)], [trade], season=2026, known_teams=["A", "B"]
+        )
