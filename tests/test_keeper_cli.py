@@ -197,3 +197,131 @@ def test_pending_conflict_retains_journal_and_backups(tmp_path, monkeypatch, cap
     assert pending.read_text() == prior
     assert list((tmp_path / "backups").glob("*.json")) == backups
     capsys.readouterr()
+
+
+def test_lock_excludes_overlapping_apply(tmp_path, monkeypatch):
+    import fcntl
+    import pytest
+    from src.keeper.sheet import TEST_SHEET
+
+    api = FakeSheet(snapshot(), snapshot())
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    with (tmp_path / f"{TEST_SHEET}.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        with pytest.raises(BlockingIOError):
+            cli.main(
+                [
+                    "reconcile",
+                    "--season",
+                    "2025",
+                    "--input",
+                    str(FIXTURES / "keepers_2025.json"),
+                    "--state-dir",
+                    str(tmp_path),
+                    "--apply",
+                ]
+            )
+    assert api.writes == []
+
+
+def test_watermark_is_loaded_after_manual_correction(tmp_path, monkeypatch, capsys):
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    before = make_plan(before, reconcile(board, before))["expected"]
+    rows = from_snapshot(before)
+    source = rows[0]
+    data = [
+        {
+            "season": 2026,
+            "league_id": 5003,
+            "date": "Oct 1, 4:10 am",
+            "teams": [
+                {"team": source.team, "received": ["Round 1"]},
+                {"team": rows[5].team, "received": [source.player + " (FLA - RW)"]},
+            ],
+        }
+    ]
+    moved, _ = scanTrades(rows, data, season=2026)
+    api = FakeSheet(before, make_plan(before, moved)["expected"])
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    input_file = tmp_path / "trade.json"
+    input_file.write_text(json.dumps(data))
+    args = [
+        "scan-trades",
+        "--season",
+        "2026",
+        "--input",
+        str(input_file),
+        "--state-dir",
+        str(tmp_path),
+    ]
+    cli.main(args + ["--apply"])
+    capsys.readouterr()
+    api.writes.clear()  # Human restores original ownership after vetoing this already-seen trade.
+    cli.main(args)
+    output = json.loads(capsys.readouterr().out)
+    assert all(not t["added"] and not t["removed"] for t in output["diff"])
+
+
+def test_save_json_atomic_durable_replacement(tmp_path, monkeypatch):
+    import os
+    import pytest
+    from pathlib import Path
+
+    target = tmp_path / "state.json"
+    target.write_text('{"old": 1}')
+    events = []
+    real_sync, real_replace = os.fsync, Path.replace
+
+    def synced(fd):
+        events.append("fsync")
+        real_sync(fd)
+
+    def replaced(path, destination):
+        events.append("replace")
+        return real_replace(path, destination)
+
+    monkeypatch.setattr(cli.os, "fsync", synced)
+    monkeypatch.setattr(Path, "replace", replaced)
+    cli.save_json(target, {"new": 2})
+    assert events == ["fsync", "replace", "fsync"]
+    assert json.loads(target.read_text()) == {"new": 2}
+
+    def disk_failure(_):
+        raise OSError("disk failure")
+
+    monkeypatch.setattr(cli.os, "fsync", disk_failure)
+    with pytest.raises(OSError, match="disk failure"):
+        cli.save_json(target, {"lost": 3})
+    assert json.loads(target.read_text()) == {"new": 2}
+
+
+def test_watermark_season_and_pending_sheet_scopes(tmp_path, monkeypatch, capsys):
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    before = make_plan(before, reconcile(board, before))["expected"]
+    api = FakeSheet(before, before)
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    input_file = tmp_path / "empty.json"
+    input_file.write_text("[]")
+    for season in ("2025", "2026"):
+        cli.main(
+            [
+                "scan-trades",
+                "--season",
+                season,
+                "--input",
+                str(input_file),
+                "--state-dir",
+                str(tmp_path),
+                "--apply",
+            ]
+        )
+    assert sorted(
+        json.loads(p.read_text())["season"] for p in tmp_path.glob("watermark*.json")
+    ) == [2025, 2026]
+    api, args = pending_before_write(tmp_path, monkeypatch)
+    cli.main(args[:-1] + ["--sheet-id", "different-sheet", "--dry-run"])
+    output = capsys.readouterr().out
+    assert "Pending apply requires recovery" not in output
+    assert '"sheet_id": "different-sheet"' in output

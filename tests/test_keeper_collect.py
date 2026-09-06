@@ -30,7 +30,7 @@ def test_live_markup_trade_sample_and_fail_closed():
     ]
     with pytest.raises(ValueError, match="transaction"):
         parse_trades("<html>Login required</html>", 2024, 17419)
-    with pytest.raises(ValueError, match="trade"):
+    with pytest.raises(ValueError, match="^unrecognized trade row$"):
         parse_trades(html.replace("Traded to", "Changed markup", 1), 2024, 17419)
     assert (
         parse_trades(

@@ -189,3 +189,22 @@ def test_team_with_zero_keepers_can_receive_keeper():
     }
     result, _ = scanTrades(rows, [trade], season=2026, known_teams=["A", "B"])
     assert result == [Keeper("B", "Player One", 2024, 1)]
+
+
+def test_trade_identity_includes_receiving_teams():
+    from src.keeper.core import trade_key
+
+    trade = fixture("trades.json")[0]
+    changed = copy.deepcopy(trade)
+    changed["teams"][0]["team"] = "Other acquiring team"
+    assert trade_key(trade) != trade_key(changed)
+
+
+def test_trade_result_is_grouped_by_owner_order():
+    rows = [
+        Keeper("A", "Player One", 2024, 0),
+        Keeper("B", "Player Two", 2024, 0),
+        Keeper("A", "Player Three", 2024, 0),
+    ]
+    result, _ = scanTrades(rows, [], season=2026)
+    assert [r.player for r in result] == ["Player One", "Player Three", "Player Two"]

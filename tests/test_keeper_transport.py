@@ -18,8 +18,13 @@ const page={
  url(){return url;},
  locator(selector){return {async evaluateAll(){
    return selector.includes('option') ? s.options : (s.next || []);
+ }, async evaluate(){
+   if(s.pages) return s.pages[step-2];
+   if(s.loop) return {tradeCount:25,pagers:[{href:`https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=${(step-1)*25}`,terminal:false}]};
+   return {tradeCount:s.tradeCount ?? (s.next?.length ? 25 : 0),
+           pagers:s.pagers || (s.next || []).map(href=>({href,terminal:false}))};
  }};},
- async content(){return '<html>captured page</html>';}
+ async content(){return s.pages?.[step-2]?.html || '<html>captured page</html>';}
 };
 export const chromium={async launchPersistentContext(){return {
  async newPage(){return page;},
@@ -109,3 +114,33 @@ def test_transport_returns_captured_page_and_closes_profile(tmp_path):
         "league_id": 5003,
     }
     assert closed.read_text() == "closed"
+
+
+def test_two_page_structural_pager_deduplicates_top_bottom_links(tmp_path):
+    next_url='https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=25'
+    scenario={'pages':[
+        {'html':'page one','tradeCount':25,'pagers':[{'href':next_url,'terminal':False}]*2},
+        {'html':'page two','tradeCount':1,'pagers':[{'href':None,'terminal':True}]*2},
+    ]}
+    result,closed=invoke(tmp_path,scenario,'scan-trades','2026','5003')
+    assert result.returncode==0,result.stderr
+    output=json.loads(result.stdout)
+    assert output['pages']==['page one','page two']
+    assert output['complete'] is True
+    assert output['transaction_count']==26
+    assert closed.exists()
+
+
+@pytest.mark.parametrize('scenario,error',[
+    ({'tradeCount':25},'terminal pagination'),
+    ({'tradeCount':1,'pagers':[{'href':None,'terminal':False}]},'pagination marker'),
+    ({'tradeCount':26,'pagers':[{'href':None,'terminal':True}]},'page size'),
+    ({'tradeCount':1,'next':['https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=25']},'page size'),
+    ({'next':['https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=50']},'pagination offset'),
+    ({'loop':True},'pagination incomplete'),
+])
+def test_pagination_refuses_unproven_completeness(tmp_path,scenario,error):
+    result,_=invoke(tmp_path,scenario,'scan-trades','2026','5003')
+    assert result.returncode!=0
+    assert error in result.stderr
+    assert result.stdout==''

@@ -226,16 +226,60 @@ def test_formula_offsets_match_sheet_row_references():
     assert shifted(formula, -2) == formula.replace("B10", "B8")
 
 
-@pytest.mark.parametrize('error', ['#NAME?', '#NUM!', '#NULL!'])
+@pytest.mark.parametrize("error", ["#NAME?", "#NUM!", "#NULL!"])
 def test_all_sheet_formula_errors_fail_verification(error):
     from src.keeper.sheet import Sheets, verify
+
     before = snapshot()
     after = copy.deepcopy(before)
-    after['raw_values'][3][3] = error
-    with pytest.raises(ValueError, match='formula error'):
+    after["raw_values"][3][3] = error
+    with pytest.raises(ValueError, match="formula error"):
         verify(after, before)
     api = Sheets.__new__(Sheets)
-    api.tabs = {'UI': {'gridProperties': {'rowCount': 1}}}
+    api.tabs = {"UI": {"gridProperties": {"rowCount": 1}}}
     api.values = lambda *args: [[error]]
-    with pytest.raises(ValueError, match='UI formula error'):
+    with pytest.raises(ValueError, match="UI formula error"):
         api.check_ui()
+
+
+def test_empty_block_keeps_one_physical_row_and_insert_structure():
+    from dataclasses import replace
+    from src.keeper.core import from_snapshot
+
+    before = snapshot()
+    rows = from_snapshot(before)
+    empty = rows[-1].team
+    start = next(i for i, r in enumerate(before["raw_values"]) if r and r[0] == empty)
+    rows = [replace(r, team=rows[0].team) if r.team == empty else r for r in rows]
+    plan = make_plan(before, rows)
+    removal = plan["requests"][0]["deleteDimension"]["range"]
+    assert removal["startIndex"] == start + 1
+    assert removal["endIndex"] == len(before["raw_values"])
+    pastes = {r["copyPaste"]["pasteType"] for r in plan["requests"] if "copyPaste" in r}
+    assert "PASTE_FORMAT" in pastes
+    assert "PASTE_DATA_VALIDATION" in pastes
+
+
+@pytest.mark.parametrize("cell", [(0, 1), (3, 0), (3, 5), (3, 2)])
+def test_formula_value_comparison_cannot_hide_behind_owner_check(cell, tmp_path):
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    plan = make_plan(before, reconcile(board, before))
+    wrong = copy.deepcopy(plan["expected"])
+    wrong["raw_formulas"][cell[0]][cell[1]] = "static replacement"
+    with pytest.raises(ValueError, match="^post-write formula/value verification failed"):
+        apply_plan(FakeSheet(before, wrong), TEST_SHEET, before, plan, tmp_path, apply=True)
+
+
+def test_apply_checks_dependent_ui_before_success(tmp_path):
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    plan = make_plan(before, reconcile(board, before))
+    api = FakeSheet(before, plan["expected"])
+
+    def broken_ui():
+        raise ValueError("dependent UI broken")
+
+    api.check_ui = broken_ui
+    with pytest.raises(ValueError, match="dependent UI broken"):
+        apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
