@@ -208,3 +208,9 @@ def test_trade_result_is_grouped_by_owner_order():
     ]
     result, _ = scanTrades(rows, [], season=2026)
     assert [r.player for r in result] == ["Player One", "Player Three", "Player Two"]
+
+
+def test_leap_day_trade_date():
+    from datetime import datetime
+    from src.keeper.core import trade_date
+    assert trade_date({'season':2027,'date':'Feb 29, 4:10 am'}) == datetime(2028,2,29,4,10)

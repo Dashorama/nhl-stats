@@ -283,3 +283,12 @@ def test_apply_checks_dependent_ui_before_success(tmp_path):
     api.check_ui = broken_ui
     with pytest.raises(ValueError, match="dependent UI broken"):
         apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
+
+
+def test_empty_template_uses_current_year_input():
+    from src.keeper.core import from_snapshot
+    before=snapshot()
+    rows=from_snapshot(before)
+    rows=[r for r in rows if r.team!=rows[-1].team]
+    plan=make_plan(before,rows)
+    assert plan['expected']['raw_formulas'][-1][4] == int(before['raw_values'][0][1])
