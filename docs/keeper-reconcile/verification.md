@@ -1992,3 +1992,55 @@ values/formulas/validation snapshot restored and verified. Restoration backup:
 `/tmp/keeper-review-fixes-integration/backups/raw-data-20260906T142232.113820Z.json`.
 Wheel rebuilt; all seven keeper source/data files byte-match. Scoped format check:
 `10 files already formatted`. No live-sheet writes.
+
+
+## Final independent sign-off
+
+Both Sonnet5 and Opus5 re-reviewed production head
+`22ebec6db24bd027639d250c4a0d9c7a90908415` in separate disposable clones, using
+read-only branch refs and offline experiments. They independently reproduced
+the 20 review-fix mutations plus five validation mutations, restored sources,
+and passed the full 170-test suite. Both report **no remaining Critical or
+Important findings**. No blocker was waived. Subsequent commits are documentation.
+
+Opus additionally enumerated continuous trade chains of length1–4 over three teams:
+120 stateless cases correct,264 ambiguous cases rejected,90 explicit-baseline
+cases correct and replay-safe,zero defects. He verified post-resize G validation
+scoping/order, the real archive artifact, and the known-name alias mutation below.
+Sonnet confirmed fuzzy warnings, cumulative replay, contract deltas, and validation
+backup/readback wiring. Live Sheets verification was performed by the coder;
+reviewers intentionally used no live credentials or services.
+
+Non-blocking notes: manual edits after a watermark require baseline reconciliation
+(now explicit in README); new contracts intentionally appear in both membership
+and contract-value output; dated navigation JSON remains historical evidence,
+while executable routing/parsing tests cover the collector. Host timeout cleanup
+and production activation remain in issue#1. Baseline CI blockers remain in issue#2.
+
+### Known Matthew Tkachuk alias
+
+Mutation: remove the `Mathew Tkachuk` matching alias; the known-typo path falsely warns about identity.
+
+```text
+E         Left contains one more item: 'possible unrecorded trade: Matthew Tkachuk sheet-team B -> draft-team A; FYK/count carried, verify bonus'
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:291: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed, 36 deselected in 0.04s
+```
+
+Green after restoring alias: `1 passed, 36 deselected`.
+
+Validation-order initial red (test committed before implementation):
+
+```text
+>       assert validation_index < value_index
+E       assert 7 < 4
+
+tests/test_keeper_sheet.py:357: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_count_validation_targets_only_keeper_g_cells_and_is_verified
+1 failed, 23 deselected in 0.07s
+```

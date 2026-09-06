@@ -218,3 +218,11 @@ observations, including the current 2026 league (current/selected `2026 draft or
 zero keeper tags because its draft has not completed; reconcile fails closed).
 The full historical ID map comes from NOVA-KRT-2; it is configuration supplied by
 the league owner, not IDs discovered or authenticated by the map unit test.
+
+After a watermark exists, hand-applied trades require re-establishing the verified
+baseline before scanning again: ownership alone can absorb a single hop but cannot
+reveal a manually applied round trip. New keepers appear under both `added`
+(membership) and `updated` (initial FYK/count with `before: null`), so all written
+contract values remain visible. The dated navigation JSON is a historical
+observation; URL construction is covered by transport tests and the archived HTML
+by parser tests. Future Yahoo changes still require fresh captures.
