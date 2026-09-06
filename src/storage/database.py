@@ -389,7 +389,7 @@ class Database:
         """Get a new database session."""
         return self.SessionLocal()
 
-    def upsert_injuries(self, records: list[dict]) -> int:
+    def upsert_injuries(self, records: list[dict[str, Any]]) -> int:
         """Insert or update player availability records."""
         with self.get_session() as session:
             count = 0
@@ -424,7 +424,7 @@ class Database:
                 .filter(InjuryRecord.status.in_(["IR", "LTIR", "SUSPENDED"]))
                 .all()
             )
-            return {r.player_id for r in rows}
+            return {r.player_id for r in rows if r.player_id is not None}
 
     def upsert_players(self, players: list[dict[str, Any]]) -> int:
         """Insert or update player records."""
