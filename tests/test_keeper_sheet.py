@@ -224,3 +224,18 @@ def test_formula_offsets_match_sheet_row_references():
     assert shifted("=E10+$G$1+G10", 3) == "=E13+$G$1+G13"
     formula = "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B10,'List Of Teams And Owners'!$B$2:$B$13,0),1)"
     assert shifted(formula, -2) == formula.replace("B10", "B8")
+
+
+@pytest.mark.parametrize('error', ['#NAME?', '#NUM!', '#NULL!'])
+def test_all_sheet_formula_errors_fail_verification(error):
+    from src.keeper.sheet import Sheets, verify
+    before = snapshot()
+    after = copy.deepcopy(before)
+    after['raw_values'][3][3] = error
+    with pytest.raises(ValueError, match='formula error'):
+        verify(after, before)
+    api = Sheets.__new__(Sheets)
+    api.tabs = {'UI': {'gridProperties': {'rowCount': 1}}}
+    api.values = lambda *args: [[error]]
+    with pytest.raises(ValueError, match='UI formula error'):
+        api.check_ui()
