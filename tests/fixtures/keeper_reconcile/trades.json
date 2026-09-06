@@ -1,0 +1,274 @@
+[
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Mar 1, 4:10 am",
+    "teams": [
+      {
+        "team": "Julie the Cat",
+        "received": [
+          "Jeremy Swayman (BOS - G)",
+          "Round 3"
+        ]
+      },
+      {
+        "team": "The Bad Place",
+        "received": [
+          "Artturi Lehkonen (COL - LW,RW)",
+          "Nikolaj Ehlers (CAR - LW,RW)",
+          "Round 6"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Jeremy Swayman | | BOS - G | | | Round 3 | | | Traded to | | | | | Julie the Cat | | Mar 1, 4:10 am | | | | | | | || | | | Artturi Lehkonen | | COL - LW,RW | | | | Nikolaj Ehlers | | CAR - LW,RW | | | Round 6 | | | Traded to | | | | | The Bad Place | | Mar 1, 4:10 am | | | | | | |"
+  },
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Feb 28, 4:10 am",
+    "teams": [
+      {
+        "team": "JeanClaud VanDangles",
+        "received": [
+          "Timo Meier (NJ - LW,RW)",
+          "Macklin Celebrini (SJ - C)",
+          "Round 1",
+          "Round 4 (traded from Miller\u2019s High Life)"
+        ]
+      },
+      {
+        "team": "Trou Trou Train",
+        "received": [
+          "Leon Draisaitl (EDM - C,LW)",
+          "Jack Eichel (VGK - C)",
+          "Round 5",
+          "Round 7"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Timo Meier | | NJ - LW,RW | | | | Macklin Celebrini | | SJ - C | | | Round 1 | | Round 4 | (traded from Miller\u2019s High Life) | | | | Traded to | | | | | JeanClaud VanDangles | | Feb 28, 4:10 am | | | | | | | || | | | Leon Draisaitl | | EDM - C,LW | | | | Jack Eichel | | VGK - C | | | Round 5 | | Round 7 | | | Traded to | | | | | Trou Trou Train | | Feb 28, 4:10 am | | | | | | |"
+  },
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Feb 17, 4:06 am",
+    "teams": [
+      {
+        "team": "The Bad Place",
+        "received": [
+          "Brayden Point (TB - C)",
+          "Round 5"
+        ]
+      },
+      {
+        "team": "Julie the Cat",
+        "received": [
+          "Round 2"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Brayden Point | | TB - C | | | Round 5 | | | Traded to | | | | | The Bad Place | | Feb 17, 4:06 am | | | | | | | || | | Round 2 | | | Traded to | | | | | Julie the Cat | | Feb 17, 4:06 am | | | | | | |"
+  },
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Feb 11, 3:59 am",
+    "teams": [
+      {
+        "team": "Hanstuetzle and Guentzel",
+        "received": [
+          "William Nylander (TOR - C,RW)",
+          "Round 3",
+          "Round 6"
+        ]
+      },
+      {
+        "team": "Miller\u2019s High Life",
+        "received": [
+          "Round 2",
+          "Round 4"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | William Nylander | | TOR - C,RW | | | Round 3 | | Round 6 | | | Traded to | | | | | Hanstuetzle and Guentzel | | Feb 11, 3:59 am | | | | | | | || | | Round 2 | | Round 4 | | | Traded to | | | | | Miller\u2019s High Life | | Feb 11, 3:59 am | | | | | | |"
+  },
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Feb 10, 4:13 am",
+    "teams": [
+      {
+        "team": "Makings of a Varsity Athlete",
+        "received": [
+          "Nathan MacKinnon (COL - C)",
+          "Round 2",
+          "Round 3 (traded from Trou Trou Train)"
+        ]
+      },
+      {
+        "team": "Miller\u2019s High Life",
+        "received": [
+          "Round 1",
+          "Round 2"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Nathan MacKinnon | | COL - C | | | Round 2 | | Round 3 | (traded from Trou Trou Train) | | | | Traded to | | | | | Makings of a Varsity Athlete | | Feb 10, 4:13 am | | | | | | | || | | Round 1 | | Round 2 | | | Traded to | | | | | Miller\u2019s High Life | | Feb 10, 4:13 am | | | | | | |"
+  },
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Dec 27, 1:47 pm",
+    "teams": [
+      {
+        "team": "Jews for McJesus",
+        "received": [
+          "Scott Wedgewood (COL - G)",
+          "Round 2"
+        ]
+      },
+      {
+        "team": "Trou Trou Train",
+        "received": [
+          "Mackenzie Blackwood (COL - G)",
+          "Round 10"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Scott Wedgewood | | COL - G | | | Round 2 | | | Traded to | | | | | Jews for McJesus | | Dec 27, 1:47 pm | | | | | | | || | | | Mackenzie Blackwood | | COL - G | | | Round 10 | | | Traded to | | | | | Trou Trou Train | | Dec 27, 1:47 pm | | | | | | |"
+  },
+  {
+    "season": 2024,
+    "league_id": 17419,
+    "date": "Dec 4, 4:44 pm",
+    "teams": [
+      {
+        "team": "Trou Trou Train",
+        "received": [
+          "Brayden McNabb (VGK - D)",
+          "Kevin Lankinen (VAN - G)",
+          "Round 4"
+        ]
+      },
+      {
+        "team": "Miller\u2019s High Life",
+        "received": [
+          "Lukas Dostal (ANA - G)",
+          "Jacob Trouba (SJ - D)",
+          "Round 3"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Brayden McNabb | | VGK - D | | | | Kevin Lankinen | | VAN - G | | O | | | Round 4 | | | Traded to | | | | | Trou Trou Train | | Dec 4, 4:44 pm | | | | | | | || | | | Lukas Dostal | | ANA - G | | | | Jacob Trouba | | SJ - D | | | Round 3 | | | Traded to | | | | | Miller\u2019s High Life | | Dec 4, 4:44 pm | | | | | | |"
+  },
+  {
+    "season": 2023,
+    "league_id": 23870,
+    "date": "Mar 1, 3:59 am",
+    "teams": [
+      {
+        "team": "Julie the Cat",
+        "received": [
+          "Filip Hronek (VAN - D)",
+          "Valeri Nichushkin (CBJ - LW,RW)",
+          "Round 2",
+          "Round 3",
+          "Round 4"
+        ]
+      },
+      {
+        "team": "Chytll\u2019ing Up",
+        "received": [
+          "Alexandar Georgiev (BUF - G)",
+          "Jacob Trouba (SJ - D)",
+          "Round 2",
+          "Round 3",
+          "Round 4"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Filip Hronek | | VAN - D | | | | Valeri Nichushkin | | CBJ - LW,RW | | IR-NR | | | Round 2 | | Round 3 | | Round 4 | | | Traded to | | | | | Julie the Cat | | Mar 1, 3:59 am | | | | | | | || | | | Alexandar Georgiev | | BUF - G | | NA | | | | Jacob Trouba | | SJ - D | | | Round 2 | | Round 3 | | Round 4 | | | Traded to | | | | | Chytll\u2019ing Up | | Mar 1, 3:59 am | | | | | | |"
+  },
+  {
+    "season": 2022,
+    "league_id": 13632,
+    "date": "Nov 30, 3:08 am",
+    "teams": [
+      {
+        "team": "JeanClaud VanDangles",
+        "received": [
+          "Martin Jones (TOR - G)"
+        ]
+      },
+      {
+        "team": "KNUCKLE PUCK TIME!!!",
+        "received": [
+          "Dylan Larkin (DET - C)"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Martin Jones | | TOR - G | | NA | | | | Traded to | | | | | JeanClaud VanDangles | | Nov 30, 3:08 am | | | | | | | || | | | Dylan Larkin | | DET - C | | | | Traded to | | | | | KNUCKLE PUCK TIME!!! | | Nov 30, 3:08 am | | | | | | |"
+  },
+  {
+    "season": 2020,
+    "league_id": 29812,
+    "date": "Mar 16, 3:09 am",
+    "teams": [
+      {
+        "team": "KNUCKLE PUCK TIME!!!",
+        "received": [
+          "Jakob Chychrun (WSH - D)"
+        ]
+      },
+      {
+        "team": "The Irish Curse",
+        "received": [
+          "Petr Mrazek (ANA - G)"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Jakob Chychrun | | WSH - D | | | | Traded to | | | | | KNUCKLE PUCK TIME!!! | | Mar 16, 3:09 am | | | | | | | || | | | Petr Mrazek | | ANA - G | | NA | | | | Traded to | | | | | The Irish Curse | | Mar 16, 3:09 am | | | | | | |"
+  },
+  {
+    "season": 2019,
+    "league_id": 20403,
+    "date": "Feb 18, 3:08 am",
+    "teams": [
+      {
+        "team": "Mika is on Point",
+        "received": [
+          "Alex Goligoski (MIN - D)",
+          "Round 2"
+        ]
+      },
+      {
+        "team": "The Irish Curse",
+        "received": [
+          "Tony DeAngelo (NYI - D)",
+          "Round 18"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Alex Goligoski | | MIN - D | | NA | | | Round 2 | | | Traded to | | | | | Mika is on Point | | Feb 18, 3:08 am | | | | | | | || | | | Tony DeAngelo | | NYI - D | | | Round 18 | | | Traded to | | | | | The Irish Curse | | Feb 18, 3:08 am | | | | | | |"
+  },
+  {
+    "season": 2016,
+    "league_id": 69011,
+    "date": "Dec 2, 3:20 am",
+    "teams": [
+      {
+        "team": "Centers Only",
+        "received": [
+          "Dylan Larkin (DET - C,RW)"
+        ]
+      },
+      {
+        "team": "Bettman Returns",
+        "received": [
+          "Jimmy Howard (DET - G)"
+        ]
+      }
+    ],
+    "raw_text": "| | \ue037 | | | | | Dylan Larkin | | DET - C,RW | | | | Traded to | | | | | Centers Only | | Dec 2, 3:20 am | | | | | | | || | | | Jimmy Howard | | DET - G | | NA | | | | Traded to | | | | | Bettman Returns | | Dec 2, 3:20 am | | | | | | |"
+  }
+]
