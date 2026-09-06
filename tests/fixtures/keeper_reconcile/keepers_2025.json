@@ -1,0 +1,2176 @@
+{
+  "Bitch Slappers": [
+    {
+      "player": "Jacob Markstrom",
+      "nhl_team_pos": "FLA - G",
+      "round": 14,
+      "pick": 10,
+      "keeper": true
+    },
+    {
+      "player": "Jesper Bratt",
+      "nhl_team_pos": "NJ - LW,RW",
+      "round": 15,
+      "pick": 3,
+      "keeper": true
+    },
+    {
+      "player": "Nick Suzuki",
+      "nhl_team_pos": "MTL - C",
+      "round": 16,
+      "pick": 10,
+      "keeper": true
+    },
+    {
+      "player": "Macklin Celebrini",
+      "nhl_team_pos": "SJ - C",
+      "round": 17,
+      "pick": 3,
+      "keeper": true
+    },
+    {
+      "player": "Cale Makar",
+      "nhl_team_pos": "COL - D",
+      "round": 18,
+      "pick": 10,
+      "keeper": true
+    }
+  ],
+  "Cuylle-O": [
+    {
+      "player": "Sergei Bobrovsky",
+      "nhl_team_pos": "TOR - G",
+      "round": 14,
+      "pick": 9,
+      "keeper": true
+    },
+    {
+      "player": "Mika Zibanejad",
+      "nhl_team_pos": "NYR - C,RW",
+      "round": 15,
+      "pick": 4,
+      "keeper": true
+    },
+    {
+      "player": "Mikhail Sergachev",
+      "nhl_team_pos": "UTA - D",
+      "round": 16,
+      "pick": 9,
+      "keeper": true
+    },
+    {
+      "player": "Matthew Tkachuk",
+      "nhl_team_pos": "FLA - LW,RW",
+      "round": 17,
+      "pick": 4,
+      "keeper": true
+    },
+    {
+      "player": "David Pastrnak",
+      "nhl_team_pos": "BOS - RW",
+      "round": 18,
+      "pick": 9,
+      "keeper": true
+    }
+  ],
+  "Hanstuetzle and Guentzel": [
+    {
+      "player": "Darcy Kuemper",
+      "nhl_team_pos": "LA - G",
+      "round": 14,
+      "pick": 6,
+      "keeper": true
+    },
+    {
+      "player": "Shea Theodore",
+      "nhl_team_pos": "VGK - D",
+      "round": 15,
+      "pick": 7,
+      "keeper": true
+    },
+    {
+      "player": "Jake Guentzel",
+      "nhl_team_pos": "TB - LW,RW",
+      "round": 16,
+      "pick": 6,
+      "keeper": true
+    },
+    {
+      "player": "William Nylander",
+      "nhl_team_pos": "TOR - C,RW",
+      "round": 17,
+      "pick": 7,
+      "keeper": true
+    },
+    {
+      "player": "Brady Tkachuk",
+      "nhl_team_pos": "FLA - C,LW",
+      "round": 18,
+      "pick": 6,
+      "keeper": true
+    }
+  ],
+  "Jews for McJesus": [
+    {
+      "player": "Anthony Stolarz",
+      "nhl_team_pos": "TOR - G",
+      "round": 14,
+      "pick": 12,
+      "keeper": true
+    },
+    {
+      "player": "Adam Fox",
+      "nhl_team_pos": "NYR - D",
+      "round": 15,
+      "pick": 1,
+      "keeper": true
+    },
+    {
+      "player": "John Tavares",
+      "nhl_team_pos": "TOR - C",
+      "round": 16,
+      "pick": 12,
+      "keeper": true
+    },
+    {
+      "player": "Mark Scheifele",
+      "nhl_team_pos": "WPG - C",
+      "round": 17,
+      "pick": 1,
+      "keeper": true
+    },
+    {
+      "player": "Jason Robertson",
+      "nhl_team_pos": "DAL - LW,RW",
+      "round": 18,
+      "pick": 12,
+      "keeper": true
+    }
+  ],
+  "Julie the Cat": [
+    {
+      "player": "Jeremy Swayman",
+      "nhl_team_pos": "BOS - G",
+      "round": 14,
+      "pick": 11,
+      "keeper": true
+    },
+    {
+      "player": "MacKenzie Weegar",
+      "nhl_team_pos": "UTA - D",
+      "round": 15,
+      "pick": 2,
+      "keeper": true
+    },
+    {
+      "player": "Martin Necas",
+      "nhl_team_pos": "COL - RW",
+      "round": 16,
+      "pick": 11,
+      "keeper": true
+    },
+    {
+      "player": "Adrian Kempe",
+      "nhl_team_pos": "LA - RW",
+      "round": 17,
+      "pick": 2,
+      "keeper": true
+    },
+    {
+      "player": "J.T. Miller",
+      "nhl_team_pos": "NYR - C,LW,RW",
+      "round": 18,
+      "pick": 11,
+      "keeper": true
+    }
+  ],
+  "KNUCKLE PUCK TIME!!!": [
+    {
+      "player": "Connor Hellebuyck",
+      "nhl_team_pos": "WPG - G",
+      "round": 14,
+      "pick": 4,
+      "keeper": true
+    },
+    {
+      "player": "Lane Hutson",
+      "nhl_team_pos": "MTL - D",
+      "round": 15,
+      "pick": 9,
+      "keeper": true
+    },
+    {
+      "player": "Tim Stutzle",
+      "nhl_team_pos": "OTT - C,LW",
+      "round": 16,
+      "pick": 4,
+      "keeper": true
+    },
+    {
+      "player": "Clayton Keller",
+      "nhl_team_pos": "UTA - LW,RW",
+      "round": 17,
+      "pick": 9,
+      "keeper": true
+    },
+    {
+      "player": "Kyle Connor",
+      "nhl_team_pos": "WPG - LW",
+      "round": 18,
+      "pick": 4,
+      "keeper": true
+    }
+  ],
+  "Makings of a Varsity Athlete": [
+    {
+      "player": "Seth Jarvis",
+      "nhl_team_pos": "CAR - LW,RW",
+      "round": 14,
+      "pick": 2,
+      "keeper": true
+    },
+    {
+      "player": "Cole Caufield",
+      "nhl_team_pos": "MTL - LW,RW",
+      "round": 15,
+      "pick": 11,
+      "keeper": true
+    },
+    {
+      "player": "Filip Forsberg",
+      "nhl_team_pos": "NSH - LW",
+      "round": 16,
+      "pick": 2,
+      "keeper": true
+    },
+    {
+      "player": "Evan Bouchard",
+      "nhl_team_pos": "EDM - D",
+      "round": 17,
+      "pick": 11,
+      "keeper": true
+    },
+    {
+      "player": "Nathan MacKinnon",
+      "nhl_team_pos": "COL - C",
+      "round": 18,
+      "pick": 2,
+      "keeper": true
+    }
+  ],
+  "Miller’s High Life": [
+    {
+      "player": "Zach Hyman",
+      "nhl_team_pos": "EDM - LW,RW",
+      "round": 14,
+      "pick": 8,
+      "keeper": true
+    },
+    {
+      "player": "Vince Dunn",
+      "nhl_team_pos": "SEA - D",
+      "round": 15,
+      "pick": 5,
+      "keeper": true
+    },
+    {
+      "player": "Tomas Hertl",
+      "nhl_team_pos": "VGK - C,LW",
+      "round": 16,
+      "pick": 8,
+      "keeper": true
+    },
+    {
+      "player": "Mark Stone",
+      "nhl_team_pos": "VGK - RW",
+      "round": 17,
+      "pick": 5,
+      "keeper": true
+    },
+    {
+      "player": "Vincent Trocheck",
+      "nhl_team_pos": "UTA - C",
+      "round": 18,
+      "pick": 8,
+      "keeper": true
+    }
+  ],
+  "Sam Rosen Rules": [
+    {
+      "player": "Jake Oettinger",
+      "nhl_team_pos": "DAL - G",
+      "round": 14,
+      "pick": 7,
+      "keeper": true
+    },
+    {
+      "player": "Josh Morrissey",
+      "nhl_team_pos": "WPG - D",
+      "round": 15,
+      "pick": 6,
+      "keeper": true
+    },
+    {
+      "player": "Sebastian Aho",
+      "nhl_team_pos": "CAR - C",
+      "round": 16,
+      "pick": 7,
+      "keeper": true
+    },
+    {
+      "player": "Nazem Kadri",
+      "nhl_team_pos": "COL - C,LW",
+      "round": 17,
+      "pick": 6,
+      "keeper": true
+    },
+    {
+      "player": "Matt Boldy",
+      "nhl_team_pos": "MIN - LW,RW",
+      "round": 18,
+      "pick": 7,
+      "keeper": true
+    }
+  ],
+  "Tage Against the Machine": [
+    {
+      "player": "Igor Shesterkin",
+      "nhl_team_pos": "NYR - G",
+      "round": 14,
+      "pick": 5,
+      "keeper": true
+    },
+    {
+      "player": "Brandon Hagel",
+      "nhl_team_pos": "TB - LW,RW",
+      "round": 15,
+      "pick": 8,
+      "keeper": true
+    },
+    {
+      "player": "Tage Thompson",
+      "nhl_team_pos": "BUF - C,RW",
+      "round": 16,
+      "pick": 5,
+      "keeper": true
+    },
+    {
+      "player": "Sam Reinhart",
+      "nhl_team_pos": "FLA - RW",
+      "round": 17,
+      "pick": 8,
+      "keeper": true
+    },
+    {
+      "player": "Quinn Hughes",
+      "nhl_team_pos": "MIN - D",
+      "round": 18,
+      "pick": 5,
+      "keeper": true
+    }
+  ],
+  "The Bad Place": [
+    {
+      "player": "Dustin Wolf",
+      "nhl_team_pos": "CGY - G",
+      "round": 14,
+      "pick": 3,
+      "keeper": true
+    },
+    {
+      "player": "Connor Bedard",
+      "nhl_team_pos": "CHI - C,RW",
+      "round": 15,
+      "pick": 10,
+      "keeper": true
+    },
+    {
+      "player": "Artemi Panarin",
+      "nhl_team_pos": "LA - LW",
+      "round": 16,
+      "pick": 3,
+      "keeper": true
+    },
+    {
+      "player": "Zach Werenski",
+      "nhl_team_pos": "CBJ - D",
+      "round": 17,
+      "pick": 10,
+      "keeper": true
+    },
+    {
+      "player": "Nikita Kucherov",
+      "nhl_team_pos": "TB - RW",
+      "round": 18,
+      "pick": 3,
+      "keeper": true
+    }
+  ],
+  "Trou Trou Train": [
+    {
+      "player": "Mackenzie Blackwood",
+      "nhl_team_pos": "COL - G",
+      "round": 14,
+      "pick": 1,
+      "keeper": true
+    },
+    {
+      "player": "Radko Gudas",
+      "nhl_team_pos": "FLA - D",
+      "round": 15,
+      "pick": 12,
+      "keeper": true
+    },
+    {
+      "player": "Jack Hughes",
+      "nhl_team_pos": "NJ - C,LW",
+      "round": 16,
+      "pick": 1,
+      "keeper": true
+    },
+    {
+      "player": "Kirill Kaprizov",
+      "nhl_team_pos": "MIN - LW",
+      "round": 17,
+      "pick": 12,
+      "keeper": true
+    },
+    {
+      "player": "Leon Draisaitl",
+      "nhl_team_pos": "EDM - C,LW",
+      "round": 18,
+      "pick": 1,
+      "keeper": true
+    }
+  ],
+  "raw_full_draft": [
+    {
+      "round": 1,
+      "pick": 1,
+      "player": "Connor McDavid",
+      "nhl_team_pos": "EDM - C",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 2,
+      "player": "Auston Matthews",
+      "nhl_team_pos": "TOR - C",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 3,
+      "player": "Andrei Vasilevskiy",
+      "nhl_team_pos": "TB - G",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 4,
+      "player": "Mikko Rantanen",
+      "nhl_team_pos": "DAL - LW,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 5,
+      "player": "Mitch Marner",
+      "nhl_team_pos": "VGK - C,LW,RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 6,
+      "player": "Jack Eichel",
+      "nhl_team_pos": "VGK - C",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 7,
+      "player": "Brayden Point",
+      "nhl_team_pos": "TB - C",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 8,
+      "player": "Rasmus Dahlin",
+      "nhl_team_pos": "BUF - D",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 9,
+      "player": "Alex Ovechkin",
+      "nhl_team_pos": "WSH - LW,RW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 10,
+      "player": "Filip Gustavsson",
+      "nhl_team_pos": "MIN - G",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 11,
+      "player": "Ilya Sorokin",
+      "nhl_team_pos": "NYI - G",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 1,
+      "pick": 12,
+      "player": "Victor Hedman",
+      "nhl_team_pos": "TB - D",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 1,
+      "player": "Wyatt Johnston",
+      "nhl_team_pos": "DAL - C,RW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 2,
+      "player": "Roman Josi",
+      "nhl_team_pos": "NSH - D",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 3,
+      "player": "Adin Hill",
+      "nhl_team_pos": "VGK - G",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 4,
+      "player": "Sidney Crosby",
+      "nhl_team_pos": "PIT - C",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 5,
+      "player": "Moritz Seider",
+      "nhl_team_pos": "DET - D",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 6,
+      "player": "Elias Pettersson",
+      "nhl_team_pos": "VAN - C",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 7,
+      "player": "Logan Thompson",
+      "nhl_team_pos": "WSH - G",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 8,
+      "player": "Travis Konecny",
+      "nhl_team_pos": "PHI - LW,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 9,
+      "player": "Robert Thomas",
+      "nhl_team_pos": "STL - C",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 10,
+      "player": "Timo Meier",
+      "nhl_team_pos": "NJ - LW,RW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 11,
+      "player": "Nikolaj Ehlers",
+      "nhl_team_pos": "CAR - LW",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 2,
+      "pick": 12,
+      "player": "Alex DeBrincat",
+      "nhl_team_pos": "DET - LW,RW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 1,
+      "player": "Jakob Chychrun",
+      "nhl_team_pos": "WSH - D",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 2,
+      "player": "Noah Dobson",
+      "nhl_team_pos": "MTL - D",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 3,
+      "player": "Sam Bennett",
+      "nhl_team_pos": "FLA - C",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 4,
+      "player": "Jake Sanderson",
+      "nhl_team_pos": "OTT - D",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 5,
+      "player": "Lucas Raymond",
+      "nhl_team_pos": "DET - RW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 6,
+      "player": "Kirill Marchenko",
+      "nhl_team_pos": "CBJ - RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 7,
+      "player": "Thomas Harley",
+      "nhl_team_pos": "DAL - D",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 8,
+      "player": "Jordan Kyrou",
+      "nhl_team_pos": "WSH - RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 9,
+      "player": "Linus Ullmark",
+      "nhl_team_pos": "OTT - G",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 10,
+      "player": "Kevin Fiala",
+      "nhl_team_pos": "LA - LW",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 11,
+      "player": "Juuse Saros",
+      "nhl_team_pos": "NSH - G",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 3,
+      "pick": 12,
+      "player": "Valeri Nichushkin",
+      "nhl_team_pos": "CBJ - LW,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 1,
+      "player": "Tom Wilson",
+      "nhl_team_pos": "WSH - RW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 2,
+      "player": "Drake Batherson",
+      "nhl_team_pos": "OTT - LW,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 3,
+      "player": "Dylan Larkin",
+      "nhl_team_pos": "DET - C",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 4,
+      "player": "Matvei Michkov",
+      "nhl_team_pos": "PHI - LW,RW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 5,
+      "player": "Matthew Knies",
+      "nhl_team_pos": "TOR - LW,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 6,
+      "player": "Miro Heiskanen",
+      "nhl_team_pos": "DAL - D",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 7,
+      "player": "Alex Tuch",
+      "nhl_team_pos": "WSH - LW,RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 8,
+      "player": "Pierre-Luc Dubois",
+      "nhl_team_pos": "WSH - C,LW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 9,
+      "player": "Nico Hischier",
+      "nhl_team_pos": "NJ - C",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 10,
+      "player": "Will Cuylle",
+      "nhl_team_pos": "NYR - LW,RW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 11,
+      "player": "Neal Pionk",
+      "nhl_team_pos": "WPG - D",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 4,
+      "pick": 12,
+      "player": "Dougie Hamilton",
+      "nhl_team_pos": "NJ - D",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 1,
+      "player": "Brandon Montour",
+      "nhl_team_pos": "SEA - D",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 2,
+      "player": "Roope Hintz",
+      "nhl_team_pos": "DAL - C",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 3,
+      "player": "Seth Jones",
+      "nhl_team_pos": "FLA - D",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 4,
+      "player": "Jordan Binnington",
+      "nhl_team_pos": "STL - G",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 5,
+      "player": "Andrei Svechnikov",
+      "nhl_team_pos": "CAR - LW,RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 6,
+      "player": "Nikita Zadorov",
+      "nhl_team_pos": "BOS - D",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 7,
+      "player": "Dylan Holloway",
+      "nhl_team_pos": "STL - C,LW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 8,
+      "player": "Samuel Montembeault",
+      "nhl_team_pos": "MTL - G",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 9,
+      "player": "Jackson LaCombe",
+      "nhl_team_pos": "ANA - D",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 10,
+      "player": "Dylan Guenther",
+      "nhl_team_pos": "UTA - LW,RW",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 11,
+      "player": "John Carlson",
+      "nhl_team_pos": "TB - D",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 5,
+      "pick": 12,
+      "player": "Mathieu Olivier",
+      "nhl_team_pos": "CBJ - RW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 1,
+      "player": "Kiefer Sherwood",
+      "nhl_team_pos": "SJ - LW,RW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 2,
+      "player": "Stuart Skinner",
+      "nhl_team_pos": "WPG - G",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 3,
+      "player": "JJ Peterka",
+      "nhl_team_pos": "BOS - LW,RW",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 4,
+      "player": "Joel Eriksson Ek",
+      "nhl_team_pos": "MIN - C",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 5,
+      "player": "Ivan Demidov",
+      "nhl_team_pos": "MTL - RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 6,
+      "player": "Carter Verhaeghe",
+      "nhl_team_pos": "FLA - LW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 7,
+      "player": "Frank Vatrano",
+      "nhl_team_pos": "ANA - LW,RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 8,
+      "player": "Charlie McAvoy",
+      "nhl_team_pos": "BOS - D",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 9,
+      "player": "Erik Karlsson",
+      "nhl_team_pos": "PIT - D",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 10,
+      "player": "Thomas Chabot",
+      "nhl_team_pos": "OTT - D",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 11,
+      "player": "Luke Hughes",
+      "nhl_team_pos": "NJ - D",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 6,
+      "pick": 12,
+      "player": "Pavel Dorofeyev",
+      "nhl_team_pos": "NYR - LW,RW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 1,
+      "player": "Pyotr Kochetkov",
+      "nhl_team_pos": "CAR - G",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 2,
+      "player": "Logan Cooley",
+      "nhl_team_pos": "UTA - C",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 3,
+      "player": "Darnell Nurse",
+      "nhl_team_pos": "SJ - D",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 4,
+      "player": "Juraj Slafkovský",
+      "nhl_team_pos": "MTL - LW,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 5,
+      "player": "Alexander Nikishin",
+      "nhl_team_pos": "CAR - D",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 6,
+      "player": "Quinton Byfield",
+      "nhl_team_pos": "LA - C",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 7,
+      "player": "Lukas Dostal",
+      "nhl_team_pos": "ANA - G",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 8,
+      "player": "Mathew Barzal",
+      "nhl_team_pos": "NYI - C,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 9,
+      "player": "Devon Toews",
+      "nhl_team_pos": "COL - D",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 10,
+      "player": "Shayne Gostisbehere",
+      "nhl_team_pos": "CAR - D",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 11,
+      "player": "Colton Parayko",
+      "nhl_team_pos": "STL - D",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 7,
+      "pick": 12,
+      "player": "Dylan Cozens",
+      "nhl_team_pos": "OTT - C",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 1,
+      "player": "Brayden McNabb",
+      "nhl_team_pos": "VGK - D",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 2,
+      "player": "Mason McTavish",
+      "nhl_team_pos": "STL - C",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 3,
+      "player": "Cam Fowler",
+      "nhl_team_pos": "STL - D",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 4,
+      "player": "Brad Marchand",
+      "nhl_team_pos": "FLA - LW,RW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 5,
+      "player": "John Gibson",
+      "nhl_team_pos": "DET - G",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 6,
+      "player": "Aaron Ekblad",
+      "nhl_team_pos": "FLA - D",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 7,
+      "player": "Bryan Rust",
+      "nhl_team_pos": "PIT - RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 8,
+      "player": "Filip Hronek",
+      "nhl_team_pos": "VAN - D",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 9,
+      "player": "Gabriel Vilardi",
+      "nhl_team_pos": "WPG - C,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 10,
+      "player": "Zeev Buium",
+      "nhl_team_pos": "VAN - D",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 11,
+      "player": "Noah Hanifin",
+      "nhl_team_pos": "VGK - D",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 8,
+      "pick": 12,
+      "player": "Dylan Strome",
+      "nhl_team_pos": "WSH - C",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 1,
+      "player": "Matt Duchene",
+      "nhl_team_pos": "DAL - C,RW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 2,
+      "player": "Adam Fantilli",
+      "nhl_team_pos": "CBJ - C",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 3,
+      "player": "Gustav Forsling",
+      "nhl_team_pos": "FLA - D",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 4,
+      "player": "Joey Daccord",
+      "nhl_team_pos": "SEA - G",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 5,
+      "player": "Ukko-Pekka Luukkonen",
+      "nhl_team_pos": "BUF - G",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 6,
+      "player": "Drew Doughty",
+      "nhl_team_pos": "LA - D",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 7,
+      "player": "Aliaksei Protas",
+      "nhl_team_pos": "WSH - LW,RW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 8,
+      "player": "Morgan Rielly",
+      "nhl_team_pos": "TOR - D",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 9,
+      "player": "Will Smith",
+      "nhl_team_pos": "SJ - LW,RW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 10,
+      "player": "Sean Monahan",
+      "nhl_team_pos": "CBJ - C",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 11,
+      "player": "Ryan Nugent-Hopkins",
+      "nhl_team_pos": "EDM - C,LW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 9,
+      "pick": 12,
+      "player": "Joseph Woll",
+      "nhl_team_pos": "PHI - G",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 1,
+      "player": "Artturi Lehkonen",
+      "nhl_team_pos": "COL - LW,RW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 2,
+      "player": "Thatcher Demko",
+      "nhl_team_pos": "VAN - G",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 3,
+      "player": "--empty--",
+      "nhl_team_pos": null,
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 4,
+      "player": "Cutter Gauthier",
+      "nhl_team_pos": "ANA - C,LW,RW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 5,
+      "player": "Steven Stamkos",
+      "nhl_team_pos": "NSH - C,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 6,
+      "player": "Frederik Andersen",
+      "nhl_team_pos": "EDM - G",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 7,
+      "player": "Mattias Ekholm",
+      "nhl_team_pos": "EDM - D",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 8,
+      "player": "Rickard Rakell",
+      "nhl_team_pos": "PIT - C,LW,RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 9,
+      "player": "Brock Faber",
+      "nhl_team_pos": "MIN - D",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 10,
+      "player": "Patrick Kane",
+      "nhl_team_pos": "CHI - RW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 11,
+      "player": "Karel Vejmelka",
+      "nhl_team_pos": "UTA - G",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 10,
+      "pick": 12,
+      "player": "Scott Wedgewood",
+      "nhl_team_pos": "COL - G",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 1,
+      "player": "Tyler Toffoli",
+      "nhl_team_pos": "SJ - LW,RW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 2,
+      "player": "Matthew Schaefer",
+      "nhl_team_pos": "NYI - D",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 3,
+      "player": "Bo Horvat",
+      "nhl_team_pos": "NYI - C",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 4,
+      "player": "Gabriel Landeskog",
+      "nhl_team_pos": "COL - LW,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 5,
+      "player": "Mikael Granlund",
+      "nhl_team_pos": "ANA - C,LW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 6,
+      "player": "Morgan Geekie",
+      "nhl_team_pos": "BOS - C,LW,RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 7,
+      "player": "Brock Nelson",
+      "nhl_team_pos": "COL - C",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 8,
+      "player": "Sam Rinzel",
+      "nhl_team_pos": "CHI - D",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 9,
+      "player": "Zayne Parekh",
+      "nhl_team_pos": "CGY - D",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 10,
+      "player": "Boone Jenner",
+      "nhl_team_pos": "WSH - C,LW",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 11,
+      "player": "Nick Schmaltz",
+      "nhl_team_pos": "UTA - C,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 11,
+      "pick": 12,
+      "player": "Jacob Trouba",
+      "nhl_team_pos": "SJ - D",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 1,
+      "player": "Tyler Seguin",
+      "nhl_team_pos": "DAL - C,RW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 2,
+      "player": "Arber Xhekaj",
+      "nhl_team_pos": "MTL - D",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 3,
+      "player": "Cole Perfetti",
+      "nhl_team_pos": "WPG - LW,RW",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 4,
+      "player": "Jet Greaves",
+      "nhl_team_pos": "CBJ - G",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 5,
+      "player": "Alexis Lafreniere",
+      "nhl_team_pos": "NYR - LW,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 6,
+      "player": "Pavel Buchnevich",
+      "nhl_team_pos": "STL - C,LW,RW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 7,
+      "player": "Jonathan Marchessault",
+      "nhl_team_pos": "NSH - LW,RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 8,
+      "player": "Jonathan Huberdeau",
+      "nhl_team_pos": "CGY - LW,RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 9,
+      "player": "Patrik Laine",
+      "nhl_team_pos": "MTL - LW,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 10,
+      "player": "Jared McCann",
+      "nhl_team_pos": "SEA - C,LW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 11,
+      "player": "Kent Johnson",
+      "nhl_team_pos": "CBJ - LW,RW",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 12,
+      "pick": 12,
+      "player": "Connor McMichael",
+      "nhl_team_pos": "STL - C,LW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 1,
+      "player": "Rasmus Andersson",
+      "nhl_team_pos": "VGK - D",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 2,
+      "player": "Michael Misa",
+      "nhl_team_pos": "SJ - C",
+      "fantasy_team": "Julie the Cat",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 3,
+      "player": "Anders Lee",
+      "nhl_team_pos": "UTA - LW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 4,
+      "player": "Niko Mikkola",
+      "nhl_team_pos": "FLA - D",
+      "fantasy_team": "Cuylle-O",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 5,
+      "player": "Matt Coronato",
+      "nhl_team_pos": "CGY - RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 6,
+      "player": "William Eklund",
+      "nhl_team_pos": "OTT - LW,RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 7,
+      "player": "Ryan Donato",
+      "nhl_team_pos": "CHI - C,LW,RW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 8,
+      "player": "Trent Frederic",
+      "nhl_team_pos": "EDM - C,LW,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 9,
+      "player": "Marco Kasper",
+      "nhl_team_pos": "DET - C,LW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 10,
+      "player": "Lian Bichsel",
+      "nhl_team_pos": "DAL - D",
+      "fantasy_team": "The Bad Place",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 11,
+      "player": "Evander Kane",
+      "nhl_team_pos": "VAN - LW,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": false
+    },
+    {
+      "round": 13,
+      "pick": 12,
+      "player": "Mason Marchment",
+      "nhl_team_pos": "SJ - LW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": false
+    },
+    {
+      "round": 14,
+      "pick": 1,
+      "player": "Mackenzie Blackwood",
+      "nhl_team_pos": "COL - G",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 2,
+      "player": "Seth Jarvis",
+      "nhl_team_pos": "CAR - LW,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 3,
+      "player": "Dustin Wolf",
+      "nhl_team_pos": "CGY - G",
+      "fantasy_team": "The Bad Place",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 4,
+      "player": "Connor Hellebuyck",
+      "nhl_team_pos": "WPG - G",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 5,
+      "player": "Igor Shesterkin",
+      "nhl_team_pos": "NYR - G",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 6,
+      "player": "Darcy Kuemper",
+      "nhl_team_pos": "LA - G",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 7,
+      "player": "Jake Oettinger",
+      "nhl_team_pos": "DAL - G",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 8,
+      "player": "Zach Hyman",
+      "nhl_team_pos": "EDM - LW,RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 9,
+      "player": "Sergei Bobrovsky",
+      "nhl_team_pos": "TOR - G",
+      "fantasy_team": "Cuylle-O",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 10,
+      "player": "Jacob Markstrom",
+      "nhl_team_pos": "FLA - G",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 11,
+      "player": "Jeremy Swayman",
+      "nhl_team_pos": "BOS - G",
+      "fantasy_team": "Julie the Cat",
+      "keeper": true
+    },
+    {
+      "round": 14,
+      "pick": 12,
+      "player": "Anthony Stolarz",
+      "nhl_team_pos": "TOR - G",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 1,
+      "player": "Adam Fox",
+      "nhl_team_pos": "NYR - D",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 2,
+      "player": "MacKenzie Weegar",
+      "nhl_team_pos": "UTA - D",
+      "fantasy_team": "Julie the Cat",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 3,
+      "player": "Jesper Bratt",
+      "nhl_team_pos": "NJ - LW,RW",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 4,
+      "player": "Mika Zibanejad",
+      "nhl_team_pos": "NYR - C,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 5,
+      "player": "Vince Dunn",
+      "nhl_team_pos": "SEA - D",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 6,
+      "player": "Josh Morrissey",
+      "nhl_team_pos": "WPG - D",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 7,
+      "player": "Shea Theodore",
+      "nhl_team_pos": "VGK - D",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 8,
+      "player": "Brandon Hagel",
+      "nhl_team_pos": "TB - LW,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 9,
+      "player": "Lane Hutson",
+      "nhl_team_pos": "MTL - D",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 10,
+      "player": "Connor Bedard",
+      "nhl_team_pos": "CHI - C,RW",
+      "fantasy_team": "The Bad Place",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 11,
+      "player": "Cole Caufield",
+      "nhl_team_pos": "MTL - LW,RW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": true
+    },
+    {
+      "round": 15,
+      "pick": 12,
+      "player": "Radko Gudas",
+      "nhl_team_pos": "FLA - D",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 1,
+      "player": "Jack Hughes",
+      "nhl_team_pos": "NJ - C,LW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 2,
+      "player": "Filip Forsberg",
+      "nhl_team_pos": "NSH - LW",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 3,
+      "player": "Artemi Panarin",
+      "nhl_team_pos": "LA - LW",
+      "fantasy_team": "The Bad Place",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 4,
+      "player": "Tim Stutzle",
+      "nhl_team_pos": "OTT - C,LW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 5,
+      "player": "Tage Thompson",
+      "nhl_team_pos": "BUF - C,RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 6,
+      "player": "Jake Guentzel",
+      "nhl_team_pos": "TB - LW,RW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 7,
+      "player": "Sebastian Aho",
+      "nhl_team_pos": "CAR - C",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 8,
+      "player": "Tomas Hertl",
+      "nhl_team_pos": "VGK - C,LW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 9,
+      "player": "Mikhail Sergachev",
+      "nhl_team_pos": "UTA - D",
+      "fantasy_team": "Cuylle-O",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 10,
+      "player": "Nick Suzuki",
+      "nhl_team_pos": "MTL - C",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 11,
+      "player": "Martin Necas",
+      "nhl_team_pos": "COL - RW",
+      "fantasy_team": "Julie the Cat",
+      "keeper": true
+    },
+    {
+      "round": 16,
+      "pick": 12,
+      "player": "John Tavares",
+      "nhl_team_pos": "TOR - C",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 1,
+      "player": "Mark Scheifele",
+      "nhl_team_pos": "WPG - C",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 2,
+      "player": "Adrian Kempe",
+      "nhl_team_pos": "LA - RW",
+      "fantasy_team": "Julie the Cat",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 3,
+      "player": "Macklin Celebrini",
+      "nhl_team_pos": "SJ - C",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 4,
+      "player": "Matthew Tkachuk",
+      "nhl_team_pos": "FLA - LW,RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 5,
+      "player": "Mark Stone",
+      "nhl_team_pos": "VGK - RW",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 6,
+      "player": "Nazem Kadri",
+      "nhl_team_pos": "COL - C,LW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 7,
+      "player": "William Nylander",
+      "nhl_team_pos": "TOR - C,RW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 8,
+      "player": "Sam Reinhart",
+      "nhl_team_pos": "FLA - RW",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 9,
+      "player": "Clayton Keller",
+      "nhl_team_pos": "UTA - LW,RW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 10,
+      "player": "Zach Werenski",
+      "nhl_team_pos": "CBJ - D",
+      "fantasy_team": "The Bad Place",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 11,
+      "player": "Evan Bouchard",
+      "nhl_team_pos": "EDM - D",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": true
+    },
+    {
+      "round": 17,
+      "pick": 12,
+      "player": "Kirill Kaprizov",
+      "nhl_team_pos": "MIN - LW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 1,
+      "player": "Leon Draisaitl",
+      "nhl_team_pos": "EDM - C,LW",
+      "fantasy_team": "Trou Trou Train",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 2,
+      "player": "Nathan MacKinnon",
+      "nhl_team_pos": "COL - C",
+      "fantasy_team": "Makings of a Varsity Athlete",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 3,
+      "player": "Nikita Kucherov",
+      "nhl_team_pos": "TB - RW",
+      "fantasy_team": "The Bad Place",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 4,
+      "player": "Kyle Connor",
+      "nhl_team_pos": "WPG - LW",
+      "fantasy_team": "KNUCKLE PUCK TIME!!!",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 5,
+      "player": "Quinn Hughes",
+      "nhl_team_pos": "MIN - D",
+      "fantasy_team": "Tage Against the Machine",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 6,
+      "player": "Brady Tkachuk",
+      "nhl_team_pos": "FLA - C,LW",
+      "fantasy_team": "Hanstuetzle and Guentzel",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 7,
+      "player": "Matt Boldy",
+      "nhl_team_pos": "MIN - LW,RW",
+      "fantasy_team": "Sam Rosen Rules",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 8,
+      "player": "Vincent Trocheck",
+      "nhl_team_pos": "UTA - C",
+      "fantasy_team": "Miller’s High Life",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 9,
+      "player": "David Pastrnak",
+      "nhl_team_pos": "BOS - RW",
+      "fantasy_team": "Cuylle-O",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 10,
+      "player": "Cale Makar",
+      "nhl_team_pos": "COL - D",
+      "fantasy_team": "Bitch Slappers",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 11,
+      "player": "J.T. Miller",
+      "nhl_team_pos": "NYR - C,LW,RW",
+      "fantasy_team": "Julie the Cat",
+      "keeper": true
+    },
+    {
+      "round": 18,
+      "pick": 12,
+      "player": "Jason Robertson",
+      "nhl_team_pos": "DAL - LW,RW",
+      "fantasy_team": "Jews for McJesus",
+      "keeper": true
+    }
+  ]
+}

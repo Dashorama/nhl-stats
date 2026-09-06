@@ -1,0 +1,1196 @@
+{
+ "raw_values": [
+  [
+   "Current Year",
+   "2025",
+   "",
+   "",
+   "",
+   "Keeper Starting Term",
+   "3"
+  ],
+  [],
+  [
+   "Team Name",
+   "Owner Name",
+   "Player Name",
+   "Years Remaining",
+   "First Year Kept",
+   "Year Expiring",
+   "Traded?"
+  ],
+  [
+   "Tage Against The Machine",
+   "David Erner",
+   "Sam Reinhart",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Tage Against The Machine",
+   "David Erner",
+   "Tage Thompson",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Tage Against The Machine",
+   "David Erner",
+   "Brandon Hagel",
+   "2",
+   "2025",
+   "2028",
+   "0"
+  ],
+  [
+   "Tage Against The Machine",
+   "David Erner",
+   "Mitch Marner",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Tage Against The Machine",
+   "David Erner",
+   "Igor Shesterkin",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Tage Against The Machine",
+   "David Erner",
+   "Quinn Hughes",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Makings of a Varsity Athlete",
+   "Steven Morano",
+   "Mikko Rantanen",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Makings of a Varsity Athlete",
+   "Steven Morano",
+   "Filip Forsberg",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Makings of a Varsity Athlete",
+   "Steven Morano",
+   "Evan Bouchard",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Makings of a Varsity Athlete",
+   "Steven Morano",
+   "Nathan MacKinnon",
+   "0",
+   "2022",
+   "2026",
+   "1"
+  ],
+  [
+   "Makings of a Varsity Athlete",
+   "Steven Morano",
+   "Elias Pettersson",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Makings of a Varsity Athlete",
+   "Steven Morano",
+   "Stuart Skinner",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Sam Rosen Rules",
+   "Sean Hofer",
+   "Steven Stamkos",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Sam Rosen Rules",
+   "Sean Hofer",
+   "Matt Boldy",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Sam Rosen Rules",
+   "Sean Hofer",
+   "Brad Marchand",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Sam Rosen Rules",
+   "Sean Hofer",
+   "Josh Morrissey",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Sam Rosen Rules",
+   "Sean Hofer",
+   "Jake Oettinger",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Trou Trou Train",
+   "Connor",
+   "Ilya Sorokin ",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Trou Trou Train",
+   "Connor",
+   "Jonathan Marchessault",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Trou Trou Train",
+   "Connor",
+   "Charlie McAvoy",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Trou Trou Train",
+   "Connor",
+   "Leon Draisaitl",
+   "0",
+   "2022",
+   "2026",
+   "1"
+  ],
+  [
+   "Trou Trou Train",
+   "Connor",
+   "Connor McDavid",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Trou Trou Train",
+   "Connor",
+   "Jack Hughes",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Jean Claude VanDangles",
+   "Jack Manire",
+   "Jesper Bratt",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Jean Claude VanDangles",
+   "Jack Manire",
+   "",
+   "2",
+   "2025",
+   "2028",
+   "0"
+  ],
+  [
+   "Jean Claude VanDangles",
+   "Jack Manire",
+   "Mathew Barzal",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Jean Claude VanDangles",
+   "Jack Manire",
+   "Cale Makar",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Jean Claude VanDangles",
+   "Jack Manire",
+   "Jakob Markstron",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Julie the Cat",
+   "Angela Chwick",
+   "JT Miller",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Julie the Cat",
+   "Angela Chwick",
+   "MacKenzie Weegar",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Julie the Cat",
+   "Angela Chwick",
+   "JeremySwayman",
+   "1",
+   "2023",
+   "2027",
+   "1"
+  ],
+  [
+   "Julie the Cat",
+   "Angela Chwick",
+   "Valeri Nichushkin",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Julie the Cat",
+   "Angela Chwick",
+   "Martin Necas",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "KNUCKLE PUCK TIME!!!",
+   "Randall Ehrenpreis",
+   "Kyle Connor",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "KNUCKLE PUCK TIME!!!",
+   "Randall Ehrenpreis",
+   "Connor Hellebuyck",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "KNUCKLE PUCK TIME!!!",
+   "Randall Ehrenpreis",
+   "Moritz Seider",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "KNUCKLE PUCK TIME!!!",
+   "Randall Ehrenpreis",
+   "Wyatt Johnson",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "KNUCKLE PUCK TIME!!!",
+   "Randall Ehrenpreis",
+   "Andrew Scevhnikov",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Cuylle-O",
+   "Bobby Lockwood",
+   "Mathew Tkachuk",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Cuylle-O",
+   "Bobby Lockwood",
+   "Aleksander Barkov",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Cuylle-O",
+   "Bobby Lockwood",
+   "David Pasternak",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Cuylle-O",
+   "Bobby Lockwood",
+   "MIkhail Sergachev",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Cuylle-O",
+   "Bobby Lockwood",
+   "Sergei Bobrovsky",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Miller's High Life",
+   "Adam Chwick",
+   "",
+   "2",
+   "2025",
+   "2028",
+   "0"
+  ],
+  [
+   "Miller's High Life",
+   "Adam Chwick",
+   "Zach Hyman",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Miller's High Life",
+   "Adam Chwick",
+   "Roman Josi",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Miller's High Life",
+   "Adam Chwick",
+   "",
+   "2",
+   "2025",
+   "2028",
+   "0"
+  ],
+  [
+   "Miller's High Life",
+   "Adam Chwick",
+   "Alexander Georgiev",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "The Bad Place",
+   "Kevin Flavin",
+   "Auston Matthews",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "The Bad Place",
+   "Kevin Flavin",
+   "Connor Bedard",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "The Bad Place",
+   "Kevin Flavin",
+   "Artemi Panarin",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "The Bad Place",
+   "Kevin Flavin",
+   "Erik Karlsson",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "The Bad Place",
+   "Kevin Flavin",
+   "Brayden Point",
+   "0",
+   "2022",
+   "2026",
+   "1"
+  ],
+  [
+   "Jews for McJesus",
+   "Charlie Katz",
+   "John Tavares",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Jews for McJesus",
+   "Charlie Katz",
+   "Chris Kreider",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Jews for McJesus",
+   "Charlie Katz",
+   "Jason Robertson",
+   "0",
+   "2023",
+   "2026",
+   "0"
+  ],
+  [
+   "Jews for McJesus",
+   "Charlie Katz",
+   "Devon Toews",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Jews for McJesus",
+   "Charlie Katz",
+   "Ukko-Pekka Luukkonen",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Hanstuetzle and Guentzel",
+   "Brad Mass",
+   "Sidney Crosby",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Hanstuetzle and Guentzel",
+   "Brad Mass",
+   "Andrei Vasilevskiy",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Hanstuetzle and Guentzel",
+   "Brad Mass",
+   "Brady Tkachuk",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Hanstuetzle and Guentzel",
+   "Brad Mass",
+   "Rasmus Dahlin ",
+   "-1",
+   "2022",
+   "2025",
+   "0"
+  ],
+  [
+   "Hanstuetzle and Guentzel",
+   "Brad Mass",
+   "Travis Konecny",
+   "1",
+   "2024",
+   "2027",
+   "0"
+  ],
+  [
+   "Hanstuetzle and Guentzel",
+   "Brad Mass",
+   "William Nylander",
+   "1",
+   "2023",
+   "2027",
+   "1"
+  ]
+ ],
+ "raw_formulas": [
+  [
+   "Current Year",
+   "=YEAR(TODAY())-MONTH(6)",
+   "",
+   "",
+   "",
+   "Keeper Starting Term",
+   3
+  ],
+  [],
+  [
+   "Team Name",
+   "Owner Name",
+   "Player Name",
+   "Years Remaining",
+   "First Year Kept",
+   "Year Expiring",
+   "Traded?"
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B4,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$2",
+   "Sam Reinhart",
+   "=F4-$B$1-1",
+   2024,
+   "=E4+$G$1+G4",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B5,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$2",
+   "Tage Thompson",
+   "=F5-$B$1-1",
+   2023,
+   "=E5+$G$1+G5",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B6,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$2",
+   "Brandon Hagel",
+   "=F6-$B$1-1",
+   2025,
+   "=E6+$G$1+G6",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B7,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$2",
+   "Mitch Marner",
+   "=F7-$B$1-1",
+   2022,
+   "=E7+$G$1+G7",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B8,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$2",
+   "Igor Shesterkin",
+   "=F8-$B$1-1",
+   2024,
+   "=E8+$G$1+G8",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B9,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$2",
+   "Quinn Hughes",
+   "=F9-$B$1-1",
+   2024,
+   "=E9+$G$1+G9",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B10,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$3",
+   "Mikko Rantanen",
+   "=F10-$B$1-1",
+   2022,
+   "=E10+$G$1+G10",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B11,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$3",
+   "Filip Forsberg",
+   "=F11-$B$1-1",
+   2024,
+   "=E11+$G$1+G11",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B12,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$3",
+   "Evan Bouchard",
+   "=F12-$B$1-1",
+   2024,
+   "=E12+$G$1+G12",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B13,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$3",
+   "Nathan MacKinnon",
+   "=F13-$B$1-1",
+   2022,
+   "=E13+$G$1+G13",
+   1
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B14,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$3",
+   "Elias Pettersson",
+   "=F14-$B$1-1",
+   2023,
+   "=E14+$G$1+G14",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B15,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$3",
+   "Stuart Skinner",
+   "=F15-$B$1-1",
+   2024,
+   "=E15+$G$1+G15",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B16,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$4",
+   "Steven Stamkos",
+   "=F16-$B$1-1",
+   2022,
+   "=E16+$G$1+G16",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B17,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$4",
+   "Matt Boldy",
+   "=F17-$B$1-1",
+   2024,
+   "=E17+$G$1+G17",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B18,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$4",
+   "Brad Marchand",
+   "=F18-$B$1-1",
+   2022,
+   "=E18+$G$1+G18",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B19,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$4",
+   "Josh Morrissey",
+   "=F19-$B$1-1",
+   2023,
+   "=E19+$G$1+G19",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B20,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$4",
+   "Jake Oettinger",
+   "=F20-$B$1-1",
+   2023,
+   "=E20+$G$1+G20",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B21,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$5",
+   "Ilya Sorokin ",
+   "=F21-$B$1-1",
+   2022,
+   "=E21+$G$1+G21",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B22,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$5",
+   "Jonathan Marchessault",
+   "=F22-$B$1-1",
+   2024,
+   "=E22+$G$1+G22",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B23,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$5",
+   "Charlie McAvoy",
+   "=F23-$B$1-1",
+   2023,
+   "=E23+$G$1+G23",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B24,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$5",
+   "Leon Draisaitl",
+   "=F24-$B$1-1",
+   2022,
+   "=E24+$G$1+G24",
+   1
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B25,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$5",
+   "Connor McDavid",
+   "=F25-$B$1-1",
+   2022,
+   "=E25+$G$1+G25",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B26,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$5",
+   "Jack Hughes",
+   "=F26-$B$1-1",
+   2023,
+   "=E26+$G$1+G26",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B27,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$6",
+   "Jesper Bratt",
+   "=F27-$B$1-1",
+   2024,
+   "=E27+$G$1+G27",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B28,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$6",
+   "",
+   "=F28-$B$1-1",
+   2025,
+   "=E28+$G$1+G28",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B29,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$6",
+   "Mathew Barzal",
+   "=F29-$B$1-1",
+   2024,
+   "=E29+$G$1+G29",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B30,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$6",
+   "Cale Makar",
+   "=F30-$B$1-1",
+   2024,
+   "=E30+$G$1+G30",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B31,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$6",
+   "Jakob Markstron",
+   "=F31-$B$1-1",
+   2024,
+   "=E31+$G$1+G31",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B32,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$7",
+   "JT Miller",
+   "=F32-$B$1-1",
+   2024,
+   "=E32+$G$1+G32",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B33,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$7",
+   "MacKenzie Weegar",
+   "=F33-$B$1-1",
+   2024,
+   "=E33+$G$1+G33",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B34,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$7",
+   "JeremySwayman",
+   "=F34-$B$1-1",
+   2023,
+   "=E34+$G$1+G34",
+   1
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B35,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$7",
+   "Valeri Nichushkin",
+   "=F35-$B$1-1",
+   2024,
+   "=E35+$G$1+G35",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B36,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$7",
+   "Martin Necas",
+   "=F36-$B$1-1",
+   2023,
+   "=E36+$G$1+G36",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B37,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$8",
+   "Kyle Connor",
+   "=F37-$B$1-1",
+   2024,
+   "=E37+$G$1+G37",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B38,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$8",
+   "Connor Hellebuyck",
+   "=F38-$B$1-1",
+   2023,
+   "=E38+$G$1+G38",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B39,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$8",
+   "Moritz Seider",
+   "=F39-$B$1-1",
+   2022,
+   "=E39+$G$1+G39",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B40,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$8",
+   "Wyatt Johnson",
+   "=F40-$B$1-1",
+   2024,
+   "=E40+$G$1+G40",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B41,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$8",
+   "Andrew Scevhnikov",
+   "=F41-$B$1-1",
+   2024,
+   "=E41+$G$1+G41",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B42,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$9",
+   "Mathew Tkachuk",
+   "=F42-$B$1-1",
+   2024,
+   "=E42+$G$1+G42",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B43,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$9",
+   "Aleksander Barkov",
+   "=F43-$B$1-1",
+   2023,
+   "=E43+$G$1+G43",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B44,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$9",
+   "David Pasternak",
+   "=F44-$B$1-1",
+   2023,
+   "=E44+$G$1+G44",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B45,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$9",
+   "MIkhail Sergachev",
+   "=F45-$B$1-1",
+   2024,
+   "=E45+$G$1+G45",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B46,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$9",
+   "Sergei Bobrovsky",
+   "=F46-$B$1-1",
+   2023,
+   "=E46+$G$1+G46",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B47,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$10",
+   "",
+   "=F47-$B$1-1",
+   2025,
+   "=E47+$G$1+G47",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B48,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$10",
+   "Zach Hyman",
+   "=F48-$B$1-1",
+   2024,
+   "=E48+$G$1+G48",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B49,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$10",
+   "Roman Josi",
+   "=F49-$B$1-1",
+   2022,
+   "=E49+$G$1+G49",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B50,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$10",
+   "",
+   "=F50-$B$1-1",
+   2025,
+   "=E50+$G$1+G50",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B51,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$10",
+   "Alexander Georgiev",
+   "=F51-$B$1-1",
+   2024,
+   "=E51+$G$1+G51",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B52,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$11",
+   "Auston Matthews",
+   "=F52-$B$1-1",
+   2022,
+   "=E52+$G$1+G52",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B53,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$11",
+   "Connor Bedard",
+   "=F53-$B$1-1",
+   2024,
+   "=E53+$G$1+G53",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B54,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$11",
+   "Artemi Panarin",
+   "=F54-$B$1-1",
+   2023,
+   "=E54+$G$1+G54",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B55,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$11",
+   "Erik Karlsson",
+   "=F55-$B$1-1",
+   2023,
+   "=E55+$G$1+G55",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B56,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$11",
+   "Brayden Point",
+   "=F56-$B$1-1",
+   2022,
+   "=E56+$G$1+G56",
+   1
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B57,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$12",
+   "John Tavares",
+   "=F57-$B$1-1",
+   2024,
+   "=E57+$G$1+G57",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B58,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$12",
+   "Chris Kreider",
+   "=F58-$B$1-1",
+   2022,
+   "=E58+$G$1+G58",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B59,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$12",
+   "Jason Robertson",
+   "=F59-$B$1-1",
+   2023,
+   "=E59+$G$1+G59",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B60,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$12",
+   "Devon Toews",
+   "=F60-$B$1-1",
+   2024,
+   "=E60+$G$1+G60",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$12,Match(B61,'List Of Teams And Owners'!$B$2:$B$12,0),1)",
+   "='List Of Teams And Owners'!$B$12",
+   "Ukko-Pekka Luukkonen",
+   "=F61-$B$1-1",
+   2024,
+   "=E61+$G$1+G61",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B62,'List Of Teams And Owners'!$B$2:$B$13,0),1)",
+   "='List Of Teams And Owners'!$B$13",
+   "Sidney Crosby",
+   "=F62-$B$1-1",
+   2022,
+   "=E62+$G$1+G62",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B63,'List Of Teams And Owners'!$B$2:$B$13,0),1)",
+   "='List Of Teams And Owners'!$B$13",
+   "Andrei Vasilevskiy",
+   "=F63-$B$1-1",
+   2022,
+   "=E63+$G$1+G63",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B64,'List Of Teams And Owners'!$B$2:$B$13,0),1)",
+   "='List Of Teams And Owners'!$B$13",
+   "Brady Tkachuk",
+   "=F64-$B$1-1",
+   2024,
+   "=E64+$G$1+G64",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B65,'List Of Teams And Owners'!$B$2:$B$13,0),1)",
+   "='List Of Teams And Owners'!$B$13",
+   "Rasmus Dahlin ",
+   "=F65-$B$1-1",
+   2022,
+   "=E65+$G$1+G65",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B66,'List Of Teams And Owners'!$B$2:$B$13,0),1)",
+   "='List Of Teams And Owners'!$B$13",
+   "Travis Konecny",
+   "=F66-$B$1-1",
+   2024,
+   "=E66+$G$1+G66",
+   0
+  ],
+  [
+   "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B67,'List Of Teams And Owners'!$B$2:$B$13,0),1)",
+   "='List Of Teams And Owners'!$B$13",
+   "William Nylander",
+   "=F67-$B$1-1",
+   2023,
+   "=E67+$G$1+G67",
+   1
+  ]
+ ]
+}
