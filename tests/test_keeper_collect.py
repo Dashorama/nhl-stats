@@ -50,3 +50,38 @@ def test_empty_live_transaction_table():
         )
         == []
     )
+
+
+@pytest.mark.parametrize(
+    "old,new,message",
+    [
+        ('class="name"', 'class="renamed"', "keeper row"),
+    ],
+)
+def test_changed_keeper_markup(old, new, message):
+    html = (FIXTURES / "draft.html").read_text().replace(old, new)
+    with pytest.raises(ValueError, match=message):
+        parse_draft(html, 2025)
+
+
+@pytest.mark.parametrize(
+    "old,new,message",
+    [
+        ("F-timestamp", "removed", "owner/date"),
+        ("Round 3", "Mystery asset", "asset"),
+        ("Mar 1, 4:10 am", "Mar 2, 4:10 am", "pairing date"),
+    ],
+)
+def test_changed_trade_markup(old, new, message):
+    html = (FIXTURES / "transactions.html").read_text().replace(old, new, 1)
+    with pytest.raises(ValueError, match=message):
+        parse_trades(html, 2024, 17419)
+
+
+def test_incomplete_trade_pair():
+    from bs4 import BeautifulSoup
+
+    soup = BeautifulSoup((FIXTURES / "transactions.html").read_text(), "html.parser")
+    soup.select("tr")[-1].decompose()
+    with pytest.raises(ValueError, match="incomplete trade"):
+        parse_trades(str(soup), 2024, 17419)

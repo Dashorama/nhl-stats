@@ -141,3 +141,77 @@ def test_verification_owner_and_error_cells():
     actual["raw_values"][3][3] = "#REF!"
     with pytest.raises(ValueError, match="formula error"):
         verify(actual, expected)
+
+
+def test_sheets_helper_paths_owner_checks_and_ui_errors(tmp_path):
+    from src.keeper.sheet import Sheets
+
+    before = snapshot()
+    owners = list(dict.fromkeys((r[0], r[1]) for r in before["raw_values"][3:]))
+    data = {"snapshot": before, "owners": owners}
+    helper = tmp_path / "sheets.py"
+    helper.write_text(
+        """
+import json
+DATA = json.loads("""
+        + repr(json.dumps(data))
+        + """)
+calls=[]
+def call(path, **kwargs):
+    calls.append((path,kwargs))
+    if '/values/' not in path:
+        return {'sheets':[{'properties':{'title':'Raw Data','sheetId':0,
+                          'gridProperties':{'rowCount':100}}},
+                          {'properties':{'title':'UI','sheetId':1,'gridProperties':{'rowCount':20}}}]}
+    if 'List%20Of%20Teams' in path:return {'values':DATA['owners']}
+    if 'UI' in path:return {'values':[['#REF!']]}
+    key='raw_formulas' if kwargs.get('valueRenderOption')=='FORMULA' else 'raw_values'
+    return {'values':DATA['snapshot'][key]}
+"""
+    )
+    api = Sheets(TEST_SHEET, str(helper))
+    assert api.read() == before
+    calls = api.call.__globals__["calls"]
+    assert all(path.startswith(TEST_SHEET + "/values/") for path, _ in calls[1:])
+    with pytest.raises(ValueError, match="UI formula"):
+        api.check_ui()
+    state = api.call.__globals__["DATA"]
+    state["owners"][0][1] = "Wrong Owner"
+    with pytest.raises(ValueError, match="owner blocks"):
+        api.read()
+    state["owners"][0][1] = owners[0][1]
+    state["snapshot"]["raw_formulas"][3][1] = "='List Of Teams And Owners'!$B$3"
+    with pytest.raises(ValueError, match="wrong owner cell"):
+        api.read()
+    api.sheet_id = "not-test-copy"
+    with pytest.raises(ValueError, match="TEST COPY"):
+        api.write([])
+    helper.write_text(helper.read_text().replace("'sheetId':0", "'sheetId':99"))
+    with pytest.raises(ValueError, match="sheetId"):
+        Sheets(TEST_SHEET, str(helper))
+
+
+def test_backup_is_durable_before_first_write(tmp_path, monkeypatch):
+    import src.keeper.sheet as sheet
+
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    plan = make_plan(before, reconcile(board, before))
+    api = FakeSheet(before, plan["expected"])
+    written = api.write
+
+    def check_backup(requests):
+        assert json.loads(next(tmp_path.glob("*.json")).read_text()) == before
+        written(requests)
+
+    api.write = check_backup
+    apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
+    failed = FakeSheet(before, plan["expected"])
+
+    def unavailable(_):
+        raise OSError("backup fsync failed")
+
+    monkeypatch.setattr(sheet.os, "fsync", unavailable)
+    with pytest.raises(OSError, match="backup fsync"):
+        apply_plan(failed, TEST_SHEET, before, plan, tmp_path, apply=True)
+    assert failed.writes == []

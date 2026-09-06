@@ -168,8 +168,9 @@ def test_trade_conflicts_fail_closed(mutation, message):
 
 def test_trade_fingerprint_survives_current_nhl_position_labels():
     from src.keeper.core import trade_key
-    trade = fixture('trades.json')[0]
+
+    trade = fixture("trades.json")[0]
     updated = copy.deepcopy(trade)
-    updated['teams'][0]['received'][0] = 'Jeremy Swayman (NYR - G)'
-    updated['teams'].reverse()
+    updated["teams"][0]["received"][0] = "Jeremy Swayman (NYR - G)"
+    updated["teams"].reverse()
     assert trade_key(updated) == trade_key(trade)

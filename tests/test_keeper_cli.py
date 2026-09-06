@@ -82,3 +82,26 @@ def test_recover_verified_sheet_after_watermark_write_failure(tmp_path, monkeypa
     assert not list(tmp_path.glob("pending*.json"))
     assert len(json.loads(next(tmp_path.glob("watermark*.json")).read_text())["seen"]) == 7
     capsys.readouterr()
+
+
+def test_cli_rejects_missing_source_and_live_apply(tmp_path):
+    import pytest
+
+    with pytest.raises(SystemExit):
+        cli.main(["reconcile", "--season", "2025", "--state-dir", str(tmp_path)])
+    with pytest.raises(SystemExit):
+        cli.main(
+            [
+                "reconcile",
+                "--season",
+                "2025",
+                "--sheet-id",
+                "live",
+                "--apply",
+                "--input",
+                str(FIXTURES / "keepers_2025.json"),
+                "--state-dir",
+                str(tmp_path),
+            ]
+        )
+    assert list(tmp_path.iterdir()) == []
