@@ -222,7 +222,10 @@ def test_formula_offsets_match_sheet_row_references():
 
     assert shifted("=F10-$B$1-1", -3) == "=F7-$B$1-1"
     assert shifted("=E10+$G$1+G10", 3) == "=E13+$G$1+G13"
-    formula = "=Index('List Of Teams And Owners'!$A$2:$B$13,Match(B10,'List Of Teams And Owners'!$B$2:$B$13,0),1)"
+    formula = (
+        "=Index('List Of Teams And Owners'!$A$2:$B$13,"
+        "Match(B10,'List Of Teams And Owners'!$B$2:$B$13,0),1)"
+    )
     assert shifted(formula, -2) == formula.replace("B10", "B8")
 
 
@@ -244,6 +247,7 @@ def test_all_sheet_formula_errors_fail_verification(error):
 
 def test_empty_block_keeps_one_physical_row_and_insert_structure():
     from dataclasses import replace
+
     from src.keeper.core import from_snapshot
 
     before = snapshot()
@@ -287,8 +291,20 @@ def test_apply_checks_dependent_ui_before_success(tmp_path):
 
 def test_empty_template_uses_current_year_input():
     from src.keeper.core import from_snapshot
-    before=snapshot()
-    rows=from_snapshot(before)
-    rows=[r for r in rows if r.team!=rows[-1].team]
-    plan=make_plan(before,rows)
-    assert plan['expected']['raw_formulas'][-1][4] == int(before['raw_values'][0][1])
+
+    before = snapshot()
+    rows = from_snapshot(before)
+    rows = [r for r in rows if r.team != rows[-1].team]
+    plan = make_plan(before, rows)
+    assert plan["expected"]["raw_formulas"][-1][4] == int(before["raw_values"][0][1])
+
+
+def test_content_requests_never_target_headers():
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    plan = make_plan(before, reconcile(board, before))
+    for request in plan["requests"]:
+        if "updateCells" in request:
+            update = request["updateCells"]
+            assert update["range"]["startRowIndex"] == 3
+            assert update["range"]["endRowIndex"] - 3 == len(update["rows"])

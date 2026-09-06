@@ -84,7 +84,8 @@ def test_recover_verified_sheet_after_watermark_write_failure(tmp_path, monkeypa
     capsys.readouterr()
 
 
-def test_cli_rejects_missing_source_and_live_apply(tmp_path):
+def test_cli_rejects_missing_source_and_live_apply(tmp_path, monkeypatch):
+    monkeypatch.setattr(cli, "Sheets", lambda *args: FakeSheet(snapshot(), snapshot()))
     import pytest
 
     with pytest.raises(SystemExit):
@@ -201,7 +202,9 @@ def test_pending_conflict_retains_journal_and_backups(tmp_path, monkeypatch, cap
 
 def test_lock_excludes_overlapping_apply(tmp_path, monkeypatch):
     import fcntl
+
     import pytest
+
     from src.keeper.sheet import TEST_SHEET
 
     api = FakeSheet(snapshot(), snapshot())
@@ -265,8 +268,9 @@ def test_watermark_is_loaded_after_manual_correction(tmp_path, monkeypatch, caps
 
 def test_save_json_atomic_durable_replacement(tmp_path, monkeypatch):
     import os
-    import pytest
     from pathlib import Path
+
+    import pytest
 
     target = tmp_path / "state.json"
     target.write_text('{"old": 1}')
@@ -325,3 +329,44 @@ def test_watermark_season_and_pending_sheet_scopes(tmp_path, monkeypatch, capsys
     output = capsys.readouterr().out
     assert "Pending apply requires recovery" not in output
     assert '"sheet_id": "different-sheet"' in output
+
+
+def test_profile_collection_is_validated_before_sheet_planning(tmp_path, monkeypatch, capsys):
+    from types import SimpleNamespace
+
+    data = {
+        "season": 2024,
+        "league_id": 17419,
+        "pages": [(FIXTURES / "transactions.html").read_text()],
+        "complete": True,
+        "transaction_count": 7,
+    }
+    calls = []
+
+    def collect(command, **kwargs):
+        calls.append(command)
+        return SimpleNamespace(stdout=json.dumps(data))
+
+    monkeypatch.setattr(cli.subprocess, "run", collect)
+    api = FakeSheet(snapshot(), snapshot())
+    monkeypatch.setattr(cli, "Sheets", lambda *args: api)
+    args = [
+        "scan-trades",
+        "--season",
+        "2024",
+        "--league-id",
+        "17419",
+        "--profile",
+        str(tmp_path),
+        "--state-dir",
+        str(tmp_path),
+    ]
+    cli.main(args)
+    assert calls[0][-4:] == ["scan-trades", "2024", str(tmp_path), "17419"]
+    assert json.loads(capsys.readouterr().out)["dry_run"] is True
+    data["complete"] = False
+    import pytest
+
+    with pytest.raises(ValueError, match="incomplete transaction collection"):
+        cli.main(args)
+    assert api.writes == []

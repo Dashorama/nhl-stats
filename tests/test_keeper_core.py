@@ -212,5 +212,22 @@ def test_trade_result_is_grouped_by_owner_order():
 
 def test_leap_day_trade_date():
     from datetime import datetime
+
     from src.keeper.core import trade_date
-    assert trade_date({'season':2027,'date':'Feb 29, 4:10 am'}) == datetime(2028,2,29,4,10)
+
+    assert trade_date({"season": 2027, "date": "Feb 29, 4:10 am"}) == datetime(2028, 2, 29, 4, 10)
+
+
+def test_duplicate_alias_candidates_are_ambiguous():
+    from src.keeper.core import match
+
+    with pytest.raises(ValueError, match="ambiguous player"):
+        match("Jacob Markstrom", ["Jacob Markstrom", "Jakob Markstron"])
+
+
+def test_exact_match_wins_and_unrelated_names_do_not_match():
+    from src.keeper.core import match
+
+    assert match("Player One", ["Player One", "Player Ones"]) == "Player One"
+    assert match("Jack Hughes", ["Quinn Hughes"]) is None
+    assert match("Jack Hughes", []) is None

@@ -79,7 +79,7 @@ def test_transport_refuses_unverified_collection(
         assert closed.exists()
 
 
-def invoke(tmp_path, scenario, command="reconcile", season="2025", league="5003"):
+def invoke(tmp_path, scenario, command="reconcile", season="2025", league="5003", profile=None):
     scenario.setdefault(
         "options",
         [
@@ -91,7 +91,7 @@ def invoke(tmp_path, scenario, command="reconcile", season="2025", league="5003"
     module.write_text(BROWSER)
     closed = tmp_path / "closed"
     result = subprocess.run(
-        ["node", str(SCRIPT), command, season, str(tmp_path), league],
+        ["node", str(SCRIPT), command, season, str(profile or tmp_path), league],
         env={
             **os.environ,
             "KEEPER_PLAYWRIGHT": str(module),
@@ -117,30 +117,61 @@ def test_transport_returns_captured_page_and_closes_profile(tmp_path):
 
 
 def test_two_page_structural_pager_deduplicates_top_bottom_links(tmp_path):
-    next_url='https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=25'
-    scenario={'pages':[
-        {'html':'page one','tradeCount':25,'pagers':[{'href':next_url,'terminal':False}]*2},
-        {'html':'page two','tradeCount':1,'pagers':[{'href':None,'terminal':True}]*2},
-    ]}
-    result,closed=invoke(tmp_path,scenario,'scan-trades','2026','5003')
-    assert result.returncode==0,result.stderr
-    output=json.loads(result.stdout)
-    assert output['pages']==['page one','page two']
-    assert output['complete'] is True
-    assert output['transaction_count']==26
+    next_url = "https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=25"
+    scenario = {
+        "pages": [
+            {
+                "html": "page one",
+                "tradeCount": 25,
+                "pagers": [{"href": next_url, "terminal": False}] * 2,
+            },
+            {"html": "page two", "tradeCount": 1, "pagers": [{"href": None, "terminal": True}] * 2},
+        ]
+    }
+    result, closed = invoke(tmp_path, scenario, "scan-trades", "2026", "5003")
+    assert result.returncode == 0, result.stderr
+    output = json.loads(result.stdout)
+    assert output["pages"] == ["page one", "page two"]
+    assert output["complete"] is True
+    assert output["transaction_count"] == 26
     assert closed.exists()
 
 
-@pytest.mark.parametrize('scenario,error',[
-    ({'tradeCount':25},'terminal pagination'),
-    ({'tradeCount':1,'pagers':[{'href':None,'terminal':False}]},'pagination marker'),
-    ({'tradeCount':26,'pagers':[{'href':None,'terminal':True}]},'page size'),
-    ({'tradeCount':1,'next':['https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=25']},'page size'),
-    ({'next':['https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=50']},'pagination offset'),
-    ({'loop':True},'pagination incomplete'),
-])
-def test_pagination_refuses_unproven_completeness(tmp_path,scenario,error):
-    result,_=invoke(tmp_path,scenario,'scan-trades','2026','5003')
-    assert result.returncode!=0
+@pytest.mark.parametrize(
+    "scenario,error",
+    [
+        ({"tradeCount": 25}, "terminal pagination"),
+        ({"tradeCount": 1, "pagers": [{"href": None, "terminal": False}]}, "pagination marker"),
+        ({"tradeCount": 26, "pagers": [{"href": None, "terminal": True}]}, "page size"),
+        (
+            {
+                "tradeCount": 1,
+                "next": [
+                    "https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=25"
+                ],
+            },
+            "page size",
+        ),
+        (
+            {
+                "next": [
+                    "https://hockey.fantasysports.yahoo.com/hockey/5003/transactions?transactionsfilter=trade&count=50"
+                ]
+            },
+            "pagination offset",
+        ),
+        ({"loop": True}, "pagination incomplete"),
+    ],
+)
+def test_pagination_refuses_unproven_completeness(tmp_path, scenario, error):
+    result, _ = invoke(tmp_path, scenario, "scan-trades", "2026", "5003")
+    assert result.returncode != 0
     assert error in result.stderr
-    assert result.stdout==''
+    assert result.stdout == ""
+
+
+def test_missing_profile_never_creates_browser_session(tmp_path):
+    result, closed = invoke(tmp_path, {}, profile=tmp_path / "missing-profile")
+    assert result.returncode != 0
+    assert "ENOENT" in result.stderr
+    assert not closed.exists()
