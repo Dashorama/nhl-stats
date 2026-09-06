@@ -49,7 +49,7 @@ def scrape_teams(ctx: click.Context, season: str | None) -> None:
     """Scrape team data from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with NHLAPIScraper() as scraper:
             teams = await scraper.scrape_teams()
             db.upsert_teams(teams)
@@ -65,7 +65,7 @@ def scrape_players(ctx: click.Context, season: str | None) -> None:
     """Scrape player data from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with NHLAPIScraper() as scraper:
             players = await scraper.scrape_players(season)
             db.upsert_players(players)
@@ -81,7 +81,7 @@ def scrape_games(ctx: click.Context, season: str | None) -> None:
     """Scrape game schedule from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with NHLAPIScraper() as scraper:
             games = await scraper.scrape_games(season)
             db.upsert_games(games)
@@ -97,7 +97,7 @@ def scrape_all(ctx: click.Context, season: str | None) -> None:
     """Scrape all data from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with NHLAPIScraper() as scraper:
             console.print("[bold]Scraping teams...[/bold]")
             teams = await scraper.scrape_teams()
@@ -124,7 +124,7 @@ def scrape_all(ctx: click.Context, season: str | None) -> None:
 def standings(ctx: click.Context) -> None:
     """Show current NHL standings."""
 
-    async def run():
+    async def run() -> None:
         async with NHLAPIScraper() as scraper:
             data = await scraper.scrape_standings()
 
@@ -172,7 +172,7 @@ def scrape_rosters(ctx: click.Context, team: str | None, season: str | None) -> 
     """Scrape full rosters from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with NHLRosterScraper() as scraper:
             if team:
                 console.print(f"[bold]Scraping roster for {team}...[/bold]")
@@ -208,7 +208,7 @@ def scrape_advanced(ctx: click.Context, season: str | None) -> None:
     """Scrape advanced stats from MoneyPuck."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with MoneyPuckScraper() as scraper:
             console.print("[bold]Downloading MoneyPuck skater stats...[/bold]")
             skaters = await scraper.scrape_skater_stats(season)
@@ -232,7 +232,7 @@ def scrape_contracts(ctx: click.Context, team: str | None) -> None:
     """Scrape contract data from PuckPedia."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with PuckPediaScraper() as scraper:
             if team:
                 console.print(f"[bold]Scraping contracts for {team}...[/bold]")
@@ -258,7 +258,7 @@ def scrape_draft(ctx: click.Context, year: int | None) -> None:
     """Scrape draft rankings from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with NHLAPIScraper() as scraper:
             if year:
                 console.print(f"[bold]Scraping {year} draft...[/bold]")
@@ -292,7 +292,7 @@ def scrape_boxscores(ctx: click.Context, limit: int | None) -> None:
     """Scrape game boxscores from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         # Get completed regular season game IDs from DB
         with db.get_session() as session:
             query = session.query(GameRecord.id).filter(
@@ -329,7 +329,7 @@ def scrape_pbp(ctx: click.Context, limit: int | None) -> None:
     """Scrape play-by-play data from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         with db.get_session() as session:
             query = session.query(GameRecord.id).filter(
                 GameRecord.game_type == "2", GameRecord.game_state.in_(["OFF", "FINAL"])
@@ -370,7 +370,7 @@ def scrape_full(ctx: click.Context, season: str | None) -> None:
     """Scrape all data from all sources."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         # NHL API - basic data
         async with NHLAPIScraper() as scraper:
             console.print("[bold cyan]═══ NHL API ═══[/bold cyan]")
@@ -425,7 +425,7 @@ def scrape_full(ctx: click.Context, season: str | None) -> None:
 def show_roster(ctx: click.Context, team: str) -> None:
     """Display team roster in formatted table."""
 
-    async def run():
+    async def run() -> None:
         async with NHLRosterScraper() as scraper:
             roster = await scraper.scrape_roster(team.upper())
 
@@ -494,7 +494,7 @@ def show_roster(ctx: click.Context, team: str) -> None:
 def show_player(ctx: click.Context, player_id: int) -> None:
     """Show detailed info for a player by ID."""
 
-    async def run():
+    async def run() -> None:
         async with NHLRosterScraper() as scraper:
             player = await scraper.scrape_player_details(player_id)
 
@@ -555,7 +555,7 @@ def scrape_game_logs(ctx: click.Context, season: str | None, limit: int | None) 
     """Scrape player game logs from NHL API."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         # Get player IDs from DB
         with db.get_session() as session:
             player_ids = [r[0] for r in session.query(PlayerRecord.id).all()]
@@ -600,7 +600,7 @@ def scrape_shots(ctx: click.Context, season: str | None) -> None:
     """Scrape shot-level data from MoneyPuck."""
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         async with MoneyPuckScraper() as scraper:
             console.print("[bold]Downloading MoneyPuck shot data...[/bold]")
             console.print("[dim](This is a large CSV download)[/dim]")
@@ -627,7 +627,7 @@ def update(ctx: click.Context, daily: bool) -> None:
     """
     db: Database = ctx.obj["db"]
 
-    async def run():
+    async def run() -> None:
         errors = []
 
         # --- Always: NHL API core data ---
