@@ -174,3 +174,12 @@ def test_trade_fingerprint_survives_current_nhl_position_labels():
     updated["teams"][0]["received"][0] = "Jeremy Swayman (NYR - G)"
     updated["teams"].reverse()
     assert trade_key(updated) == trade_key(trade)
+
+
+def test_team_with_zero_keepers_can_receive_keeper():
+    rows = [Keeper('A', 'Player One', 2024, 0)]
+    trade = {'season': 2026, 'league_id': 5003, 'date': 'Oct 1, 4:10 am',
+             'teams': [{'team': 'A', 'received': ['Round 1']},
+                       {'team': 'B', 'received': ['Player One (BOS - G)']}]}
+    result, _ = scanTrades(rows, [trade], season=2026, known_teams=['A','B'])
+    assert result == [Keeper('B', 'Player One', 2024, 1)]
