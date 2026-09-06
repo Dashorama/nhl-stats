@@ -34,6 +34,7 @@ NAME_ALIASES = {
     "David Pasternak": "David Pastrnak",
     "MIkhail Sergachev": "Mikhail Sergachev",
     "Jakob Markstron": "Jacob Markstrom",
+    "Mathew Tkachuk": "Matthew Tkachuk",
 }
 
 
@@ -104,6 +105,13 @@ def reconcile(
                 if found in used:
                     raise ValueError("multiple drafted players match the same sheet keeper")
                 used.add(found)
+                if warnings is not None and normalize(
+                    NAME_ALIASES.get(player, player)
+                ) != normalize(NAME_ALIASES.get(found, found)):
+                    warnings.append(
+                        f"fuzzy player-name match: {player} -> {found}; "
+                        "verify same person before trusting FYK/count"
+                    )
                 contracts[player] = next(row for row in old if row.player == found)
     result = []
     for team in teams:
@@ -150,6 +158,7 @@ def scanTrades(  # noqa: N802
     season: int,  # noqa: N802
     state: dict[str, Any] | None = None,
     known_teams: list[str] | None = None,
+    warnings: list[str] | None = None,
 ) -> tuple[list[Keeper], dict[str, Any]]:
     """Process only this season. Return new rows and a persist-after-verify watermark."""
     if state is not None and state["season"] != season:
@@ -159,51 +168,85 @@ def scanTrades(  # noqa: N802
     seen = set(state["seen"] if state else [])
     watermark = state.get("last_seen", "") if state else ""
     result = list(rows)
-    ownership_history: dict[str, list[str]] = {}
     teams = {
         team_key(name): name
         for name in (known_teams if known_teams is not None else [r.team for r in rows])
     }
+    histories: dict[str, list[tuple[str, str, str]]] = {}
+    pending = []
+    queued = set(seen)
     for trade in sorted((t for t in trades if t["season"] == season), key=trade_date):
         key = trade_key(trade)
-        if key in seen:
+        if key in queued:
             continue
+        queued.add(key)
         if len(trade["teams"]) != 2:
             raise ValueError("trade must contain two teams")
         transferred: set[str] = set()
+        events = []
         for side in trade["teams"]:
             for item in side["received"]:
                 if item.startswith("Round "):
                     continue
                 player = re.sub(r"\s*\([^)]*\)\s*$", "", item)
-                found = match(player, [r.player for r in result])
+                found = match(player, [r.player for r in rows])
                 if found is None:
                     continue
                 if found in transferred:
                     raise ValueError("duplicate keeper in trade")
                 transferred.add(found)
+                if warnings is not None and normalize(
+                    NAME_ALIASES.get(player, player)
+                ) != normalize(NAME_ALIASES.get(found, found)):
+                    warnings.append(
+                        f"fuzzy player-name match: {player} -> {found}; "
+                        "verify same person before trusting FYK/count"
+                    )
                 target = teams.get(team_key(side["team"]))
                 if target is None:
                     raise ValueError(f"unknown acquiring team: {side['team']}")
-                index = next(i for i, r in enumerate(result) if r.player == found)
-                source = next(s["team"] for s in trade["teams"] if s is not side)
-                row = result[index]
-                ownership_history.setdefault(found, [team_key(source)]).append(team_key(target))
-                if team_key(row.team) not in (team_key(source), team_key(target)):
-                    raise ValueError(f"trade ownership conflict for {player}")
-                # A target-owned row is already reflected (e.g. bootstrap from a
-                # manually maintained sheet). Never count it a second time.
-                if team_key(row.team) != team_key(target):
-                    result[index] = replace(row, team=target, traded=row.traded + 1)
-        seen.add(key)
-        watermark = max(watermark, trade_date(trade).isoformat())
+                source = team_key(next(s["team"] for s in trade["teams"] if s is not side))
+                histories.setdefault(found, []).append((source, team_key(target), key))
+                events.append((found, source, target))
+        pending.append((trade, key, events))
+    reflected: set[tuple[str, str]] = set()
     if state is None:
         for row in rows:
-            if ownership_history.get(row.player, []).count(team_key(row.team)) > 1:
+            history = histories.get(row.player, [])
+            if not history:
+                continue
+            if any(left[1] != right[0] for left, right in zip(history, history[1:])):
+                raise ValueError(
+                    f"trade ownership conflict for {row.player}: discontinuous history"
+                )
+            positions = [history[0][0], *(hop[1] for hop in history)]
+            owner = team_key(row.team)
+            if owner not in positions:
+                raise ValueError(f"trade ownership conflict for {row.player}")
+            if positions.count(owner) != 1:
                 raise ValueError(
                     f"ambiguous unwatermarked trade history for {row.player}; "
                     "establish a verified baseline before applying"
                 )
+            # A unique position in a linear history identifies its reflected prefix.
+            reflected.update((row.player, hop[2]) for hop in history[: positions.index(owner)])
+    for trade, key, events in pending:
+        for found, source, target in events:
+            if (found, key) in reflected:
+                continue
+            index = next(i for i, r in enumerate(result) if r.player == found)
+            row = result[index]
+            if team_key(row.team) not in (source, team_key(target)):
+                raise ValueError(f"trade ownership conflict for {found}")
+            if team_key(row.team) != team_key(target):
+                result[index] = replace(row, team=target, traded=row.traded + 1)
+                if warnings is not None:
+                    warnings.append(
+                        f"keeper trade: {row.player} {row.team} -> {target}; "
+                        f"trade count {row.traded} -> {row.traded + 1}"
+                    )
+        seen.add(key)
+        watermark = max(watermark, trade_date(trade).isoformat())
     # Stable within each owner block; scan does not force five keepers per team.
     order = {key: i for i, key in enumerate(teams)}
     result.sort(key=lambda r: order[team_key(r.team)])

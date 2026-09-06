@@ -1661,3 +1661,326 @@ FAILED tests/test_keeper_core.py::test_unwatermarked_round_trip_requires_a_verif
 ```
 
 Final full suite after all mutations reverted: **163 passed, 2 warnings**.
+
+
+## Revision internal review and fixes
+
+Parallel Sonnet5 and Opus5 reviewed `0646a507d43db777b5e44b4f14c3bf870027c811`
+against `2361174`. Both independently reproduced all 22 revision mutations.
+Sonnet's Important fuzzy-identity warning gap is fixed with explicit name-pair
+warnings (his suggested option 2), including in trade scans. Opus's Critical
+unwatermarked-cycle inflation is fixed by refusing ambiguous owner revisits and
+recognizing already-reflected prefixes in continuous linear histories. A cycle
+cannot safely be declared already applied from ownership/count alone: the same
+snapshot may precede or follow it. The tool therefore fails closed and requires
+a verified baseline, rather than silently guessing either bonus or no bonus.
+New cycles with explicit baseline state increment per hop and replay unchanged.
+
+The reviewability half of that finding is also fixed: every increment has a
+warning and every FYK/count change is visible in per-team `updated` deltas.
+Opus's Important archive-evidence gap is fixed by the actual sanitized
+`draft-2025-26028.html` capture and literal navigation metadata in
+`collector-navigation-20260906.json`. Its current/selected labels both read
+`2025 draft order`, with 60 tags. The 2024 archive similarly reports
+`2024 draft order` / 60 tags and its transaction collector returns the seven
+fixture trades. Bare historical URLs show Yahoo error pages with no options.
+Current league5003 reports current/selected `2026 draft order` and zero keeper
+tags (not yet drafted, so reconciliation refuses). These are new authenticated
+observations, not inherited counts from the old5003 previous-period collector.
+
+Minor cardinality coverage is strengthened alongside owner-set equality; the
+season-map test is explicitly a change detector for NOVA-KRT-2's supplied map.
+Initial review-fix red: **4 failed, 67 passed**; restored full suite:
+**170 passed, 2 warnings**. Followup reviews cover these fixes and G validation.
+
+### Review-fix mutation_proof (20 independent records)
+
+### fixture cardinality
+
+Mutation in `src/keeper/core.py`: `result.append(replace(row, team=team, player=player))` → `result.extend([replace(row, team=team, player=player)] * 2)`.
+
+```text
+E        +  where 93 = len([Keeper(team='Tage Against The Machine', player='Sam Reinhart', first_year=2024, traded=0), Keeper(team='Tage Against ..._year=2025, traded=0), Keeper(team='Tage Against The Machine', player='Brandon Hagel', first_year=2025, traded=0), ...])
+E        +  and   60 = len([{'First Year Kept': '2024', 'Owner Name': 'David Erner', 'Player Name': 'Sam Reinhart', 'Team Name': 'Tage Against Th...'Owner Name': 'Steven Morano', 'Player Name': 'Filip Forsberg', 'Team Name': 'Makings of a Varsity Athlete', ...}, ...])
+
+tests/test_keeper_core.py:36: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
+1 failed in 0.06s
+```
+
+### fuzzy reconcile warning
+
+Mutation in `src/keeper/core.py`: `if warnings is not None and normalize(
+                    NAME_ALIASES.get(player, player)
+                ) != normalize(NAME_ALIASES.get(found, found)):` → `if False:`.
+
+```text
+E       assert False
+E        +  where False = any(<generator object test_fuzzy_contract_match_warns_about_identity_not_just_bonus.<locals>.<genexpr> at 0x71de566d61f0>)
+
+tests/test_keeper_core.py:385: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_fuzzy_contract_match_warns_about_identity_not_just_bonus
+1 failed in 0.04s
+```
+
+### known alias excludes identity warning
+
+Mutation in `src/keeper/core.py`: `if warnings is not None and normalize(
+                    NAME_ALIASES.get(player, player)
+                ) != normalize(NAME_ALIASES.get(found, found)):` → `if warnings is not None:`.
+
+```text
+E         Left contains 2 more items, first extra item: 'fuzzy player-name match: Other Two -> Other Two; verify same person before trusting FYK/count'
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:291: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_global_contract_carry_and_new_append_order_with_move_warning
+1 failed in 0.04s
+```
+
+### fuzzy scan warning
+
+Mutation in `src/keeper/core.py`: `if warnings is not None and normalize(
+                    NAME_ALIASES.get(player, player)
+                ) != normalize(NAME_ALIASES.get(found, found)):` → `if False:`.
+
+```text
+E         Right contains one more item: 'keeper trade: Brand New Guyy A -> B; trade count 2 -> 3'
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:450: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_scanner_surfaces_fuzzy_identity_and_each_increment
+1 failed in 0.04s
+```
+
+### each increment is warned
+
+Mutation in `src/keeper/core.py`: `if warnings is not None:
+                    warnings.append(` → `if False:
+                    warnings.append(`.
+
+```text
+E       assert False
+E        +  where False = any(<generator object test_cli_preserves_empty_team_identity.<locals>.<genexpr> at 0x7f2d58d25540>)
+
+tests/test_keeper_cli.py:145: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_cli_preserves_empty_team_identity - ass...
+1 failed in 0.20s
+```
+
+### duplicate input fingerprints
+
+Mutation in `src/keeper/core.py`: `queued.add(key)` → `pass`.
+
+```text
+                    )
+E                   ValueError: trade ownership conflict for Player One: discontinuous history
+
+src/keeper/core.py:219: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_seen_duplicates_and_explicit_state_target_owned_rows_do_not_recount
+1 failed in 0.05s
+```
+
+### persisted seen fingerprints
+
+Mutation in `src/keeper/core.py`: `queued = set(seen)` → `queued = set()`.
+
+```text
+>                   raise ValueError(f"trade ownership conflict for {found}")
+E                   ValueError: trade ownership conflict for Player One
+
+src/keeper/core.py:240: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_chained_trades_chronology_cumulative_and_watermark
+1 failed in 0.04s
+```
+
+### keepers without events
+
+Mutation in `src/keeper/core.py`: `if not history:` → `if False:`.
+
+```text
+>               positions = [history[0][0], *(hop[1] for hop in history)]
+E               IndexError: list index out of range
+
+src/keeper/core.py:222: IndexError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_result_is_grouped_by_owner_order
+1 failed in 0.04s
+```
+
+### continuous bootstrap history
+
+Mutation in `src/keeper/core.py`: `if any(left[1] != right[0] for left, right in zip(history, history[1:])):` → `if False:`.
+
+```text
+>       with pytest.raises(ValueError, match="ownership conflict"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_core.py:414: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_linear_history_recognizes_reflected_prefix
+1 failed in 0.04s
+```
+
+### bootstrap owner must occur
+
+Mutation in `src/keeper/core.py`: `if owner not in positions:` → `if False:`.
+
+```text
+E         Expected regex: 'ownership conflict'
+E         Actual message: 'ambiguous unwatermarked trade history for Player One; establish a verified baseline before applying'
+
+tests/test_keeper_core.py:175: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_conflicts_fail_closed[owner-ownership conflict]
+1 failed, 3 passed in 0.05s
+```
+
+### ambiguous owner revisit
+
+Mutation in `src/keeper/core.py`: `if positions.count(owner) != 1:` → `if False:`.
+
+```text
+>       with pytest.raises(ValueError, match="ambiguous unwatermarked trade history"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_core.py:367: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_round_trip_requires_a_verified_baseline
+1 failed in 0.04s
+```
+
+### explicit baseline allows new cycles
+
+Mutation in `src/keeper/core.py`: `if state is None:` → `if True:`.
+
+```text
+                    )
+E                   ValueError: ambiguous unwatermarked trade history for Player One; establish a verified baseline before applying
+
+src/keeper/core.py:227: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_round_trip_requires_a_verified_baseline
+1 failed in 0.04s
+```
+
+### already-reflected prefix
+
+Mutation in `src/keeper/core.py`: `reflected.update((row.player, hop[2]) for hop in history[: positions.index(owner)])` → `pass`.
+
+```text
+>                   raise ValueError(f"trade ownership conflict for {found}")
+E                   ValueError: trade ownership conflict for Player One
+
+src/keeper/core.py:240: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_linear_history_recognizes_reflected_prefix
+1 failed in 0.05s
+```
+
+### skip reflected transfers
+
+Mutation in `src/keeper/core.py`: `if (found, key) in reflected:` → `if False:`.
+
+```text
+>                   raise ValueError(f"trade ownership conflict for {found}")
+E                   ValueError: trade ownership conflict for Player One
+
+src/keeper/core.py:240: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_linear_history_recognizes_reflected_prefix
+1 failed in 0.05s
+```
+
+### watermarked ownership conflicts
+
+Mutation in `src/keeper/core.py`: `if team_key(row.team) not in (source, team_key(target)):` → `if False:`.
+
+```text
+>       with pytest.raises(ValueError, match="ownership conflict"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_core.py:467: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_watermarked_trade_still_checks_current_ownership
+1 failed in 0.04s
+```
+
+### watermarked already-owned row
+
+Mutation in `src/keeper/core.py`: `if team_key(row.team) != team_key(target):` → `if True:`.
+
+```text
+E         At index 0 diff: Keeper(team='B', player='Player One', first_year=2022, traded=2) != Keeper(team='B', player='Player One', first_year=2022, traded=1)
+E         Use -v to get more diff
+
+tests/test_keeper_core.py:434: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_seen_duplicates_and_explicit_state_target_owned_rows_do_not_recount
+1 failed in 0.04s
+```
+
+### contract deltas in diff
+
+Mutation in `src/keeper/sheet.py`: `if (old_year, old_count) != (keeper.first_year, keeper.traded):` → `if False:`.
+
+```text
+E         Right contains one more item: {'first_year': {'after': 2023, 'before': 2024}, 'player': 'Sam Reinhart', 'trade_count': {'after': 2, 'before': 0}}
+E         Use -v to get more diff
+
+tests/test_keeper_sheet.py:379: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_plan_exposes_contract_year_and_count_deltas
+1 failed in 0.05s
+```
+
+### archive current label
+
+Mutation in `tests/fixtures/keeper_reconcile/draft-2025-26028.html`: `2025 draft order` → `2026 draft order`.
+
+```text
+E         + 2026 draft order
+E         ?    ^
+
+tests/test_keeper_collect.py:166: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_archived_2025_league_capture_has_its_own_current_draft
+1 failed in 0.17s
+```
+
+### archive selected label
+
+Mutation in `tests/fixtures/keeper_reconcile/draft-2025-26028.html`: `selected="" value="current"` → `value="current"`.
+
+```text
+>       assert soup.select_one("option[selected]").get_text(strip=True) == "2025 draft order"
+E       AttributeError: 'NoneType' object has no attribute 'get_text'
+
+tests/test_keeper_collect.py:167: AttributeError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_archived_2025_league_capture_has_its_own_current_draft
+1 failed in 0.17s
+```
+
+### archive parser result
+
+Mutation in `src/keeper/collect.py`: `    return result` → `    return {}`.
+
+```text
+E         
+E         ...Full output truncated (56 lines hidden), use '-vv' to show
+
+tests/test_keeper_collect.py:170: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_archived_2025_league_capture_has_its_own_current_draft
+1 failed in 0.18s
+```
+
+Green after restoring all mutations: `170 passed, 2 warnings`.

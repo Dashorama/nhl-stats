@@ -11,7 +11,8 @@ The pure engine accepts JSON snapshots and returns keeper records plus trade
 watermark state. Reconcile retains existing row order, appends new draft keepers
 in board order, preserves FYK/trade counts globally, and matches normalized player names
 with explicit league aliases and conservative fuzzy matching. Ambiguous matches
-fail for human resolution. In-season scans are season-scoped, chronological,
+fail for human resolution; fuzzy matches explicitly ask the operator to verify
+player identity before trusting the carried contract. In-season scans are season-scoped, chronological,
 and use stable transaction fingerprints to avoid replay. The confirmed trade bonus is cumulative: each newly applied keeper trade adds
 one to column G. The existing `F = E + term + G` formula already supports counts;
 no formula change is needed. A draft team move carries the contract without adding
@@ -65,3 +66,9 @@ rows only, before numeric writes in the same atomic batch. Backups include the
 previous G validation rules as well as values/formulas; readback verifies each
 new rule. This is the only validation change; A/B/D/F and B1 formulas and all
 headers remain intact.
+
+Initial trade scanning infers an already-reflected prefix only when a continuous
+history visits the current owner once. An unwatermarked owner revisit is ambiguous
+and fails closed; initialize the verified watermark before trading starts where
+possible. With state, new round trips increment once per hop. Per-player FYK/count
+deltas and increment warnings make all bonus changes visible in dry-run output.

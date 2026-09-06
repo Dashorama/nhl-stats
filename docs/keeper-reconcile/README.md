@@ -21,8 +21,8 @@ python3 -m src.keeper.cli scan-trades --season 2024 \
 ```
 
 No `--apply` means dry-run; explicit `--dry-run` is also supported. Output contains
-per-team additions/removals, possible-unrecorded-trade warnings, and every proposed
-Sheets request. Spelling corrections
+per-team additions/removals, per-player FYK/count before→after deltas,
+possible-unrecorded-trade and fuzzy-identity warnings, and every proposed Sheets request. Spelling corrections
 appear as removal/addition pairs. The pure functions return team/player/FYK/trade-count;
 expiry and remaining years stay spreadsheet formulas, never computed by the tool.
 
@@ -96,9 +96,11 @@ next trade. `Traded?` remains the column label for compatibility, but values are
 nonnegative integer counts. The existing `F = E + term + G` formula already adds
 that many years; no formula/header change is made.
 
-Known fingerprints are skipped. For a previously unseen transaction whose keeper
-is already under the acquiring owner, the scanner treats the row as already
-reflected and preserves its count. This allows starting from a manually maintained
+Known fingerprints are skipped. With no watermark, a continuous trade history
+that visits the current owner exactly once identifies the already-reflected
+prefix; those trades preserve the existing count. For a single hop this is the
+keeper already being under the acquiring owner. A→B→C can therefore start from
+A (apply both), B (apply the second) or C (apply neither). This allows starting from a manually maintained
 sheet without awarding the same bonus again. It cannot infer missing historical
 bonuses from ownership alone: verify counts before bootstrapping, keep the durable
 watermark, and do not replay old history onto a different roster. Chained new trades
@@ -201,3 +203,18 @@ rows only, before numeric writes in the same atomic batch. Backups include the
 previous G validation rules as well as values/formulas; readback verifies each
 new rule. This is the only validation change; A/B/D/F and B1 formulas and all
 headers remain intact.
+
+Fuzzy player-name matches produce a separate identity warning naming BOTH strings:
+verify they are the same person before trusting FYK/count. Known fixture aliases
+and exact normalized names do not produce this warning. Each applied keeper trade
+also prints its count increment, in addition to the per-team `updated` contract
+deltas, so a round trip cannot hide a bonus change behind unchanged roster names.
+
+The committed `draft-2025-26028.html` capture is from
+`https://hockey.fantasysports.yahoo.com/2025/hockey/26028/draftresults` on 2026-09-06:
+its current and selected labels both read `2025 draft order` and it contains 60
+keeper tags. `collector-navigation-20260906.json` records the bare/fallback URL
+observations, including the current 2026 league (current/selected `2026 draft order`,
+zero keeper tags because its draft has not completed; reconcile fails closed).
+The full historical ID map comes from NOVA-KRT-2; it is configuration supplied by
+the league owner, not IDs discovered or authenticated by the map unit test.

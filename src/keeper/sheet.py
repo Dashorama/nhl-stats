@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, cast
 from urllib.parse import quote
 
-from .core import Keeper, team_key
+from .core import Keeper, match, team_key
 
 TEST_SHEET = "1E8P5w5ensWavBPQBO66sMmqAmFBGP0c11AhT91FPxbk"
 FORMULA_COLUMNS = (0, 1, 3, 5)
@@ -128,11 +128,26 @@ def make_plan(snapshot: dict[str, Any], rows: list[Keeper]) -> dict[str, Any]:
         desired = [r for r in rows if team_key(r.team) == team_key(block["team"])]
         before = [r[2] for r in values[source : source + block["count"]] if r[2]]
         after = [r.player for r in desired]
+        updated = []
+        for keeper in desired:
+            previous_name = match(keeper.player, [r[2].strip() for r in values[3:] if r[2].strip()])
+            previous = next((r for r in values[3:] if r[2].strip() == previous_name), None)
+            old_year = int(previous[4]) if previous else None
+            old_count = int(previous[6]) if previous else None
+            if (old_year, old_count) != (keeper.first_year, keeper.traded):
+                updated.append(
+                    {
+                        "player": keeper.player,
+                        "first_year": {"before": old_year, "after": keeper.first_year},
+                        "trade_count": {"before": old_count, "after": keeper.traded},
+                    }
+                )
         diffs.append(
             {
                 "team": block["team"],
                 "added": [p for p in after if p not in before],
                 "removed": [p for p in before if p not in after],
+                "updated": updated,
             }
         )
         if not desired:

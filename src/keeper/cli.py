@@ -111,6 +111,7 @@ def main(argv: list[str] | None = None) -> None:
                 data,
                 season=args.season,
                 state=state,
+                warnings=warnings,
                 known_teams=list(dict.fromkeys(r[0] for r in before["raw_values"][3:])),
             )
         plan = make_plan(before, rows)
