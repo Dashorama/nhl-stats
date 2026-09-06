@@ -1506,3 +1506,85 @@ FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collect
 ```
 
 Green after all mutations reverted: `161 passed, 2 warnings` (full suite).
+
+
+### Cumulative-count sheet integration
+
+The TEST COPY had strict 0–1 validation on G, discovered by a read-only metadata
+inspection. The adapter now backs up and verifies those rules and atomically
+changes keeper-row G validation to nonnegative integers before cell writes.
+Tests `30ffd8c` / `cb34d73` precede implementation. Initial red: `2 failed, 22
+deselected`; validation-order red: `assert 7 < 4` / `1 failed, 23 deselected`.
+
+Live integration: 60 canonical draft keepers via season ID 26028; seven 2024
+trades via ID 17419. TEST COPY Sam Reinhart moved twice, reaching count **2**;
+replay stayed **2**. All 60 validation rules, formulas, owners and UI error checks
+passed. A read-quota 429 interrupted cleanup before its write; after the quota
+window cleared, the canonical reconciled roster was restored and verified.
+Restoration backup: `/tmp/keeper-rulings-integration/backups/raw-data-20260906T135543.980524Z.json`.
+Live sheet untouched.
+
+### G-only range
+
+Mutation: `grid(row, row + 1, 6)` → `grid(row, row + 1, 5)`.
+
+```text
+E         Use -v to get more diff
+
+tests/test_keeper_sheet.py:331: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_count_validation_targets_only_keeper_g_cells_and_is_verified
+1 failed, 23 deselected in 0.08s
+```
+
+### integer count formula
+
+Mutation: `MOD({cell},1)=0` → `MOD({cell},1)=1`.
+
+```text
+E         Use -v to get more diff
+
+tests/test_keeper_sheet.py:331: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_count_validation_targets_only_keeper_g_cells_and_is_verified
+1 failed, 23 deselected in 0.08s
+```
+
+### readback validation guard
+
+Mutation: `if actual.get("raw_validation") != expected.get("raw_validation"):` → `if False:`.
+
+```text
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_sheet.py:360: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_count_validation_targets_only_keeper_g_cells_and_is_verified
+1 failed, 23 deselected in 0.07s
+```
+
+### validation read for backup
+
+Mutation: `.get("dataValidation", {})` → `.get("missingValidation", {})`.
+
+```text
+E         Use -v to get more diff
+
+tests/test_keeper_sheet.py:177: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed, 23 deselected in 0.04s
+```
+
+### validation read scope
+
+Mutation: `ranges=f"'Raw Data'!G4:G{len(snapshot['raw_values'])}"` → `ranges=f"'Raw Data'!F4:F{len(snapshot['raw_values'])}"`.
+
+```text
+E         Use -v to get more diff
+
+tests/test_keeper_sheet.py:180: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
+1 failed, 23 deselected in 0.04s
+```

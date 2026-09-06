@@ -59,3 +59,9 @@ Jack-Hughes-before-Draisaitl artifact is deliberately not reproduced.
 B1 (`=YEAR(TODAY())-MONTH(6)`) is preserved verbatim, like all header formulas.
 The existing `Traded?` header remains; its numeric values now mean trade counts.
 Production scheduling and any new UI still require the separate rollout decision.
+
+Column G's old 0–1 validation is widened to nonnegative integers on keeper
+rows only, before numeric writes in the same atomic batch. Backups include the
+previous G validation rules as well as values/formulas; readback verifies each
+new rule. This is the only validation change; A/B/D/F and B1 formulas and all
+headers remain intact.

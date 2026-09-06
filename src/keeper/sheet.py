@@ -148,6 +148,20 @@ def make_plan(snapshot: dict[str, Any], rows: list[Keeper]) -> dict[str, Any]:
             expected["raw_values"].append(row)
             expected["raw_formulas"].append(frow)
             cursor += 1
+    expected["raw_validation"] = []
+    for row in range(3, cursor):
+        cell = f"G{row + 1}"
+        rule = {
+            "condition": {
+                "type": "CUSTOM_FORMULA",
+                "values": [
+                    {"userEnteredValue": f"=AND(ISNUMBER({cell}),{cell}>=0,MOD({cell},1)=0)"}
+                ],
+            },
+            "strict": True,
+        }
+        requests.append({"setDataValidation": {"range": grid(row, row + 1, 6), "rule": rule}})
+        expected["raw_validation"].append(rule)
     for col in (2, 4, 6):
         requests.append(
             {
@@ -173,6 +187,8 @@ def make_plan(snapshot: dict[str, Any], rows: list[Keeper]) -> dict[str, Any]:
 
 
 def verify(actual: dict[str, Any], expected: dict[str, Any]) -> None:
+    if actual.get("raw_validation") != expected.get("raw_validation"):
+        raise ValueError("post-write count validation verification failed")
     if actual["raw_formulas"] != expected["raw_formulas"]:
         raise ValueError("post-write formula/value verification failed; backup retained")
     if [(r[0], r[1]) for r in actual["raw_values"][3:]] != [
@@ -239,7 +255,7 @@ class Sheets:
     def read(self) -> dict[str, Any]:
         limit = self.tabs["Raw Data"]["gridProperties"]["rowCount"]
         range_name = f"'Raw Data'!A1:G{limit}"
-        snapshot = {
+        snapshot: dict[str, Any] = {
             "raw_values": self.values(range_name),
             "raw_formulas": self.values(range_name, "FORMULA"),
         }
@@ -251,6 +267,23 @@ class Sheets:
             owner_index = owners.index([row[0], row[1]]) + 2
             if formula[1] != f"='List Of Teams And Owners'!$B${owner_index}":
                 raise ValueError("owner formula points to wrong owner cell")
+        validations = (
+            self.call(
+                self.sheet_id,
+                ranges=f"'Raw Data'!G4:G{len(snapshot['raw_values'])}",
+                fields="sheets(data(rowData(values(dataValidation))))",
+            )["sheets"][0]
+            .get("data", [{}])[0]
+            .get("rowData", [])
+        )
+        snapshot["raw_validation"] = [
+            (
+                validations[i].get("values", [{}])[0].get("dataValidation", {})
+                if i < len(validations)
+                else {}
+            )
+            for i in range(len(snapshot["raw_values"]) - 3)
+        ]
         return snapshot
 
     def write(self, requests: list[dict[str, Any]]) -> None:

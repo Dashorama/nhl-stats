@@ -188,3 +188,9 @@ Fixtures are unchanged ground truth. Sanitized HTML fixtures contain only draft
 select/table markup and trade tables, not account navigation, session cookies,
 or login tokens. See [verification evidence](verification.md) for mutation proof,
 live scrape comparison, formula-preserving test-copy round trips, and review.
+
+Column G's old 0–1 validation is widened to nonnegative integers on keeper
+rows only, before numeric writes in the same atomic batch. Backups include the
+previous G validation rules as well as values/formulas; readback verifies each
+new rule. This is the only validation change; A/B/D/F and B1 formulas and all
+headers remain intact.
