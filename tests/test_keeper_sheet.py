@@ -365,3 +365,16 @@ def test_count_validation_targets_only_keeper_g_cells_and_is_verified(tmp_path):
     assert json.loads(next(tmp_path.glob("*.json")).read_text())["raw_validation"] == [
         {"strict": True}
     ]
+
+
+def test_plan_exposes_contract_year_and_count_deltas():
+    from dataclasses import replace
+    from src.keeper.core import from_snapshot
+
+    before = snapshot()
+    rows = from_snapshot(before)
+    rows[0] = replace(rows[0], first_year=rows[0].first_year - 1, traded=2)
+    plan = make_plan(before, rows)
+    assert plan["diff"][0]["updated"] == [{"player": rows[0].player,
+        "first_year": {"before": 2024, "after": 2023},
+        "trade_count": {"before": 0, "after": 2}}]

@@ -33,6 +33,7 @@ def test_reconcile_ground_truth():
         )
         for r in expected
     }
+    assert len(result) == len(expected)
     assert (board, snapshot) == original
 
 
@@ -373,3 +374,29 @@ def test_unwatermarked_round_trip_requires_a_verified_baseline():
         result,
         state,
     )
+
+
+def test_fuzzy_contract_match_warns_about_identity_not_just_bonus():
+    board, snapshot = small_board_snapshot()
+    board["A"][1]["player"] = "Brand New Guy"
+    snapshot["raw_values"][4][2] = "Brand New Guyy"
+    warnings = []
+    reconcile(board, snapshot, expected_count=3, warnings=warnings)
+    assert any("fuzzy player-name match: Brand New Guy -> Brand New Guyy" in w
+               and "verify same person" in w for w in warnings)
+
+
+def test_unwatermarked_linear_history_recognizes_reflected_prefix():
+    trade = lambda i, source, target: {"season": 2026, "league_id": 5003,
+        "date": f"Oct {i}, 4:10 am", "teams": [
+            {"team": source, "received": ["Round 1"]},
+            {"team": target, "received": ["Player One (BOS - G)"]}]}
+    trades = [trade(1, "A", "B"), trade(2, "B", "C")]
+    for owner, count in [("A", 0), ("B", 1), ("C", 2)]:
+        result, _ = scanTrades([Keeper(owner, "Player One", 2022, count)], trades,
+                              season=2026, known_teams=["A", "B", "C"])
+        assert result == [Keeper("C", "Player One", 2022, 2)]
+    broken = [trade(1, "A", "B"), trade(2, "A", "C")]
+    with pytest.raises(ValueError, match="ownership conflict"):
+        scanTrades([Keeper("C", "Player One", 2022, 2)], broken,
+                   season=2026, known_teams=["A", "B", "C"])

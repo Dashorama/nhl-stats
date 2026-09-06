@@ -142,6 +142,7 @@ def test_cli_preserves_empty_team_identity(tmp_path, monkeypatch, capsys):
     )
     output = json.loads(capsys.readouterr().out)
     assert next(t for t in output["diff"] if t["team"] == empty_team)["added"] == [source.player]
+    assert any("keeper trade:" in w and "trade count 0 -> 1" in w for w in output["warnings"])
 
 
 def pending_before_write(tmp_path, monkeypatch):
