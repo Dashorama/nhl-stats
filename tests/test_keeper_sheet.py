@@ -147,6 +147,7 @@ def test_sheets_helper_paths_owner_checks_and_ui_errors(tmp_path):
     from src.keeper.sheet import Sheets
 
     before = snapshot()
+    before["raw_validation"] = [{"strict": True}] * (len(before["raw_values"]) - 3)
     owners = list(dict.fromkeys((r[0], r[1]) for r in before["raw_values"][3:]))
     data = {"snapshot": before, "owners": owners}
     helper = tmp_path / "sheets.py"
@@ -159,6 +160,9 @@ DATA = json.loads("""
 calls=[]
 def call(path, **kwargs):
     calls.append((path,kwargs))
+    if kwargs.get('ranges'):
+        return {'sheets':[{'data':[{'rowData':[{'values':[{'dataValidation':r}]}
+                   for r in DATA['snapshot']['raw_validation']]}]}]}
     if '/values/' not in path:
         return {'sheets':[{'properties':{'title':'Raw Data','sheetId':0,
                           'gridProperties':{'rowCount':100}}},
@@ -172,7 +176,11 @@ def call(path, **kwargs):
     api = Sheets(TEST_SHEET, str(helper))
     assert api.read() == before
     calls = api.call.__globals__["calls"]
-    assert all(path.startswith(TEST_SHEET + "/values/") for path, _ in calls[1:])
+    assert all(path.startswith(TEST_SHEET + "/values/") for path, _ in calls[1:-1])
+    assert calls[-1] == (TEST_SHEET, {
+        "ranges": f"'Raw Data'!G4:G{len(before['raw_values'])}",
+        "fields": "sheets(data(rowData(values(dataValidation))))",
+    })
     with pytest.raises(ValueError, match="UI formula"):
         api.check_ui()
     state = api.call.__globals__["DATA"]
@@ -308,3 +316,27 @@ def test_content_requests_never_target_headers():
             update = request["updateCells"]
             assert update["range"]["startRowIndex"] == 3
             assert update["range"]["endRowIndex"] - 3 == len(update["rows"])
+
+
+def test_count_validation_targets_only_keeper_g_cells_and_is_verified(tmp_path):
+    from src.keeper.sheet import verify
+
+    before = snapshot()
+    board = json.loads((FIXTURES / "keepers_2025.json").read_text())
+    plan = make_plan(before, reconcile(board, before))
+    rules = [r["setDataValidation"] for r in plan["requests"] if "setDataValidation" in r]
+    assert rules == [{"range": {"sheetId": 0, "startRowIndex": i, "endRowIndex": i + 1,
+                                "startColumnIndex": 6, "endColumnIndex": 7},
+                      "rule": {"condition": {"type": "CUSTOM_FORMULA", "values": [
+                          {"userEnteredValue": f"=AND(ISNUMBER(G{i + 1}),G{i + 1}>=0,"
+                                                f"MOD(G{i + 1},1)=0)"}]}, "strict": True}}
+                     for i in range(3, 63)]
+    after = copy.deepcopy(plan["expected"])
+    after["raw_validation"][0] = {"condition": {"type": "NUMBER_BETWEEN"}}
+    with pytest.raises(ValueError, match="validation"):
+        verify(after, plan["expected"])
+    before["raw_validation"] = [{"strict": True}]
+    api = FakeSheet(before, plan["expected"])
+    apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
+    assert json.loads(next(tmp_path.glob("*.json")).read_text())["raw_validation"] == [
+        {"strict": True}]
