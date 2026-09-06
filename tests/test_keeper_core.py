@@ -351,10 +351,18 @@ def test_one_keeper_cannot_be_received_twice_in_one_trade(duplicate_side):
 
 def test_unwatermarked_round_trip_requires_a_verified_baseline():
     rows = [Keeper("A", "Player One", 2022, 2)]
-    trades = [{"season": 2026, "league_id": 5003, "date": f"Oct {i}, 4:10 am",
-               "teams": [{"team": source, "received": ["Round 1"]},
-                         {"team": target, "received": ["Player One (BOS - G)"]}]}
-              for i, source, target in [(1, "A", "B"), (2, "B", "A")]]
+    trades = [
+        {
+            "season": 2026,
+            "league_id": 5003,
+            "date": f"Oct {i}, 4:10 am",
+            "teams": [
+                {"team": source, "received": ["Round 1"]},
+                {"team": target, "received": ["Player One (BOS - G)"]},
+            ],
+        }
+        for i, source, target in [(1, "A", "B"), (2, "B", "A")]
+    ]
     with pytest.raises(ValueError, match="ambiguous unwatermarked trade history"):
         scanTrades(rows, trades, season=2026, known_teams=["A", "B"])
     # A deliberately established pre-trade watermark disambiguates new round trips.
@@ -362,4 +370,6 @@ def test_unwatermarked_round_trip_requires_a_verified_baseline():
     result, state = scanTrades(rows, trades, season=2026, known_teams=["A", "B"], state=baseline)
     assert result == [Keeper("A", "Player One", 2022, 4)]
     assert scanTrades(result, trades, season=2026, known_teams=["A", "B"], state=state) == (
-        result, state)
+        result,
+        state,
+    )

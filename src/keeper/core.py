@@ -159,6 +159,7 @@ def scanTrades(  # noqa: N802
     seen = set(state["seen"] if state else [])
     watermark = state.get("last_seen", "") if state else ""
     result = list(rows)
+    ownership_history: dict[str, list[str]] = {}
     teams = {
         team_key(name): name
         for name in (known_teams if known_teams is not None else [r.team for r in rows])
@@ -187,6 +188,7 @@ def scanTrades(  # noqa: N802
                 index = next(i for i, r in enumerate(result) if r.player == found)
                 source = next(s["team"] for s in trade["teams"] if s is not side)
                 row = result[index]
+                ownership_history.setdefault(found, [team_key(source)]).append(team_key(target))
                 if team_key(row.team) not in (team_key(source), team_key(target)):
                     raise ValueError(f"trade ownership conflict for {player}")
                 # A target-owned row is already reflected (e.g. bootstrap from a
@@ -195,6 +197,13 @@ def scanTrades(  # noqa: N802
                     result[index] = replace(row, team=target, traded=row.traded + 1)
         seen.add(key)
         watermark = max(watermark, trade_date(trade).isoformat())
+    if state is None:
+        for row in rows:
+            if ownership_history.get(row.player, []).count(team_key(row.team)) > 1:
+                raise ValueError(
+                    f"ambiguous unwatermarked trade history for {row.player}; "
+                    "establish a verified baseline before applying"
+                )
     # Stable within each owner block; scan does not force five keepers per team.
     order = {key: i for i, key in enumerate(teams)}
     result.sort(key=lambda r: order[team_key(r.team)])

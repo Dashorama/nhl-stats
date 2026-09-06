@@ -103,7 +103,14 @@ sheet without awarding the same bonus again. It cannot infer missing historical
 bonuses from ownership alone: verify counts before bootstrapping, keep the durable
 watermark, and do not replay old history onto a different roster. Chained new trades
 are processed chronologically and increment once each. Duplicate keeper receipts
-within one transaction are rejected.
+within one transaction are rejected. Without a watermark, a history that revisits
+the keeper's current owner is ambiguous and stops before returning a write plan;
+ownership cannot show whether that round trip already earned bonuses. Initialize
+weekly scanning before the first trade when possible: even an empty verified
+`scan-trades --apply` establishes a watermark. For an already active season, resolve
+the sheet/history baseline before proceeding; never create an empty watermark just
+to bypass an ambiguity. The pure API accepts an explicit verified pre-trade state
+for a new round trip and then applies each bonus once.
 
 Keeper counts vary during the season; a team with zero keepers keeps one empty
 formula template row so its owner block can later receive a keeper. The placeholder's

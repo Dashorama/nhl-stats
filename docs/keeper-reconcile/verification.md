@@ -1620,3 +1620,44 @@ FAILED tests/test_keeper_core.py::test_cumulative_trade_from_existing_count_and_
 FAILED tests/test_keeper_cli.py::test_cli_surfaces_global_move_warning - KeyE...
 7 failed, 34 passed in 0.57s
 ```
+
+
+### Unwatermarked round trips
+
+A sheet at owner A with no watermark cannot distinguish a new A→B→A round trip
+from a manually reflected one. The scanner now rejects that ambiguity before a
+write plan exists. A verified pre-trade state allows new round trips, adding two
+bonuses; replay adds none. Test-first commit `b1adcff` was red with
+`Failed: DID NOT RAISE <class 'ValueError'>` / `1 failed, 31 deselected`.
+
+### ambiguous bootstrap rejection
+
+Mutation: replace the `state is None` history check with `False`.
+
+```text
+        ]
+>       with pytest.raises(ValueError, match="ambiguous unwatermarked trade history"):
+E       Failed: DID NOT RAISE <class 'ValueError'>
+
+tests/test_keeper_core.py:366: Failed
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_round_trip_requires_a_verified_baseline
+1 failed, 31 deselected in 0.04s
+```
+
+### verified baseline accepted
+
+Mutation: replace the `state is None` history check with `True`.
+
+```text
+                        "establish a verified baseline before applying"
+                    )
+E                   ValueError: ambiguous unwatermarked trade history for Player One; establish a verified baseline before applying
+
+src/keeper/core.py:203: ValueError
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_unwatermarked_round_trip_requires_a_verified_baseline
+1 failed, 31 deselected in 0.04s
+```
+
+Final full suite after all mutations reverted: **163 passed, 2 warnings**.
