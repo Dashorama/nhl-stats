@@ -8,13 +8,14 @@ import json
 import os
 import subprocess
 from pathlib import Path
+from typing import Any
 
 from .collect import parse_draft, parse_trades
 from .core import from_snapshot, reconcile, scanTrades
 from .sheet import TEST_SHEET, Sheets, apply_plan, make_plan, verify
 
 
-def save_json(path, data):
+def save_json(path: Path, data: Any) -> None:
     temporary = path.with_suffix(".tmp")
     with temporary.open("w") as file:
         json.dump(data, file, indent=2)
@@ -28,7 +29,7 @@ def save_json(path, data):
         os.close(directory)
 
 
-def main(argv=None):
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=["reconcile", "scan-trades"])
     parser.add_argument("--season", type=int, required=True)

@@ -9,6 +9,7 @@ import unicodedata
 from dataclasses import dataclass, replace
 from datetime import datetime
 from difflib import SequenceMatcher
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -58,7 +59,7 @@ def match(name: str, candidates: list[str]) -> str | None:
     return scores[0][1]
 
 
-def from_snapshot(snapshot: dict) -> list[Keeper]:
+def from_snapshot(snapshot: dict[str, Any]) -> list[Keeper]:
     data = snapshot["raw_values"][3:]
     if any(len(r) < 7 for r in data):
         raise ValueError("incomplete snapshot row")
@@ -72,7 +73,7 @@ def from_snapshot(snapshot: dict) -> list[Keeper]:
 
 
 def reconcile(
-    board: dict, snapshot: dict, season: int = 2025, expected_count: int = 5
+    board: dict[str, Any], snapshot: dict[str, Any], season: int = 2025, expected_count: int = 5
 ) -> list[Keeper]:
     old = from_snapshot(snapshot)
     teams = list(dict.fromkeys(r[0] for r in snapshot["raw_values"][3:] if r))
@@ -113,23 +114,32 @@ def reconcile(
     return result
 
 
-def trade_key(trade: dict) -> str:
-    canonical = {k: trade[k] for k in ("season", "league_id", "date", "teams")}
+def trade_key(trade: dict[str, Any]) -> str:
+    canonical = {k: trade[k] for k in ("season", "league_id", "date")}
+    # Yahoo renders current NHL labels on historical trades. Those labels and
+    # presentation order are not transaction identity.
+    canonical["teams"] = sorted(
+        (
+            team_key(side["team"]),
+            sorted(normalize(re.sub(r"\s*\([^)]*\)\s*$", "", item)) for item in side["received"]),
+        )
+        for side in trade["teams"]
+    )
     return hashlib.sha256(json.dumps(canonical, sort_keys=True).encode()).hexdigest()
 
 
-def trade_date(trade: dict) -> datetime:
+def trade_date(trade: dict[str, Any]) -> datetime:
     date = datetime.strptime(trade["date"], "%b %d, %I:%M %p")
     return date.replace(year=trade["season"] + (1 if date.month < 7 else 0))
 
 
 def scanTrades(  # noqa: N802
     rows: list[Keeper],
-    trades: list[dict],
+    trades: list[dict[str, Any]],
     *,
     season: int,  # noqa: N802
-    state: dict | None = None,
-) -> tuple[list[Keeper], dict]:
+    state: dict[str, Any] | None = None,
+) -> tuple[list[Keeper], dict[str, Any]]:
     """Process only this season. Return new rows and a persist-after-verify watermark."""
     if state is not None and state["season"] != season:
         raise ValueError("watermark season mismatch")

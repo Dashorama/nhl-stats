@@ -3,8 +3,10 @@
 Baseline origin/main: 59 passed, 3 failed (`sqlite3.OperationalError: no such table: players`).
 The existing generator test fixture now creates its required players table and mocks
 LLM narration, so tests do not depend on an external narrator. No generator production
-code changed. Final full suite: `89 passed, 2 warnings in 5.02s`. Existing integration
-marker warnings remain. Scoped Ruff passed. `pip wheel . --no-deps` built nhl-stats.
+code changed. Final full suite: `107 passed, 2 warnings in 4.35s`. Existing integration
+marker warnings remain. Scoped Ruff and strict mypy passed. Full-repo Ruff (69 errors) and mypy
+(139 errors) match independent origin/main baseline runs exactly; this feature
+adds no lint/type errors. `pip wheel . --no-deps` built nhl-stats.
 
 Live read-only collector checks on 2026-09-06: 60 2025 keeper badges matched staged
 player lists; seven 2024 trade records matched the corresponding supplied sample.
@@ -32,9 +34,10 @@ FAILED test_empty_live_transaction_table - ValueError: unrecognized trade row
 ```
 
 The following targeted implementation mutations were applied in the isolated
-worktree, tested, and reverted. All twelve produced failures. Green after restoring
-all mutations: `27 passed in 0.43s` (keeper tests). The baseline generator fixture
+worktree, tested, and reverted. All nineteen produced failures. Green after restoring
+all mutations: `45 keeper tests passed; full suite 107 passed in 4.35s` (keeper tests). The baseline generator fixture
 repair's red is the three missing-table failures above; green: `3 passed in 2.21s`.
+
 
 ## Drop reconcile output
 
@@ -68,7 +71,7 @@ E
 E     ...Full output truncated (2 lines hidden), use '-vv' to show
 =========================== short test summary info ============================
 FAILED tests/test_keeper_core.py::test_reconcile_ground_truth - AssertionErro...
-1 failed in 0.03s
+1 failed in 0.02s
 ```
 
 ## Make trade bonus cumulative
@@ -108,7 +111,7 @@ F                                                                        [100%]
 ____________ test_chained_trades_chronology_one_time_and_watermark _____________
 tests/test_keeper_core.py:93: in test_chained_trades_chronology_one_time_and_watermark
     assert scanTrades(result, trades, season=2025, state=state) == (result, state)
-src/keeper/core.py:163: in scanTrades
+src/keeper/core.py:173: in scanTrades
     raise ValueError(f"trade ownership conflict for {player}")
 E   ValueError: trade ownership conflict for Player One
 =========================== short test summary info ============================
@@ -119,7 +122,7 @@ FAILED tests/test_keeper_core.py::test_chained_trades_chronology_one_time_and_wa
 ## Remove validation raises
 
 ```text
-.F.FFFFFFFFFF.FF.FFFFFFF.                                                [100%]
+.F.FFFFFFFFFF..FF.FFFFFF.FF.FFFFF                                        [100%]
 =================================== FAILURES ===================================
 __________________ test_reconcile_tag_count_and_unknown_team ___________________
 tests/test_keeper_core.py:33: in test_reconcile_tag_count_and_unknown_team
@@ -140,11 +143,11 @@ E   Failed: DID NOT RAISE <class 'ValueError'>
 _______ test_reconcile_rejects_corrupt_inputs[malformed_sheet-snapshot] ________
 tests/test_keeper_core.py:118: in test_reconcile_rejects_corrupt_inputs
     reconcile(board, snapshot)
-src/keeper/core.py:54: in reconcile
+src/keeper/core.py:55: in reconcile
     old = from_snapshot(snapshot)
-src/keeper/core.py:45: in from_snapshot
+src/keeper/core.py:46: in from_snapshot
     if any((str(r[6]) not in ('0', '1') for r in data)):
-src/keeper/core.py:45: in <genexpr>
+src/keeper/core.py:46: in <genexpr>
     if any((str(r[6]) not in ('0', '1') for r in data)):
 E   IndexError: list index out of range
 __________ test_reconcile_rejects_corrupt_inputs[invalid_flag-Traded] __________
@@ -162,11 +165,11 @@ E   Failed: DID NOT RAISE <class 'ValueError'>
 _________ test_trade_conflicts_fail_closed[unknown-unknown acquiring] __________
 tests/test_keeper_core.py:166: in test_trade_conflicts_fail_closed
     scanTrades(rows, trades, season=2025)
-src/keeper/core.py:123: in scanTrades
+src/keeper/core.py:125: in scanTrades
     if team_key(row.team) not in (team_key(source), team_key(target)):
-src/keeper/core.py:24: in team_key
+src/keeper/core.py:25: in team_key
     key = normalize(name)
-src/keeper/core.py:19: in normalize
+src/keeper/core.py:20: in normalize
     return ''.join((c for c in unicodedata.normalize('NFKD', value).casefold() if c.isalnum()))
 E   TypeError: normalize() argument 2 must be str, not None
 __________ test_trade_conflicts_fail_closed[owner-ownership conflict] __________
@@ -188,15 +191,15 @@ E   Failed: DID NOT RAISE <class 'ValueError'>
 ________________ test_bad_sheet_plan_rejected[length-snapshot] _________________
 tests/test_keeper_sheet.py:129: in test_bad_sheet_plan_rejected
     make_plan(before, rows)
-src/keeper/sheet.py:30: in make_plan
+src/keeper/sheet.py:33: in make_plan
     if len(row) < 7 or len(formulas[i]) < 7:
 E   IndexError: list index out of range
 _______________ test_bad_sheet_plan_rejected[partial-incomplete] _______________
 tests/test_keeper_sheet.py:129: in test_bad_sheet_plan_rejected
     make_plan(before, rows)
-src/keeper/sheet.py:32: in make_plan
+src/keeper/sheet.py:35: in make_plan
     if not all((isinstance(formulas[i][c], str) and formulas[i][c].startswith('=') for c in FORMULA_COLUMNS)):
-src/keeper/sheet.py:32: in <genexpr>
+src/keeper/sheet.py:35: in <genexpr>
     if not all((isinstance(formulas[i][c], str) and formulas[i][c].startswith('=') for c in FORMULA_COLUMNS)):
 E   IndexError: list index out of range
 _______________ test_bad_sheet_plan_rejected[blocks-contiguous] ________________
@@ -211,6 +214,10 @@ ___________________ test_verification_owner_and_error_cells ____________________
 tests/test_keeper_sheet.py:138: in test_verification_owner_and_error_cells
     with pytest.raises(ValueError, match="owner alignment"):
 E   Failed: DID NOT RAISE <class 'ValueError'>
+_____________ test_sheets_helper_paths_owner_checks_and_ui_errors ______________
+tests/test_keeper_sheet.py:176: in test_sheets_helper_paths_owner_checks_and_ui_errors
+    with pytest.raises(ValueError, match="UI formula"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
 ______________ test_live_markup_draft_matches_staged_keeper_board ______________
 tests/test_keeper_collect.py:18: in test_live_markup_draft_matches_staged_keeper_board
     with pytest.raises(ValueError, match="season"):
@@ -218,9 +225,33 @@ E   Failed: DID NOT RAISE <class 'ValueError'>
 ________________ test_live_markup_trade_sample_and_fail_closed _________________
 tests/test_keeper_collect.py:32: in test_live_markup_trade_sample_and_fail_closed
     parse_trades("<html>Login required</html>", 2024, 17419)
-src/keeper/collect.py:26: in parse_trades
+src/keeper/collect.py:27: in parse_trades
     rows = table.select('tr')
 E   AttributeError: 'NoneType' object has no attribute 'select'
+_____ test_changed_keeper_markup[class="name"-class="renamed"-keeper row] ______
+tests/test_keeper_collect.py:64: in test_changed_keeper_markup
+    parse_draft(html, 2025)
+src/keeper/collect.py:17: in parse_draft
+    result.setdefault(team.get_text(strip=True), []).append({'player': player.get_text(strip=True), 'keeper': True})
+E   AttributeError: 'NoneType' object has no attribute 'get_text'
+__________ test_changed_trade_markup[F-timestamp-removed-owner/date] ___________
+tests/test_keeper_collect.py:78: in test_changed_trade_markup
+    parse_trades(html, 2024, 17419)
+src/keeper/collect.py:53: in parse_trades
+    dates.append(stamp.get_text(strip=True))
+E   AttributeError: 'NoneType' object has no attribute 'get_text'
+____________ test_changed_trade_markup[Round 3-Mystery asset-asset] ____________
+tests/test_keeper_collect.py:77: in test_changed_trade_markup
+    with pytest.raises(ValueError, match=message):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+____ test_changed_trade_markup[Mar 1, 4:10 am-Mar 2, 4:10 am-pairing date] _____
+tests/test_keeper_collect.py:77: in test_changed_trade_markup
+    with pytest.raises(ValueError, match=message):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+__________________________ test_incomplete_trade_pair __________________________
+tests/test_keeper_collect.py:86: in test_incomplete_trade_pair
+    with pytest.raises(ValueError, match="incomplete trade"):
+E   Failed: DID NOT RAISE <class 'ValueError'>
 =========================== short test summary info ============================
 FAILED tests/test_keeper_core.py::test_reconcile_tag_count_and_unknown_team
 FAILED tests/test_keeper_core.py::test_chained_trades_chronology_one_time_and_watermark
@@ -240,9 +271,15 @@ FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[partial-incomple
 FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[blocks-contiguous]
 FAILED tests/test_keeper_sheet.py::test_bad_sheet_plan_rejected[unknown-unknown team]
 FAILED tests/test_keeper_sheet.py::test_verification_owner_and_error_cells - ...
+FAILED tests/test_keeper_sheet.py::test_sheets_helper_paths_owner_checks_and_ui_errors
 FAILED tests/test_keeper_collect.py::test_live_markup_draft_matches_staged_keeper_board
 FAILED tests/test_keeper_collect.py::test_live_markup_trade_sample_and_fail_closed
-20 failed, 5 passed in 0.32s
+FAILED tests/test_keeper_collect.py::test_changed_keeper_markup[class="name"-class="renamed"-keeper row]
+FAILED tests/test_keeper_collect.py::test_changed_trade_markup[F-timestamp-removed-owner/date]
+FAILED tests/test_keeper_collect.py::test_changed_trade_markup[Round 3-Mystery asset-asset]
+FAILED tests/test_keeper_collect.py::test_changed_trade_markup[Mar 1, 4:10 am-Mar 2, 4:10 am-pairing date]
+FAILED tests/test_keeper_collect.py::test_incomplete_trade_pair - Failed: DID...
+26 failed, 7 passed in 0.42s
 ```
 
 ## Write into protected column
@@ -281,7 +318,7 @@ _____________ test_cli_dry_run_and_watermark_after_verified_apply ______________
 tests/test_keeper_cli.py:25: in test_cli_dry_run_and_watermark_after_verified_apply
     assert not api.writes
 E   AssertionError: assert not [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimen...': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}, ...]]
-E    +  where [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimen...': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}, ...]] = <tests.test_keeper_sheet.FakeSheet object at 0x7800a982a170>.writes
+E    +  where [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 67, 'sheetId': 0, 'startIndex': 66}}}, {'deleteDimen...': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}, ...]] = <tests.test_keeper_sheet.FakeSheet object at 0x78d7bd02a7a0>.writes
 =========================== short test summary info ============================
 FAILED tests/test_keeper_sheet.py::test_dry_run_backup_apply_and_verification
 FAILED tests/test_keeper_cli.py::test_cli_dry_run_and_watermark_after_verified_apply
@@ -315,7 +352,7 @@ tests/test_keeper_cli.py:81: in test_recover_verified_sheet_after_watermark_writ
     assert len(api.writes) == 1
 E   AssertionError: assert 2 == 1
 E    +  where 2 = len([[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 51, 'sheetId': 0, 'startIndex': 49}}}, {'deleteDimen...alues': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}]])
-E    +    where [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 51, 'sheetId': 0, 'startIndex': 49}}}, {'deleteDimen...alues': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}]] = <tests.test_keeper_sheet.FakeSheet object at 0x7644859ee4d0>.writes
+E    +    where [[{'deleteDimension': {'range': {'dimension': 'ROWS', 'endIndex': 51, 'sheetId': 0, 'startIndex': 49}}}, {'deleteDimen...alues': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, {'values': [...]}, ...]}}]] = <tests.test_keeper_sheet.FakeSheet object at 0x72cdc962b190>.writes
 =========================== short test summary info ============================
 FAILED tests/test_keeper_cli.py::test_recover_verified_sheet_after_watermark_write_failure
 1 failed in 0.14s
@@ -337,7 +374,7 @@ E     {'Trou Trou Train': ['Mackenzie Blackwood', 'Radko Gudas', 'Jack Hughes', 
 E     Use -v to get more diff
 =========================== short test summary info ============================
 FAILED tests/test_keeper_collect.py::test_live_markup_draft_matches_staged_keeper_board
-1 failed in 0.11s
+1 failed in 0.10s
 ```
 
 ## Drop parsed trade
@@ -378,3 +415,211 @@ E     Use -v to get more diff
 FAILED tests/test_keeper_sheet.py::test_expand_and_zero_keeper_template - ass...
 1 failed in 0.02s
 ```
+
+## Browser guards incorrectly exit successfully
+
+```text
+.FFFF.FF.                                                                [100%]
+=================================== FAILURES ===================================
+_ test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available] _
+tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
+    assert result.returncode != 0
+E   AssertionError: assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2000', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif1', '5003'], returncode=0, stdout='', stderr='').returncode
+_ test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id] _
+tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
+    assert result.returncode != 0
+E   AssertionError: assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2024', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif2', '5003'], returncode=0, stdout='', stderr='').returncode
+_ test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target] _
+tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
+    assert result.returncode != 0
+E   AssertionError: assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2026', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif3', '5003'], returncode=0, stdout='', stderr='').returncode
+_ test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination] _
+tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
+    assert result.returncode != 0
+E   AssertionError: assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2026', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif4', '5003'], returncode=0, stdout='', stderr='').returncode
+_ test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete] _
+tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
+    assert result.returncode != 0
+E   AssertionError: assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2026', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif6', '5003'], returncode=0, stdout='', stderr='').returncode
+_ test_transport_refuses_unverified_collection[scenario7-bad-command-2025-5003-invalid collector arguments] _
+tests/test_keeper_transport.py:70: in test_transport_refuses_unverified_collection
+    assert result.returncode != 0
+E   AssertionError: assert 0 != 0
+E    +  where 0 = CompletedProcess(args=['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mj...'2025', '/tmp/pytest-of-david/pytest-274/test_transport_refuses_unverif7', '5003'], returncode=0, stdout='', stderr='').returncode
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario7-bad-command-2025-5003-invalid collector arguments]
+6 failed, 3 passed in 0.25s
+```
+
+## Browser fails to close profile
+
+```text
+FFFFFFF.F                                                                [100%]
+=================================== FAILURES ===================================
+_ test_transport_refuses_unverified_collection[scenario0-reconcile-2025-5003-season metadata] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif0/closed').exists
+_ test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif1/closed').exists
+_ test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif2/closed').exists
+_ test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif3/closed').exists
+_ test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif4/closed').exists
+_ test_transport_refuses_unverified_collection[scenario5-scan-trades-2026-5003-redirect] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif5/closed').exists
+_ test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete] _
+tests/test_keeper_transport.py:74: in test_transport_refuses_unverified_collection
+    assert closed.exists()
+E   AssertionError: assert False
+E    +  where False = exists()
+E    +    where exists = PosixPath('/tmp/pytest-of-david/pytest-275/test_transport_refuses_unverif6/closed').exists
+___________ test_transport_returns_captured_page_and_closes_profile ____________
+tests/test_keeper_transport.py:111: in test_transport_returns_captured_page_and_closes_profile
+    assert closed.read_text() == "closed"
+/usr/lib/python3.10/pathlib.py:1134: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+/usr/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-david/pytest-275/test_transport_returns_capture0/closed'
+=========================== short test summary info ============================
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario0-reconcile-2025-5003-season metadata]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario1-reconcile-2000-5003-not available]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario2-scan-trades-2024-5003-archived --league-id]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario3-scan-trades-2026-5003-pagination target]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario4-scan-trades-2026-5003-ambiguous pagination]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario5-scan-trades-2026-5003-redirect]
+FAILED tests/test_keeper_transport.py::test_transport_refuses_unverified_collection[scenario6-scan-trades-2026-5003-pagination incomplete]
+FAILED tests/test_keeper_transport.py::test_transport_returns_captured_page_and_closes_profile
+8 failed, 1 passed in 0.28s
+```
+
+## Ignore explicit empty transaction page
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_empty_live_transaction_table _______________________
+tests/test_keeper_collect.py:45: in test_empty_live_transaction_table
+    parse_trades(
+src/keeper/collect.py:35: in parse_trades
+    raise ValueError("empty page unsupported")
+E   ValueError: empty page unsupported
+=========================== short test summary info ============================
+FAILED tests/test_keeper_collect.py::test_empty_live_transaction_table - Valu...
+1 failed in 0.06s
+```
+
+## Fingerprint includes mutable NHL labels again
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_trade_fingerprint_survives_current_nhl_position_labels __________
+tests/test_keeper_core.py:176: in test_trade_fingerprint_survives_current_nhl_position_labels
+    assert trade_key(updated) == trade_key(trade)
+E   AssertionError: assert '31df662cc741...ebe569134f551' == 'e8d798b748d2...a0c14af1b057c'
+E     
+E     - e8d798b748d21561aff1a9178b4420301d0cd916f243f3446b1a0c14af1b057c
+E     + 31df662cc741e21abf237b0e0848236dd9a7d67720014af7dd2ebe569134f551
+=========================== short test summary info ============================
+FAILED tests/test_keeper_core.py::test_trade_fingerprint_survives_current_nhl_position_labels
+1 failed in 0.02s
+```
+
+## Write before backup
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_backup_is_durable_before_first_write ___________________
+tests/test_keeper_sheet.py:208: in test_backup_is_durable_before_first_write
+    apply_plan(api, TEST_SHEET, before, plan, tmp_path, apply=True)
+src/keeper/sheet.py:204: in apply_plan
+    api.write(plan["requests"])
+tests/test_keeper_sheet.py:204: in check_backup
+    assert json.loads(next(tmp_path.glob("*.json")).read_text()) == before
+E   StopIteration
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_backup_is_durable_before_first_write
+1 failed in 0.03s
+```
+
+## Ignore backup fsync
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________________ test_backup_is_durable_before_first_write ___________________
+tests/test_keeper_sheet.py:215: in test_backup_is_durable_before_first_write
+    with pytest.raises(OSError, match="backup fsync"):
+E   Failed: DID NOT RAISE <class 'OSError'>
+=========================== short test summary info ============================
+FAILED tests/test_keeper_sheet.py::test_backup_is_durable_before_first_write
+1 failed in 0.03s
+```
+
+## Disable CLI argument safety errors
+
+```text
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_cli_rejects_missing_source_and_live_apply ________________
+tests/test_keeper_cli.py:91: in test_cli_rejects_missing_source_and_live_apply
+    cli.main(["reconcile", "--season", "2025", "--state-dir", str(tmp_path)])
+src/keeper/cli.py:58: in main
+    output = subprocess.run(
+/usr/lib/python3.10/subprocess.py:526: in run
+    raise CalledProcessError(retcode, process.args,
+E   subprocess.CalledProcessError: Command '['node', '/home/david/nhl-stats/.worktrees/feature/M-keeper-reconcile-tool/src/keeper/collect.mjs', 'reconcile', '2025', 'None', '5003']' returned non-zero exit status 1.
+=========================== short test summary info ============================
+FAILED tests/test_keeper_cli.py::test_cli_rejects_missing_source_and_live_apply
+1 failed in 0.11s
+```
+
+## Additional live integration
+
+The complete `--profile` CLI scrape-to-sheet dry-run succeeded with zero changed
+teams. A synthetic 2026 keeper trade then moved Sam Reinhart from David's block
+to Steven's block, setting Traded=1 and resizing both blocks. All formula/owner/UI
+checks passed. Restoration to original rights also passed; the final formula
+snapshot matched the original exactly. Backups:
+`/tmp/keeper-integration/backups/raw-data-20260906T123059.249246Z.json` and
+`/tmp/keeper-integration/backups/raw-data-20260906T123101.619702Z.json`.
+
+Production activation and weekly scheduler follow-up: GitHub issue #1.
+`bd onboard` could not run (`bd: command not found`); tracking is on GitHub.

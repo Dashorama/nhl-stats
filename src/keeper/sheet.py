@@ -8,7 +8,10 @@ import json
 import os
 import re
 from datetime import datetime, timezone
+from importlib.abc import Loader
+from importlib.machinery import ModuleSpec
 from pathlib import Path
+from typing import Any, cast
 from urllib.parse import quote
 
 from .core import Keeper, team_key
@@ -23,13 +26,13 @@ def shifted(formula: str, offset: int) -> str:
     for i in range(0, len(parts), 2):
         parts[i] = re.sub(
             r"(?<![A-Za-z0-9_$])([A-Z]+)([0-9]+)",
-            lambda m: m[1] + str(int(m[2]) + offset),
+            lambda m: str(m[1]) + str(int(m[2]) + offset),
             parts[i],
         )
     return "".join(parts)
 
 
-def grid(start: int, end: int, col: int, last: int | None = None) -> dict:
+def grid(start: int, end: int, col: int, last: int | None = None) -> dict[str, Any]:
     return {
         "sheetId": 0,
         "startRowIndex": start,
@@ -39,11 +42,11 @@ def grid(start: int, end: int, col: int, last: int | None = None) -> dict:
     }
 
 
-def make_plan(snapshot: dict, rows: list[Keeper]) -> dict:
+def make_plan(snapshot: dict[str, Any], rows: list[Keeper]) -> dict[str, Any]:
     values, formulas = snapshot["raw_values"], snapshot["raw_formulas"]
     if len(values) != len(formulas) or len(values) < 4:
         raise ValueError("invalid snapshot shape")
-    blocks = []
+    blocks: list[dict[str, Any]] = []
     for i, row in enumerate(values[3:], 3):
         if len(row) < 7 or len(formulas[i]) < 7:
             raise ValueError("incomplete sheet row")
@@ -59,7 +62,7 @@ def make_plan(snapshot: dict, rows: list[Keeper]) -> dict:
         raise ValueError("non-contiguous owner blocks")
     if any(team_key(r.team) not in {team_key(b["team"]) for b in blocks} for r in rows):
         raise ValueError("unknown team in output")
-    requests = []
+    requests: list[dict[str, Any]] = []
     for block in reversed(blocks):
         wanted = sum(team_key(r.team) == team_key(block["team"]) for r in rows)
         # Keep an empty template row for a team temporarily holding zero keepers.
@@ -168,7 +171,7 @@ def make_plan(snapshot: dict, rows: list[Keeper]) -> dict:
     return {"requests": requests, "diff": diffs, "expected": expected}
 
 
-def verify(actual: dict, expected: dict) -> None:
+def verify(actual: dict[str, Any], expected: dict[str, Any]) -> None:
     if actual["raw_formulas"] != expected["raw_formulas"]:
         raise ValueError("post-write formula/value verification failed; backup retained")
     if [(r[0], r[1]) for r in actual["raw_values"][3:]] != [
@@ -184,7 +187,13 @@ def verify(actual: dict, expected: dict) -> None:
 
 
 def apply_plan(
-    api, sheet_id: str, before: dict, plan: dict, backup_dir: Path, *, apply: bool = False
+    api: Any,
+    sheet_id: str,
+    before: dict[str, Any],
+    plan: dict[str, Any],
+    backup_dir: Path,
+    *,
+    apply: bool = False,
 ) -> Path | None:
     if not apply:
         return None
@@ -211,21 +220,26 @@ class Sheets:
         self, sheet_id: str = TEST_SHEET, helper: str = "/home/david/.config/sheets-cli/sheets.py"
     ):
         self.sheet_id = sheet_id
-        spec = importlib.util.spec_from_file_location("keeper_sheets_helper", helper)
+        spec = cast(
+            ModuleSpec, importlib.util.spec_from_file_location("keeper_sheets_helper", helper)
+        )
         module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        cast(Loader, spec.loader).exec_module(module)
         self.call = module.call
         metadata = self.call(sheet_id, fields="sheets(properties)")
         self.tabs = {s["properties"]["title"]: s["properties"] for s in metadata["sheets"]}
         if self.tabs.get("Raw Data", {}).get("sheetId") != 0:
             raise ValueError("Raw Data sheetId must be 0")
 
-    def values(self, range_name: str, render: str = "FORMATTED_VALUE") -> list:
-        return self.call(
-            f"{self.sheet_id}/values/{quote(range_name, safe='!:')}", valueRenderOption=render
-        ).get("values", [])
+    def values(self, range_name: str, render: str = "FORMATTED_VALUE") -> list[list[Any]]:
+        return cast(
+            list[list[Any]],
+            self.call(
+                f"{self.sheet_id}/values/{quote(range_name, safe='!:')}", valueRenderOption=render
+            ).get("values", []),
+        )
 
-    def read(self) -> dict:
+    def read(self) -> dict[str, Any]:
         limit = self.tabs["Raw Data"]["gridProperties"]["rowCount"]
         range_name = f"'Raw Data'!A1:G{limit}"
         snapshot = {
@@ -242,7 +256,7 @@ class Sheets:
                 raise ValueError("owner formula points to wrong owner cell")
         return snapshot
 
-    def write(self, requests: list) -> None:
+    def write(self, requests: list[dict[str, Any]]) -> None:
         if self.sheet_id != TEST_SHEET:
             raise ValueError("apply is restricted to the TEST COPY")
         self.call(f"{self.sheet_id}:batchUpdate", method="POST", body={"requests": requests})

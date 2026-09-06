@@ -1,14 +1,16 @@
 """Parse bounded Yahoo page content, rejecting incomplete or changed markup."""
 
+from typing import Any
+
 from bs4 import BeautifulSoup
 
 
-def parse_draft(html: str, season: int) -> dict:
+def parse_draft(html: str, season: int) -> dict[str, Any]:
     soup = BeautifulSoup(html, "html.parser")
     selected = soup.select_one("#yfa-draftresults-select option[selected]")
     if selected is None or str(season) not in selected.get_text():
         raise ValueError("draft season selection not confirmed")
-    result = {}
+    result: dict[str, Any] = {}
     for tag in soup.select('[title="This player is a keeper."]'):
         row = tag.find_parent("tr")
         player = row.select_one("a.name") if row else None
@@ -23,7 +25,7 @@ def parse_draft(html: str, season: int) -> dict:
     return result
 
 
-def parse_trades(html: str, season: int, league_id: int) -> list:
+def parse_trades(html: str, season: int, league_id: int) -> list[dict[str, Any]]:
     soup = BeautifulSoup(html, "html.parser")
     table = soup.select_one("table.Tst-transaction-table")
     if table is None:
