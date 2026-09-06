@@ -75,3 +75,54 @@ def test_chained_trades_chronology_one_time_and_watermark():
     assert scanTrades(result, trades, season=2025, state=state) == (result, state)
     with pytest.raises(ValueError, match='season'):
         scanTrades(result, trades, season=2026, state=state)
+
+
+@pytest.mark.parametrize('mutation,message', [
+    ('duplicate_board', 'duplicate'), ('duplicate_sheet', 'duplicate'),
+    ('malformed_sheet', 'snapshot'), ('invalid_flag', 'Traded'),
+])
+def test_reconcile_rejects_corrupt_inputs(mutation, message):
+    board, snapshot = fixture('keepers_2025.json'), fixture('rawdata_backup.json')
+    if mutation == 'duplicate_board':
+        board['Julie the Cat'][0]['player'] = board['Cuylle-O'][0]['player']
+    elif mutation == 'duplicate_sheet':
+        snapshot['raw_values'][4][2] = snapshot['raw_values'][3][2]
+    elif mutation == 'malformed_sheet':
+        snapshot['raw_values'][4] = ['partial']
+    else:
+        snapshot['raw_values'][4][6] = '2'
+    with pytest.raises(ValueError, match=message):
+        reconcile(board, snapshot)
+
+
+def test_matching_ambiguity_is_an_error():
+    from src.keeper.core import match
+    with pytest.raises(ValueError, match='ambiguous'):
+        match('JT Miller', ['J.T. Miller', 'JT Miller'])
+    with pytest.raises(ValueError, match='ambiguous'):
+        match('Player Ones', ['Player Onea', 'Player Oneb'])
+
+
+@pytest.mark.parametrize('mutation,message', [
+    ('sides', 'two teams'), ('unknown', 'unknown acquiring'),
+    ('owner', 'ownership conflict'), ('league', 'league'),
+])
+def test_trade_conflicts_fail_closed(mutation, message):
+    rows = [Keeper('A', 'Player One', 2022, 0), Keeper('B', 'Other', 2024, 0),
+            Keeper('C', 'Third', 2024, 0)]
+    trade = {'season': 2025, 'league_id': 5003, 'date': 'Dec 1, 4:10 am',
+             'teams': [{'team': 'A', 'received': ['Round 1']},
+                       {'team': 'B', 'received': ['Player One (BOS - G)']}]}
+    trades = [trade]
+    if mutation == 'sides':
+        trade['teams'].pop()
+    elif mutation == 'unknown':
+        trade['teams'][1]['team'] = 'Unknown'
+    elif mutation == 'owner':
+        trade['teams'][0]['team'] = 'C'
+    else:
+        other = copy.deepcopy(trade)
+        other['league_id'] = 42
+        trades.append(other)
+    with pytest.raises(ValueError, match=message):
+        scanTrades(rows, trades, season=2025)

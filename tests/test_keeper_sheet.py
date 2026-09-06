@@ -75,3 +75,52 @@ def test_apply_rejects_live_stale_and_bad_formulas(tmp_path):
     before['raw_formulas'][3][0] = 'static team'
     with pytest.raises(ValueError, match='formula'):
         make_plan(before, reconcile(board, before))
+
+
+def test_expand_and_zero_keeper_template():
+    from src.keeper.core import from_snapshot
+    before = snapshot()
+    rows = from_snapshot(before)
+    destination = rows[0].team
+    emptied = rows[-1].team
+    from dataclasses import replace
+    rows = [replace(r, team=destination) if r.team == emptied else r for r in rows]
+    plan = make_plan(before, rows)
+    assert any('insertDimension' in r for r in plan['requests'])
+    copies = [r['copyPaste'] for r in plan['requests'] if 'copyPaste' in r]
+    assert {r['source']['startColumnIndex'] for r in copies if r['pasteType'] == 'PASTE_FORMULA'} == {0, 1, 3, 5}
+    assert plan['expected']['raw_formulas'][-1][2] == ''
+    assert plan['expected']['raw_formulas'][-1][1] == "='List Of Teams And Owners'!$B$13"
+
+
+@pytest.mark.parametrize('mutation,message', [
+    ('length', 'snapshot'), ('partial', 'incomplete'), ('blocks', 'contiguous'),
+    ('unknown', 'unknown team'),
+])
+def test_bad_sheet_plan_rejected(mutation, message):
+    from src.keeper.core import Keeper, from_snapshot
+    before = snapshot()
+    rows = from_snapshot(before)
+    if mutation == 'length':
+        before['raw_formulas'].pop()
+    elif mutation == 'partial':
+        before['raw_formulas'][3] = ['=x']
+    elif mutation == 'blocks':
+        before['raw_values'][4][0] = 'Another'
+    else:
+        rows.append(Keeper('Unknown', 'Name', 2025, 0))
+    with pytest.raises(ValueError, match=message):
+        make_plan(before, rows)
+
+
+def test_verification_owner_and_error_cells():
+    from src.keeper.sheet import verify
+    expected = snapshot()
+    actual = copy.deepcopy(expected)
+    actual['raw_values'][3][1] = 'Wrong owner'
+    with pytest.raises(ValueError, match='owner alignment'):
+        verify(actual, expected)
+    actual = copy.deepcopy(expected)
+    actual['raw_values'][3][3] = '#REF!'
+    with pytest.raises(ValueError, match='formula error'):
+        verify(actual, expected)
