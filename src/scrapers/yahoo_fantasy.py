@@ -9,7 +9,7 @@ token is cached and refreshed automatically.
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import structlog
 from yfpy.query import YahooFantasySportsQuery
@@ -50,35 +50,34 @@ class YahooFantasyClient:
     def get_league_info(self) -> dict[str, Any]:
         """Get league name, settings, scoring type, etc."""
         info = self.query.get_league_info()
-        return _to_dict(info)
+        return cast("dict[str, Any]", _to_dict(info))
 
     def get_league_settings(self) -> dict[str, Any]:
         """Get league scoring categories, roster positions, etc."""
         settings = self.query.get_league_settings()
-        return _to_dict(settings)
+        return cast("dict[str, Any]", _to_dict(settings))
 
-    def get_league_standings(self) -> list[dict[str, Any]]:
+    def get_league_standings(self) -> dict[str, Any]:
         """Get current league standings."""
         standings = self.query.get_league_standings()
-        return _to_dict(standings)
+        return cast("dict[str, Any]", _to_dict(standings))
 
     def get_league_scoreboard(self, week: int | None = None) -> dict[str, Any]:
         """Get scoreboard for a given week (current week if None)."""
         scoreboard = self.query.get_league_scoreboard_by_week(chosen_week=week)
-        return _to_dict(scoreboard)
+        return cast("dict[str, Any]", _to_dict(scoreboard))
 
     # ── Team Info ────────────────────────────────────────────────
 
-    def get_my_team(self) -> dict[str, Any]:
+    def get_my_team(self) -> list[dict[str, Any]]:
         """Get the authenticated user's team info."""
-        user = self.query.get_current_user()
         teams = self.query.get_league_teams()
-        return _to_dict(teams)
+        return cast("list[dict[str, Any]]", _to_dict(teams))
 
     def get_team_info(self, team_id: int | str | None = None) -> dict[str, Any]:
         """Get info for a specific team."""
         info = self.query.get_team_info(team_id)
-        return _to_dict(info)
+        return cast("dict[str, Any]", _to_dict(info))
 
     def get_team_roster(
         self, team_id: int | str | None = None, week: int | None = None
@@ -90,12 +89,12 @@ class YahooFantasyClient:
             )
         else:
             roster = self.query.get_team_roster_player_stats(team_id=team_id)
-        return _to_dict(roster)
+        return cast("list[dict[str, Any]]", _to_dict(roster))
 
     def get_team_matchups(self, team_id: int | str | None = None) -> list[dict[str, Any]]:
         """Get all matchups for a team this season."""
         matchups = self.query.get_team_matchups(team_id=team_id)
-        return _to_dict(matchups)
+        return cast("list[dict[str, Any]]", _to_dict(matchups))
 
     def get_team_stats(
         self, team_id: int | str | None = None, week: int | None = None
@@ -105,43 +104,41 @@ class YahooFantasyClient:
             stats = self.query.get_team_stats_by_week(team_id=team_id, chosen_week=week)
         else:
             stats = self.query.get_team_stats(team_id=team_id)
-        return _to_dict(stats)
+        return cast("dict[str, Any]", _to_dict(stats))
 
     # ── Player Info ──────────────────────────────────────────────
 
-    def get_player_stats(
-        self, player_key: str, week: int | None = None
-    ) -> dict[str, Any]:
+    def get_player_stats(self, player_key: str, week: int | None = None) -> dict[str, Any]:
         """Get stats for a specific player."""
         if week:
             stats = self.query.get_player_stats_by_week(player_key, chosen_week=week)
         else:
             stats = self.query.get_player_stats_for_season(player_key)
-        return _to_dict(stats)
+        return cast("dict[str, Any]", _to_dict(stats))
 
     def get_player_ownership(self, player_key: str) -> dict[str, Any]:
         """Get ownership info for a player (who owns them, % owned)."""
         ownership = self.query.get_player_ownership(player_key)
-        return _to_dict(ownership)
+        return cast("dict[str, Any]", _to_dict(ownership))
 
     # ── Matchup Analysis ─────────────────────────────────────────
 
     def get_current_matchup(self, team_id: int | str | None = None) -> dict[str, Any]:
         """Get the current week's matchup details for a team."""
         scoreboard = self.query.get_league_scoreboard_by_week()
-        return _to_dict(scoreboard)
+        return cast("dict[str, Any]", _to_dict(scoreboard))
 
     # ── Transactions ─────────────────────────────────────────────
 
     def get_transactions(self) -> list[dict[str, Any]]:
         """Get recent league transactions (adds, drops, trades)."""
         transactions = self.query.get_league_transactions()
-        return _to_dict(transactions)
+        return cast("list[dict[str, Any]]", _to_dict(transactions))
 
     def get_draft_results(self) -> list[dict[str, Any]]:
         """Get draft results."""
         results = self.query.get_league_draft_results()
-        return _to_dict(results)
+        return cast("list[dict[str, Any]]", _to_dict(results))
 
     # ── Free Agents / Waiver Wire ────────────────────────────────
 
@@ -164,7 +161,7 @@ class YahooFantasyClient:
             player_count=count,
             player_count_start=0,
         )
-        return _to_dict(players)
+        return cast("list[dict[str, Any]]", _to_dict(players))
 
 
 def _to_dict(obj: Any) -> Any:

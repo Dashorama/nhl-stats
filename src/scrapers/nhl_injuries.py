@@ -1,4 +1,7 @@
 """Scraper for NHL player injury/availability status."""
+
+from typing import Any
+
 import httpx
 import structlog
 
@@ -10,10 +13,38 @@ BASE_URL = "https://api-web.nhle.com/v1"
 SOURCE_NAME = "nhl_injuries"
 
 NHL_TEAMS = [
-    "ANA","BOS","BUF","CAR","CBJ","CGY","CHI","COL","DAL","DET",
-    "EDM","FLA","LAK","MIN","MTL","NJD","NSH","NYI","NYR","OTT",
-    "PHI","PIT","SEA","SJS","STL","TBL","TOR","UTA","VAN","VGK",
-    "WSH","WPG",
+    "ANA",
+    "BOS",
+    "BUF",
+    "CAR",
+    "CBJ",
+    "CGY",
+    "CHI",
+    "COL",
+    "DAL",
+    "DET",
+    "EDM",
+    "FLA",
+    "LAK",
+    "MIN",
+    "MTL",
+    "NJD",
+    "NSH",
+    "NYI",
+    "NYR",
+    "OTT",
+    "PHI",
+    "PIT",
+    "SEA",
+    "SJS",
+    "STL",
+    "TBL",
+    "TOR",
+    "UTA",
+    "VAN",
+    "VGK",
+    "WSH",
+    "WPG",
 ]
 
 STATUS_MAP = {
@@ -28,7 +59,7 @@ STATUS_MAP = {
 
 
 class NHLInjuriesScraper:
-    async def scrape_all(self, db: Database) -> dict:
+    async def scrape_all(self, db: Database) -> dict[str, Any]:
         records = []
         errors = []
 
@@ -42,16 +73,18 @@ class NHLInjuriesScraper:
                         for player in data.get(group, []):
                             roster_status = player.get("rosterStatus", "ACTIVE")
                             status = STATUS_MAP.get(roster_status, "HEALTHY")
-                            records.append({
-                                "player_id": player["id"],
-                                "player_name": (
-                                    f"{player['firstName']['default']} "
-                                    f"{player['lastName']['default']}"
-                                ),
-                                "team_abbrev": team,
-                                "status": status,
-                                "detail": None,
-                            })
+                            records.append(
+                                {
+                                    "player_id": player["id"],
+                                    "player_name": (
+                                        f"{player['firstName']['default']} "
+                                        f"{player['lastName']['default']}"
+                                    ),
+                                    "team_abbrev": team,
+                                    "status": status,
+                                    "detail": None,
+                                }
+                            )
                 except Exception as e:
                     logger.error("injury_scrape_failed", team=team, error=str(e))
                     errors.append(team)

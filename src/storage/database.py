@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import structlog
 from sqlalchemy import (
     Boolean,
     Column,
@@ -17,7 +18,6 @@ from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
-import structlog
 
 logger = structlog.get_logger()
 Base = declarative_base()
@@ -254,9 +254,7 @@ class BoxscoreRecord(Base):
     raw_data = Column(Text)
     updated_at = Column(DateTime, default=datetime.utcnow)
 
-    __table_args__ = (
-        Index("ix_boxscore_game_player", "game_id", "player_id"),
-    )
+    __table_args__ = (Index("ix_boxscore_game_player", "game_id", "player_id"),)
 
 
 class PlayByPlayRecord(Base):
@@ -288,13 +286,12 @@ class PlayByPlayRecord(Base):
 
     raw_data = Column(Text)
 
-    __table_args__ = (
-        Index("ix_pbp_game_event", "game_id", "event_id"),
-    )
+    __table_args__ = (Index("ix_pbp_game_event", "game_id", "event_id"),)
 
 
 class GameLogRecord(Base):
     """Per-player per-game stats from NHL API."""
+
     __tablename__ = "game_logs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -323,13 +320,12 @@ class GameLogRecord(Base):
     raw_data = Column(Text)
     updated_at = Column(DateTime, default=datetime.utcnow)
 
-    __table_args__ = (
-        Index("ix_gamelog_player_game", "player_id", "game_id"),
-    )
+    __table_args__ = (Index("ix_gamelog_player_game", "player_id", "game_id"),)
 
 
 class ShotRecord(Base):
     """Individual shot events from MoneyPuck shot data."""
+
     __tablename__ = "shots"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -361,9 +357,7 @@ class ShotRecord(Base):
     situation = Column(String(10))  # 5v5, 5v4, etc.
     is_home = Column(Boolean)
 
-    __table_args__ = (
-        Index("ix_shot_game_shooter", "game_id", "shooter_id"),
-    )
+    __table_args__ = (Index("ix_shot_game_shooter", "game_id", "shooter_id"),)
 
 
 class InjuryRecord(Base):
@@ -374,7 +368,7 @@ class InjuryRecord(Base):
     player_id = Column(Integer, primary_key=True)
     player_name = Column(String(100))
     team_abbrev = Column(String(3))
-    status = Column(String(20))   # 'IR', 'LTIR', 'DTD', 'SUSPENDED', 'HEALTHY'
+    status = Column(String(20))  # 'IR', 'LTIR', 'DTD', 'SUSPENDED', 'HEALTHY'
     detail = Column(String(200))
     updated_at = Column(DateTime, default=datetime.utcnow)
 
@@ -395,7 +389,7 @@ class Database:
         """Get a new database session."""
         return self.SessionLocal()
 
-    def upsert_injuries(self, records: list[dict]) -> int:
+    def upsert_injuries(self, records: list[dict[str, Any]]) -> int:
         """Insert or update player availability records."""
         with self.get_session() as session:
             count = 0
@@ -408,14 +402,16 @@ class Database:
                     existing.detail = r.get("detail")
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(InjuryRecord(
-                        player_id=r["player_id"],
-                        player_name=r["player_name"],
-                        team_abbrev=r["team_abbrev"],
-                        status=r["status"],
-                        detail=r.get("detail"),
-                        updated_at=datetime.utcnow(),
-                    ))
+                    session.add(
+                        InjuryRecord(
+                            player_id=r["player_id"],
+                            player_name=r["player_name"],
+                            team_abbrev=r["team_abbrev"],
+                            status=r["status"],
+                            detail=r.get("detail"),
+                            updated_at=datetime.utcnow(),
+                        )
+                    )
                 count += 1
             session.commit()
         return count
@@ -423,10 +419,16 @@ class Database:
     def get_unavailable_players(self) -> set[int]:
         """Return player IDs that are IR, LTIR, or SUSPENDED."""
         with self.get_session() as session:
-            rows = session.query(InjuryRecord).filter(
-                InjuryRecord.status.in_(["IR", "LTIR", "SUSPENDED"])
-            ).all()
-            return {r.player_id for r in rows}
+            rows = (
+                session.query(InjuryRecord)
+                .filter(InjuryRecord.status.in_(["IR", "LTIR", "SUSPENDED"]))
+                .all()
+            )
+            ids: set[int] = set()
+            for r in rows:
+                assert r.player_id is not None, "player_id is the injuries table's primary key"
+                ids.add(r.player_id)
+            return ids
 
     def upsert_players(self, players: list[dict[str, Any]]) -> int:
         """Insert or update player records."""
@@ -446,19 +448,21 @@ class Database:
                     existing.raw_data = json.dumps(p)
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(PlayerRecord(
-                        id=player_id,
-                        first_name=p.get("first_name"),
-                        last_name=p.get("last_name"),
-                        position=p.get("position"),
-                        team_abbrev=p.get("team"),
-                        birth_date=p.get("birth_date"),
-                        birth_country=p.get("birth_country"),
-                        draft_year=p.get("draft_year"),
-                        draft_round=p.get("draft_round"),
-                        draft_pick=p.get("draft_pick"),
-                        raw_data=json.dumps(p),
-                    ))
+                    session.add(
+                        PlayerRecord(
+                            id=player_id,
+                            first_name=p.get("first_name"),
+                            last_name=p.get("last_name"),
+                            position=p.get("position"),
+                            team_abbrev=p.get("team"),
+                            birth_date=p.get("birth_date"),
+                            birth_country=p.get("birth_country"),
+                            draft_year=p.get("draft_year"),
+                            draft_round=p.get("draft_round"),
+                            draft_pick=p.get("draft_pick"),
+                            raw_data=json.dumps(p),
+                        )
+                    )
                 count += 1
 
             session.commit()
@@ -482,13 +486,15 @@ class Database:
                     existing.raw_data = json.dumps(t)
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(TeamRecord(
-                        abbrev=abbrev,
-                        name=t.get("name"),
-                        conference=t.get("conference"),
-                        division=t.get("division"),
-                        raw_data=json.dumps(t),
-                    ))
+                    session.add(
+                        TeamRecord(
+                            abbrev=abbrev,
+                            name=t.get("name"),
+                            conference=t.get("conference"),
+                            division=t.get("division"),
+                            raw_data=json.dumps(t),
+                        )
+                    )
                 count += 1
 
             session.commit()
@@ -512,18 +518,20 @@ class Database:
                     existing.raw_data = json.dumps(g)
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(GameRecord(
-                        id=game_id,
-                        season=g.get("season"),
-                        game_date=g.get("date"),
-                        game_type=str(g.get("game_type")),
-                        home_team=g.get("home_team"),
-                        away_team=g.get("away_team"),
-                        home_score=g.get("home_score"),
-                        away_score=g.get("away_score"),
-                        game_state=g.get("game_state"),
-                        raw_data=json.dumps(g),
-                    ))
+                    session.add(
+                        GameRecord(
+                            id=game_id,
+                            season=g.get("season"),
+                            game_date=g.get("date"),
+                            game_type=str(g.get("game_type")),
+                            home_team=g.get("home_team"),
+                            away_team=g.get("away_team"),
+                            home_score=g.get("home_score"),
+                            away_score=g.get("away_score"),
+                            game_state=g.get("game_state"),
+                            raw_data=json.dumps(g),
+                        )
+                    )
                 count += 1
 
             session.commit()
@@ -637,10 +645,16 @@ class Database:
                     existing.xg_for = s.get("xg_for", existing.xg_for)
                     existing.xg_against = s.get("xg_against", existing.xg_against)
                     existing.xg_pct = s.get("xg_pct", existing.xg_pct)
-                    existing.goals_above_expected = s.get("goals_above_expected", existing.goals_above_expected)
+                    existing.goals_above_expected = s.get(
+                        "goals_above_expected", existing.goals_above_expected
+                    )
                     existing.oz_start_pct = s.get("offensive_zone_start_pct", existing.oz_start_pct)
-                    existing.hd_chances_for = s.get("high_danger_chances_for", existing.hd_chances_for)
-                    existing.hd_chances_against = s.get("high_danger_chances_against", existing.hd_chances_against)
+                    existing.hd_chances_for = s.get(
+                        "high_danger_chances_for", existing.hd_chances_for
+                    )
+                    existing.hd_chances_against = s.get(
+                        "high_danger_chances_against", existing.hd_chances_against
+                    )
                     existing.raw_data = json.dumps(s)
                     existing.updated_at = datetime.utcnow()
                 else:
@@ -688,11 +702,7 @@ class Database:
                 if not year or not rank:
                     continue
 
-                existing = (
-                    session.query(DraftRecord)
-                    .filter_by(draft_year=year, rank=rank)
-                    .first()
-                )
+                existing = session.query(DraftRecord).filter_by(draft_year=year, rank=rank).first()
 
                 if existing:
                     existing.first_name = p.get("first_name", existing.first_name)
@@ -701,23 +711,25 @@ class Database:
                     existing.raw_data = json.dumps(p)
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(DraftRecord(
-                        draft_year=year,
-                        rank=rank,
-                        first_name=p.get("first_name"),
-                        last_name=p.get("last_name"),
-                        position=p.get("position"),
-                        shoots_catches=p.get("shoots_catches"),
-                        height_inches=p.get("height_inches"),
-                        weight_pounds=p.get("weight_pounds"),
-                        amateur_club=p.get("amateur_club"),
-                        amateur_league=p.get("amateur_league"),
-                        birth_date=p.get("birth_date"),
-                        birth_country=p.get("birth_country"),
-                        midterm_rank=p.get("midterm_rank"),
-                        final_rank=p.get("final_rank"),
-                        raw_data=json.dumps(p),
-                    ))
+                    session.add(
+                        DraftRecord(
+                            draft_year=year,
+                            rank=rank,
+                            first_name=p.get("first_name"),
+                            last_name=p.get("last_name"),
+                            position=p.get("position"),
+                            shoots_catches=p.get("shoots_catches"),
+                            height_inches=p.get("height_inches"),
+                            weight_pounds=p.get("weight_pounds"),
+                            amateur_club=p.get("amateur_club"),
+                            amateur_league=p.get("amateur_league"),
+                            birth_date=p.get("birth_date"),
+                            birth_country=p.get("birth_country"),
+                            midterm_rank=p.get("midterm_rank"),
+                            final_rank=p.get("final_rank"),
+                            raw_data=json.dumps(p),
+                        )
+                    )
                 count += 1
 
             session.commit()
@@ -740,40 +752,56 @@ class Database:
                 )
 
                 if existing:
-                    for key in ["goals", "assists", "points", "plus_minus", "pim",
-                               "hits", "shots", "blocked_shots", "toi", "shifts",
-                               "giveaways", "takeaways", "saves", "shots_against", "goals_against"]:
+                    for key in [
+                        "goals",
+                        "assists",
+                        "points",
+                        "plus_minus",
+                        "pim",
+                        "hits",
+                        "shots",
+                        "blocked_shots",
+                        "toi",
+                        "shifts",
+                        "giveaways",
+                        "takeaways",
+                        "saves",
+                        "shots_against",
+                        "goals_against",
+                    ]:
                         if p.get(key) is not None:
                             setattr(existing, key, p[key])
                     existing.raw_data = json.dumps(p)
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(BoxscoreRecord(
-                        game_id=game_id,
-                        player_id=player_id,
-                        player_name=p.get("player_name"),
-                        team_abbrev=p.get("team_abbrev"),
-                        position=p.get("position"),
-                        is_home=p.get("is_home"),
-                        goals=p.get("goals", 0),
-                        assists=p.get("assists", 0),
-                        points=p.get("points", 0),
-                        plus_minus=p.get("plus_minus", 0),
-                        pim=p.get("pim", 0),
-                        hits=p.get("hits", 0),
-                        shots=p.get("shots", 0),
-                        blocked_shots=p.get("blocked_shots", 0),
-                        faceoff_pct=p.get("faceoff_pct"),
-                        toi=p.get("toi"),
-                        shifts=p.get("shifts", 0),
-                        giveaways=p.get("giveaways", 0),
-                        takeaways=p.get("takeaways", 0),
-                        power_play_goals=p.get("power_play_goals", 0),
-                        saves=p.get("saves"),
-                        shots_against=p.get("shots_against"),
-                        goals_against=p.get("goals_against"),
-                        raw_data=json.dumps(p),
-                    ))
+                    session.add(
+                        BoxscoreRecord(
+                            game_id=game_id,
+                            player_id=player_id,
+                            player_name=p.get("player_name"),
+                            team_abbrev=p.get("team_abbrev"),
+                            position=p.get("position"),
+                            is_home=p.get("is_home"),
+                            goals=p.get("goals", 0),
+                            assists=p.get("assists", 0),
+                            points=p.get("points", 0),
+                            plus_minus=p.get("plus_minus", 0),
+                            pim=p.get("pim", 0),
+                            hits=p.get("hits", 0),
+                            shots=p.get("shots", 0),
+                            blocked_shots=p.get("blocked_shots", 0),
+                            faceoff_pct=p.get("faceoff_pct"),
+                            toi=p.get("toi"),
+                            shifts=p.get("shifts", 0),
+                            giveaways=p.get("giveaways", 0),
+                            takeaways=p.get("takeaways", 0),
+                            power_play_goals=p.get("power_play_goals", 0),
+                            saves=p.get("saves"),
+                            shots_against=p.get("shots_against"),
+                            goals_against=p.get("goals_against"),
+                            raw_data=json.dumps(p),
+                        )
+                    )
                 count += 1
 
             session.commit()
@@ -787,25 +815,27 @@ class Database:
 
             count = 0
             for e in events:
-                session.add(PlayByPlayRecord(
-                    game_id=game_id,
-                    event_id=e.get("event_id"),
-                    event_type=e.get("event_type"),
-                    period=e.get("period"),
-                    period_type=e.get("period_type"),
-                    time_in_period=e.get("time_in_period"),
-                    time_remaining=e.get("time_remaining"),
-                    x_coord=e.get("x_coord"),
-                    y_coord=e.get("y_coord"),
-                    zone_code=e.get("zone_code"),
-                    player1_id=e.get("player1_id"),
-                    player2_id=e.get("player2_id"),
-                    player3_id=e.get("player3_id"),
-                    team_id=e.get("team_id"),
-                    shot_type=e.get("shot_type"),
-                    description=e.get("description"),
-                    raw_data=json.dumps(e),
-                ))
+                session.add(
+                    PlayByPlayRecord(
+                        game_id=game_id,
+                        event_id=e.get("event_id"),
+                        event_type=e.get("event_type"),
+                        period=e.get("period"),
+                        period_type=e.get("period_type"),
+                        time_in_period=e.get("time_in_period"),
+                        time_remaining=e.get("time_remaining"),
+                        x_coord=e.get("x_coord"),
+                        y_coord=e.get("y_coord"),
+                        zone_code=e.get("zone_code"),
+                        player1_id=e.get("player1_id"),
+                        player2_id=e.get("player2_id"),
+                        player3_id=e.get("player3_id"),
+                        team_id=e.get("team_id"),
+                        shot_type=e.get("shot_type"),
+                        description=e.get("description"),
+                        raw_data=json.dumps(e),
+                    )
+                )
                 count += 1
 
             session.commit()
@@ -828,38 +858,51 @@ class Database:
                 )
 
                 if existing:
-                    for key in ["goals", "assists", "points", "plus_minus", "pim",
-                               "shots", "shifts", "toi", "power_play_goals",
-                               "power_play_points", "shorthanded_goals",
-                               "game_winning_goals", "ot_goals"]:
+                    for key in [
+                        "goals",
+                        "assists",
+                        "points",
+                        "plus_minus",
+                        "pim",
+                        "shots",
+                        "shifts",
+                        "toi",
+                        "power_play_goals",
+                        "power_play_points",
+                        "shorthanded_goals",
+                        "game_winning_goals",
+                        "ot_goals",
+                    ]:
                         if log.get(key) is not None:
                             setattr(existing, key, log[key])
                     existing.raw_data = json.dumps(log)
                     existing.updated_at = datetime.utcnow()
                 else:
-                    session.add(GameLogRecord(
-                        player_id=player_id,
-                        game_id=game_id,
-                        season=season,
-                        team_abbrev=log.get("team_abbrev"),
-                        opponent_abbrev=log.get("opponent_abbrev"),
-                        game_date=log.get("game_date"),
-                        home_road=log.get("home_road"),
-                        goals=log.get("goals", 0),
-                        assists=log.get("assists", 0),
-                        points=log.get("points", 0),
-                        plus_minus=log.get("plus_minus", 0),
-                        pim=log.get("pim", 0),
-                        shots=log.get("shots", 0),
-                        shifts=log.get("shifts", 0),
-                        toi=log.get("toi"),
-                        power_play_goals=log.get("power_play_goals", 0),
-                        power_play_points=log.get("power_play_points", 0),
-                        shorthanded_goals=log.get("shorthanded_goals", 0),
-                        game_winning_goals=log.get("game_winning_goals", 0),
-                        ot_goals=log.get("ot_goals", 0),
-                        raw_data=json.dumps(log),
-                    ))
+                    session.add(
+                        GameLogRecord(
+                            player_id=player_id,
+                            game_id=game_id,
+                            season=season,
+                            team_abbrev=log.get("team_abbrev"),
+                            opponent_abbrev=log.get("opponent_abbrev"),
+                            game_date=log.get("game_date"),
+                            home_road=log.get("home_road"),
+                            goals=log.get("goals", 0),
+                            assists=log.get("assists", 0),
+                            points=log.get("points", 0),
+                            plus_minus=log.get("plus_minus", 0),
+                            pim=log.get("pim", 0),
+                            shots=log.get("shots", 0),
+                            shifts=log.get("shifts", 0),
+                            toi=log.get("toi"),
+                            power_play_goals=log.get("power_play_goals", 0),
+                            power_play_points=log.get("power_play_points", 0),
+                            shorthanded_goals=log.get("shorthanded_goals", 0),
+                            game_winning_goals=log.get("game_winning_goals", 0),
+                            ot_goals=log.get("ot_goals", 0),
+                            raw_data=json.dumps(log),
+                        )
+                    )
                 count += 1
 
             session.commit()
@@ -876,29 +919,31 @@ class Database:
                 session.commit()
             count = 0
             for s in shots:
-                session.add(ShotRecord(
-                    season=s.get("season"),
-                    game_id=s.get("game_id"),
-                    team=s.get("team"),
-                    shooter_id=s.get("shooter_id"),
-                    shooter_name=s.get("shooter_name"),
-                    goalie_id=s.get("goalie_id"),
-                    goalie_name=s.get("goalie_name"),
-                    event=s.get("event"),
-                    period=s.get("period"),
-                    time=s.get("time"),
-                    x_coord=s.get("x_coord"),
-                    y_coord=s.get("y_coord"),
-                    shot_type=s.get("shot_type"),
-                    x_goal=s.get("x_goal"),
-                    goal=s.get("goal"),
-                    shot_angle=s.get("shot_angle"),
-                    shot_distance=s.get("shot_distance"),
-                    shot_rebound=s.get("shot_rebound"),
-                    shot_rush=s.get("shot_rush"),
-                    situation=s.get("situation"),
-                    is_home=s.get("is_home"),
-                ))
+                session.add(
+                    ShotRecord(
+                        season=s.get("season"),
+                        game_id=s.get("game_id"),
+                        team=s.get("team"),
+                        shooter_id=s.get("shooter_id"),
+                        shooter_name=s.get("shooter_name"),
+                        goalie_id=s.get("goalie_id"),
+                        goalie_name=s.get("goalie_name"),
+                        event=s.get("event"),
+                        period=s.get("period"),
+                        time=s.get("time"),
+                        x_coord=s.get("x_coord"),
+                        y_coord=s.get("y_coord"),
+                        shot_type=s.get("shot_type"),
+                        x_goal=s.get("x_goal"),
+                        goal=s.get("goal"),
+                        shot_angle=s.get("shot_angle"),
+                        shot_distance=s.get("shot_distance"),
+                        shot_rebound=s.get("shot_rebound"),
+                        shot_rush=s.get("shot_rush"),
+                        situation=s.get("situation"),
+                        is_home=s.get("is_home"),
+                    )
+                )
                 count += 1
 
                 # Batch commit every 10000

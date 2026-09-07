@@ -5,13 +5,41 @@ from typing import Any
 
 from .base import BaseScraper
 
-
 # All 32 NHL team abbreviations
 NHL_TEAMS = [
-    "ANA", "ARI", "BOS", "BUF", "CAR", "CBJ", "CGY", "CHI",
-    "COL", "DAL", "DET", "EDM", "FLA", "LAK", "MIN", "MTL",
-    "NJD", "NSH", "NYI", "NYR", "OTT", "PHI", "PIT", "SEA",
-    "SJS", "STL", "TBL", "TOR", "UTA", "VAN", "VGK", "WPG", "WSH",
+    "ANA",
+    "ARI",
+    "BOS",
+    "BUF",
+    "CAR",
+    "CBJ",
+    "CGY",
+    "CHI",
+    "COL",
+    "DAL",
+    "DET",
+    "EDM",
+    "FLA",
+    "LAK",
+    "MIN",
+    "MTL",
+    "NJD",
+    "NSH",
+    "NYI",
+    "NYR",
+    "OTT",
+    "PHI",
+    "PIT",
+    "SEA",
+    "SJS",
+    "STL",
+    "TBL",
+    "TOR",
+    "UTA",
+    "VAN",
+    "VGK",
+    "WPG",
+    "WSH",
 ]
 
 
@@ -31,11 +59,11 @@ class NHLRosterScraper(BaseScraper):
     async def scrape_roster(self, team_abbrev: str, season: str | None = None) -> dict[str, Any]:
         """
         Fetch full roster for a single team.
-        
+
         Args:
             team_abbrev: Team abbreviation (e.g., 'TOR', 'NYR')
             season: Season ID (e.g., '20242025'). Uses current season if None.
-        
+
         Returns:
             Dict with team info and player lists by position
         """
@@ -45,7 +73,7 @@ class NHLRosterScraper(BaseScraper):
         # Fetch roster from NHL API
         data = await self.get_json(f"/roster/{team_abbrev}/current")
 
-        roster = {
+        roster: dict[str, Any] = {
             "team_abbrev": team_abbrev,
             "season": season,
             "as_of_date": datetime.now().isoformat(),
@@ -94,10 +122,10 @@ class NHLRosterScraper(BaseScraper):
     async def scrape_all_rosters(self, season: str | None = None) -> list[dict[str, Any]]:
         """
         Fetch rosters for all NHL teams.
-        
+
         Args:
             season: Season ID. Uses current season if None.
-            
+
         Returns:
             List of roster dicts for all teams
         """
@@ -118,10 +146,10 @@ class NHLRosterScraper(BaseScraper):
     async def scrape_player_details(self, player_id: int) -> dict[str, Any]:
         """
         Fetch detailed info for a specific player.
-        
+
         Args:
             player_id: NHL player ID
-            
+
         Returns:
             Dict with comprehensive player data
         """
@@ -167,10 +195,10 @@ class NHLRosterScraper(BaseScraper):
         """
         Fetch comprehensive stats for all skaters in a season.
         Uses the NHL stats API endpoint.
-        
+
         Args:
             season: Season ID (e.g., '20242025')
-            
+
         Returns:
             List of player stat dicts
         """
@@ -179,13 +207,13 @@ class NHLRosterScraper(BaseScraper):
 
         # Use the stats.nhl.com API for comprehensive stats
         stats_url = "https://api.nhle.com/stats/rest/en/skater/summary"
-        
+
         players = []
         start = 0
         limit = 100
 
         while True:
-            params = {
+            params: dict[str, str | int] = {
                 "isAggregate": "false",
                 "isGame": "false",
                 "sort": '[{"property":"points","direction":"DESC"}]',
@@ -193,6 +221,9 @@ class NHLRosterScraper(BaseScraper):
                 "limit": limit,
                 "cayenneExp": f"seasonId={season} and gameTypeId=2",
             }
+
+            if not self.client:
+                raise RuntimeError("Scraper not initialized - use async with")
 
             # Need to use full URL since it's a different base
             response = await self.client.get(stats_url, params=params)
@@ -204,29 +235,31 @@ class NHLRosterScraper(BaseScraper):
                 break
 
             for p in batch:
-                players.append({
-                    "player_id": p.get("playerId"),
-                    "player_name": p.get("skaterFullName"),
-                    "team_abbrev": p.get("teamAbbrevs"),
-                    "position": p.get("positionCode"),
-                    "season": season,
-                    "games_played": p.get("gamesPlayed", 0),
-                    "goals": p.get("goals", 0),
-                    "assists": p.get("assists", 0),
-                    "points": p.get("points", 0),
-                    "plus_minus": p.get("plusMinus", 0),
-                    "pim": p.get("penaltyMinutes", 0),
-                    "ppg": p.get("ppGoals", 0),
-                    "ppp": p.get("ppPoints", 0),
-                    "shg": p.get("shGoals", 0),
-                    "shp": p.get("shPoints", 0),
-                    "gwg": p.get("gameWinningGoals", 0),
-                    "otg": p.get("otGoals", 0),
-                    "shots": p.get("shots", 0),
-                    "shot_pct": p.get("shootingPct"),
-                    "toi_per_game": p.get("timeOnIcePerGame"),
-                    "faceoff_pct": p.get("faceoffWinPct"),
-                })
+                players.append(
+                    {
+                        "player_id": p.get("playerId"),
+                        "player_name": p.get("skaterFullName"),
+                        "team_abbrev": p.get("teamAbbrevs"),
+                        "position": p.get("positionCode"),
+                        "season": season,
+                        "games_played": p.get("gamesPlayed", 0),
+                        "goals": p.get("goals", 0),
+                        "assists": p.get("assists", 0),
+                        "points": p.get("points", 0),
+                        "plus_minus": p.get("plusMinus", 0),
+                        "pim": p.get("penaltyMinutes", 0),
+                        "ppg": p.get("ppGoals", 0),
+                        "ppp": p.get("ppPoints", 0),
+                        "shg": p.get("shGoals", 0),
+                        "shp": p.get("shPoints", 0),
+                        "gwg": p.get("gameWinningGoals", 0),
+                        "otg": p.get("otGoals", 0),
+                        "shots": p.get("shots", 0),
+                        "shot_pct": p.get("shootingPct"),
+                        "toi_per_game": p.get("timeOnIcePerGame"),
+                        "faceoff_pct": p.get("faceoffWinPct"),
+                    }
+                )
 
             if len(batch) < limit:
                 break
@@ -238,10 +271,10 @@ class NHLRosterScraper(BaseScraper):
     async def scrape_all_goalie_stats(self, season: str | None = None) -> list[dict[str, Any]]:
         """
         Fetch comprehensive stats for all goalies in a season.
-        
+
         Args:
             season: Season ID (e.g., '20242025')
-            
+
         Returns:
             List of goalie stat dicts
         """
@@ -249,13 +282,13 @@ class NHLRosterScraper(BaseScraper):
             season = await self.get_current_season()
 
         stats_url = "https://api.nhle.com/stats/rest/en/goalie/summary"
-        
+
         goalies = []
         start = 0
         limit = 100
 
         while True:
-            params = {
+            params: dict[str, str | int] = {
                 "isAggregate": "false",
                 "isGame": "false",
                 "sort": '[{"property":"wins","direction":"DESC"}]',
@@ -263,6 +296,9 @@ class NHLRosterScraper(BaseScraper):
                 "limit": limit,
                 "cayenneExp": f"seasonId={season} and gameTypeId=2",
             }
+
+            if not self.client:
+                raise RuntimeError("Scraper not initialized - use async with")
 
             response = await self.client.get(stats_url, params=params)
             response.raise_for_status()
@@ -273,24 +309,26 @@ class NHLRosterScraper(BaseScraper):
                 break
 
             for g in batch:
-                goalies.append({
-                    "player_id": g.get("playerId"),
-                    "player_name": g.get("goalieFullName"),
-                    "team_abbrev": g.get("teamAbbrevs"),
-                    "season": season,
-                    "games_played": g.get("gamesPlayed", 0),
-                    "games_started": g.get("gamesStarted", 0),
-                    "wins": g.get("wins", 0),
-                    "losses": g.get("losses", 0),
-                    "ot_losses": g.get("otLosses", 0),
-                    "shutouts": g.get("shutouts", 0),
-                    "shots_against": g.get("shotsAgainst", 0),
-                    "goals_against": g.get("goalsAgainst", 0),
-                    "saves": g.get("saves", 0),
-                    "save_pct": g.get("savePct"),
-                    "gaa": g.get("goalsAgainstAverage"),
-                    "toi_seconds": g.get("timeOnIce"),
-                })
+                goalies.append(
+                    {
+                        "player_id": g.get("playerId"),
+                        "player_name": g.get("goalieFullName"),
+                        "team_abbrev": g.get("teamAbbrevs"),
+                        "season": season,
+                        "games_played": g.get("gamesPlayed", 0),
+                        "games_started": g.get("gamesStarted", 0),
+                        "wins": g.get("wins", 0),
+                        "losses": g.get("losses", 0),
+                        "ot_losses": g.get("otLosses", 0),
+                        "shutouts": g.get("shutouts", 0),
+                        "shots_against": g.get("shotsAgainst", 0),
+                        "goals_against": g.get("goalsAgainst", 0),
+                        "saves": g.get("saves", 0),
+                        "save_pct": g.get("savePct"),
+                        "gaa": g.get("goalsAgainstAverage"),
+                        "toi_seconds": g.get("timeOnIce"),
+                    }
+                )
 
             if len(batch) < limit:
                 break

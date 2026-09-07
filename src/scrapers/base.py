@@ -3,13 +3,16 @@
 import asyncio
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any
+from types import TracebackType
+from typing import Any, TypeVar
 
 import httpx
 import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = structlog.get_logger()
+
+_TScraper = TypeVar("_TScraper", bound="BaseScraper")
 
 
 class RateLimiter:
@@ -46,12 +49,12 @@ class BaseScraper(ABC):
     REQUESTS_PER_SECOND: float = 1.0
     USER_AGENT: str = "NHL-Scraper/0.1.0 (analytics research project)"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.rate_limiter = RateLimiter(self.REQUESTS_PER_SECOND)
         self.client: httpx.AsyncClient | None = None
         self.logger = logger.bind(source=self.SOURCE_NAME)
 
-    async def __aenter__(self):
+    async def __aenter__(self: _TScraper) -> _TScraper:
         self.client = httpx.AsyncClient(
             base_url=self.BASE_URL,
             headers={"User-Agent": self.USER_AGENT},
@@ -60,7 +63,12 @@ class BaseScraper(ABC):
         )
         return self
 
-    async def __aexit__(self, *args):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         if self.client:
             await self.client.aclose()
 

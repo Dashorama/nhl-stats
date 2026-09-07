@@ -12,7 +12,7 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "lxml>=5.0",
     "pydantic>=2.5",
-    "sqlalchemy>=2.0",
+    "sqlalchemy>=2.0,<2.1",  # <2.1: removes sqlalchemy.ext.mypy.plugin, see [tool.mypy] below
     "tenacity>=8.2",
     "structlog>=24.0",
     "rich>=13.0",
@@ -22,6 +22,7 @@ dependencies = [
     "matplotlib>=3.8",
     "yfpy>=17.0",
     "python-dotenv>=1.0",
+    "openai>=1.0",
 ]
 
 [project.optional-dependencies]
@@ -53,6 +54,16 @@ select = ["E", "F", "I", "N", "W", "UP"]
 [tool.mypy]
 python_version = "3.10"
 strict = true
+# Type-checks the legacy Column()-style ORM models in src/storage/database.py.
+# SQLAlchemy 2.1 deletes this plugin outright, hence the sqlalchemy<2.1 pin
+# above -- do not remove one without the other. Long-term fix is migrating
+# those models to 2.0-style Mapped[]/mapped_column(), tracked in
+# Dashorama/nhl-stats#4.
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[[tool.mypy.overrides]]
+module = "yfpy.*"
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

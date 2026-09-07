@@ -1,5 +1,5 @@
 """Tests for RSS headline fetcher."""
-import pytest
+
 from scripts.fetch_rss import filter_headlines
 
 

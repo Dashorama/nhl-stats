@@ -124,7 +124,7 @@ class AdvancedGoalieStats(BaseModel):
 
     # Freeze/play
     freeze_pct: float | None = None
-    
+
     source: str = "moneypuck"
 
     @property

@@ -26,18 +26,20 @@ class NHLAPIScraper(BaseScraper):
         teams = []
 
         for record in data.get("standings", []):
-            teams.append({
-                "id": record.get("teamAbbrev", {}).get("default"),
-                "name": record.get("teamName", {}).get("default"),
-                "abbreviation": record.get("teamAbbrev", {}).get("default"),
-                "conference": record.get("conferenceName"),
-                "division": record.get("divisionName"),
-                "wins": record.get("wins"),
-                "losses": record.get("losses"),
-                "ot_losses": record.get("otLosses"),
-                "points": record.get("points"),
-                "games_played": record.get("gamesPlayed"),
-            })
+            teams.append(
+                {
+                    "id": record.get("teamAbbrev", {}).get("default"),
+                    "name": record.get("teamName", {}).get("default"),
+                    "abbreviation": record.get("teamAbbrev", {}).get("default"),
+                    "conference": record.get("conferenceName"),
+                    "division": record.get("divisionName"),
+                    "wins": record.get("wins"),
+                    "losses": record.get("losses"),
+                    "ot_losses": record.get("otLosses"),
+                    "points": record.get("points"),
+                    "games_played": record.get("gamesPlayed"),
+                }
+            )
 
         self.logger.info("scraped_teams", count=len(teams))
         return teams
@@ -68,18 +70,28 @@ class NHLAPIScraper(BaseScraper):
 
         players = []
         for p in data.get("points", []):
-            first = p.get("firstName", {}).get("default", "") if isinstance(p.get("firstName"), dict) else p.get("firstName", "")
-            last = p.get("lastName", {}).get("default", "") if isinstance(p.get("lastName"), dict) else p.get("lastName", "")
-            players.append({
-                "id": p.get("id"),
-                "first_name": first,
-                "last_name": last,
-                "name": f"{first} {last}".strip(),
-                "team": p.get("teamAbbrev"),
-                "position": p.get("position"),
-                "points": p.get("value"),
-                "player_type": "skater",
-            })
+            first = (
+                p.get("firstName", {}).get("default", "")
+                if isinstance(p.get("firstName"), dict)
+                else p.get("firstName", "")
+            )
+            last = (
+                p.get("lastName", {}).get("default", "")
+                if isinstance(p.get("lastName"), dict)
+                else p.get("lastName", "")
+            )
+            players.append(
+                {
+                    "id": p.get("id"),
+                    "first_name": first,
+                    "last_name": last,
+                    "name": f"{first} {last}".strip(),
+                    "team": p.get("teamAbbrev"),
+                    "position": p.get("position"),
+                    "points": p.get("value"),
+                    "player_type": "skater",
+                }
+            )
 
         return players
 
@@ -92,18 +104,28 @@ class NHLAPIScraper(BaseScraper):
 
         goalies = []
         for g in data.get("wins", []):
-            first = g.get("firstName", {}).get("default", "") if isinstance(g.get("firstName"), dict) else g.get("firstName", "")
-            last = g.get("lastName", {}).get("default", "") if isinstance(g.get("lastName"), dict) else g.get("lastName", "")
-            goalies.append({
-                "id": g.get("id"),
-                "first_name": first,
-                "last_name": last,
-                "name": f"{first} {last}".strip(),
-                "team": g.get("teamAbbrev"),
-                "position": "G",
-                "wins": g.get("value"),
-                "player_type": "goalie",
-            })
+            first = (
+                g.get("firstName", {}).get("default", "")
+                if isinstance(g.get("firstName"), dict)
+                else g.get("firstName", "")
+            )
+            last = (
+                g.get("lastName", {}).get("default", "")
+                if isinstance(g.get("lastName"), dict)
+                else g.get("lastName", "")
+            )
+            goalies.append(
+                {
+                    "id": g.get("id"),
+                    "first_name": first,
+                    "last_name": last,
+                    "name": f"{first} {last}".strip(),
+                    "team": g.get("teamAbbrev"),
+                    "position": "G",
+                    "wins": g.get("value"),
+                    "player_type": "goalie",
+                }
+            )
 
         return goalies
 
@@ -129,17 +151,19 @@ class NHLAPIScraper(BaseScraper):
 
             for week in data.get("gameWeek", []):
                 for game in week.get("games", []):
-                    games.append({
-                        "id": game.get("id"),
-                        "date": game.get("gameDate"),
-                        "game_type": game.get("gameType"),
-                        "home_team": game.get("homeTeam", {}).get("abbrev"),
-                        "away_team": game.get("awayTeam", {}).get("abbrev"),
-                        "home_score": game.get("homeTeam", {}).get("score"),
-                        "away_score": game.get("awayTeam", {}).get("score"),
-                        "game_state": game.get("gameState"),
-                        "venue": game.get("venue", {}).get("default"),
-                    })
+                    games.append(
+                        {
+                            "id": game.get("id"),
+                            "date": game.get("gameDate"),
+                            "game_type": game.get("gameType"),
+                            "home_team": game.get("homeTeam", {}).get("abbrev"),
+                            "away_team": game.get("awayTeam", {}).get("abbrev"),
+                            "home_score": game.get("homeTeam", {}).get("score"),
+                            "away_score": game.get("awayTeam", {}).get("score"),
+                            "game_state": game.get("gameState"),
+                            "venue": game.get("venue", {}).get("default"),
+                        }
+                    )
 
             current_date = data.get("nextStartDate")
 
@@ -181,22 +205,24 @@ class NHLAPIScraper(BaseScraper):
 
         picks = []
         for rank, p in enumerate(data.get("rankings", []), 1):
-            picks.append({
-                "draft_year": year,
-                "rank": rank,
-                "first_name": p.get("firstName", ""),
-                "last_name": p.get("lastName", ""),
-                "position": p.get("positionCode"),
-                "shoots_catches": p.get("shootsCatches"),
-                "height_inches": p.get("heightInInches"),
-                "weight_pounds": p.get("weightInPounds"),
-                "amateur_club": p.get("lastAmateurClub"),
-                "amateur_league": p.get("lastAmateurLeague"),
-                "birth_date": p.get("birthDate"),
-                "birth_country": p.get("birthCountry"),
-                "midterm_rank": p.get("midtermRank"),
-                "final_rank": p.get("finalRank"),
-            })
+            picks.append(
+                {
+                    "draft_year": year,
+                    "rank": rank,
+                    "first_name": p.get("firstName", ""),
+                    "last_name": p.get("lastName", ""),
+                    "position": p.get("positionCode"),
+                    "shoots_catches": p.get("shootsCatches"),
+                    "height_inches": p.get("heightInInches"),
+                    "weight_pounds": p.get("weightInPounds"),
+                    "amateur_club": p.get("lastAmateurClub"),
+                    "amateur_league": p.get("lastAmateurLeague"),
+                    "birth_date": p.get("birthDate"),
+                    "birth_country": p.get("birthCountry"),
+                    "midterm_rank": p.get("midtermRank"),
+                    "final_rank": p.get("finalRank"),
+                }
+            )
 
         self.logger.info("scraped_draft", year=year, count=len(picks))
         return picks
@@ -226,29 +252,33 @@ class NHLAPIScraper(BaseScraper):
                     }
 
                     if group == "goalies":
-                        player.update({
-                            "saves": p.get("saves", 0),
-                            "shots_against": p.get("shotsAgainst", 0),
-                            "goals_against": p.get("goalsAgainst", 0),
-                            "toi": p.get("toi"),
-                        })
+                        player.update(
+                            {
+                                "saves": p.get("saves", 0),
+                                "shots_against": p.get("shotsAgainst", 0),
+                                "goals_against": p.get("goalsAgainst", 0),
+                                "toi": p.get("toi"),
+                            }
+                        )
                     else:
-                        player.update({
-                            "goals": p.get("goals", 0),
-                            "assists": p.get("assists", 0),
-                            "points": p.get("points", 0),
-                            "plus_minus": p.get("plusMinus", 0),
-                            "pim": p.get("pim", 0),
-                            "hits": p.get("hits", 0),
-                            "shots": p.get("sog", 0),
-                            "blocked_shots": p.get("blockedShots", 0),
-                            "faceoff_pct": p.get("faceoffWinningPctg"),
-                            "toi": p.get("toi"),
-                            "shifts": p.get("shifts", 0),
-                            "giveaways": p.get("giveaways", 0),
-                            "takeaways": p.get("takeaways", 0),
-                            "power_play_goals": p.get("powerPlayGoals", 0),
-                        })
+                        player.update(
+                            {
+                                "goals": p.get("goals", 0),
+                                "assists": p.get("assists", 0),
+                                "points": p.get("points", 0),
+                                "plus_minus": p.get("plusMinus", 0),
+                                "pim": p.get("pim", 0),
+                                "hits": p.get("hits", 0),
+                                "shots": p.get("sog", 0),
+                                "blocked_shots": p.get("blockedShots", 0),
+                                "faceoff_pct": p.get("faceoffWinningPctg"),
+                                "toi": p.get("toi"),
+                                "shifts": p.get("shifts", 0),
+                                "giveaways": p.get("giveaways", 0),
+                                "takeaways": p.get("takeaways", 0),
+                                "power_play_goals": p.get("powerPlayGoals", 0),
+                            }
+                        )
 
                     players.append(player)
 
@@ -310,7 +340,9 @@ class NHLAPIScraper(BaseScraper):
         self.logger.info("scraped_play_by_play", game_id=game_id, events=len(events))
         return events
 
-    async def scrape_player_game_log(self, player_id: int, season: str | None = None) -> list[dict[str, Any]]:
+    async def scrape_player_game_log(
+        self, player_id: int, season: str | None = None
+    ) -> list[dict[str, Any]]:
         """Fetch game-by-game stats for a player."""
         if season is None:
             season = await self.get_current_season()
@@ -319,26 +351,28 @@ class NHLAPIScraper(BaseScraper):
 
         logs = []
         for g in data.get("gameLog", []):
-            logs.append({
-                "game_id": g.get("gameId"),
-                "team_abbrev": g.get("teamAbbrev"),
-                "opponent_abbrev": g.get("opponentAbbrev"),
-                "game_date": g.get("gameDate"),
-                "home_road": g.get("homeRoadFlag"),
-                "goals": g.get("goals", 0),
-                "assists": g.get("assists", 0),
-                "points": g.get("points", 0),
-                "plus_minus": g.get("plusMinus", 0),
-                "pim": g.get("pim", 0),
-                "shots": g.get("shots", 0),
-                "shifts": g.get("shifts", 0),
-                "toi": g.get("toi"),
-                "power_play_goals": g.get("powerPlayGoals", 0),
-                "power_play_points": g.get("powerPlayPoints", 0),
-                "shorthanded_goals": g.get("shorthandedGoals", 0),
-                "game_winning_goals": g.get("gameWinningGoals", 0),
-                "ot_goals": g.get("otGoals", 0),
-            })
+            logs.append(
+                {
+                    "game_id": g.get("gameId"),
+                    "team_abbrev": g.get("teamAbbrev"),
+                    "opponent_abbrev": g.get("opponentAbbrev"),
+                    "game_date": g.get("gameDate"),
+                    "home_road": g.get("homeRoadFlag"),
+                    "goals": g.get("goals", 0),
+                    "assists": g.get("assists", 0),
+                    "points": g.get("points", 0),
+                    "plus_minus": g.get("plusMinus", 0),
+                    "pim": g.get("pim", 0),
+                    "shots": g.get("shots", 0),
+                    "shifts": g.get("shifts", 0),
+                    "toi": g.get("toi"),
+                    "power_play_goals": g.get("powerPlayGoals", 0),
+                    "power_play_points": g.get("powerPlayPoints", 0),
+                    "shorthanded_goals": g.get("shorthandedGoals", 0),
+                    "game_winning_goals": g.get("gameWinningGoals", 0),
+                    "ot_goals": g.get("otGoals", 0),
+                }
+            )
 
         return logs
 
@@ -352,21 +386,23 @@ class NHLAPIScraper(BaseScraper):
         }
 
         for team in data.get("standings", []):
-            standings["teams"].append({
-                "team": team.get("teamAbbrev", {}).get("default"),
-                "conference": team.get("conferenceName"),
-                "division": team.get("divisionName"),
-                "games_played": team.get("gamesPlayed"),
-                "wins": team.get("wins"),
-                "losses": team.get("losses"),
-                "ot_losses": team.get("otLosses"),
-                "points": team.get("points"),
-                "points_pct": team.get("pointPctg"),
-                "goals_for": team.get("goalFor"),
-                "goals_against": team.get("goalAgainst"),
-                "goal_diff": team.get("goalDifferential"),
-                "regulation_wins": team.get("regulationWins"),
-                "streak": team.get("streakCode"),
-            })
+            standings["teams"].append(
+                {
+                    "team": team.get("teamAbbrev", {}).get("default"),
+                    "conference": team.get("conferenceName"),
+                    "division": team.get("divisionName"),
+                    "games_played": team.get("gamesPlayed"),
+                    "wins": team.get("wins"),
+                    "losses": team.get("losses"),
+                    "ot_losses": team.get("otLosses"),
+                    "points": team.get("points"),
+                    "points_pct": team.get("pointPctg"),
+                    "goals_for": team.get("goalFor"),
+                    "goals_against": team.get("goalAgainst"),
+                    "goal_diff": team.get("goalDifferential"),
+                    "regulation_wins": team.get("regulationWins"),
+                    "streak": team.get("streakCode"),
+                }
+            )
 
         return standings
