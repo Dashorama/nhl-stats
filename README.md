@@ -58,6 +58,8 @@ nhl-stats backfill-pbp --start-season 2018    # Play-by-play + shift charts, res
 nhl-stats validate                            # Integrity checks; exits non-zero on failure
 ```
 
+Use `--db PATH` (or `NHL_STATS_DB_PATH`) to point any command at another database.
+
 ### Display Commands
 ```bash
 nhl-stats standings              # Current NHL standings

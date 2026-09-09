@@ -906,6 +906,12 @@ class Database:
 
             count = 0
             for e in events:
+                if e.get("event_id") is None:
+                    # NULLs are distinct in a SQLite unique index, so a keyless
+                    # event would slip past uq_pbp_game_event and duplicate on
+                    # every re-ingest.
+                    self.logger.warning("skipped_event_without_id", game_id=game_id)
+                    continue
                 session.add(
                     PlayByPlayRecord(
                         game_id=game_id,
@@ -1077,14 +1083,25 @@ class Database:
             "situation",
             "is_home",
         )
-        rows = [{column: s.get(column) for column in columns} for s in shots]
+        # A shot with no shot_id cannot be deduplicated: NULLs are distinct in a
+        # SQLite unique index, so it would evade uq_shots_season_game_shot.
+        keyed = [s for s in shots if s.get("shot_id") is not None]
+        if len(keyed) != len(shots):
+            self.logger.warning(
+                "skipped_shots_without_id", season=season, count=len(shots) - len(keyed)
+            )
+
+        rows = [{column: s.get(column) for column in columns} for s in keyed]
 
         with self.engine.begin() as conn:
             if season:
                 conn.execute(
                     ShotRecord.__table__.delete().where(ShotRecord.__table__.c.season == season)
                 )
-            conn.execute(ShotRecord.__table__.insert(), rows)
+            if rows:
+                # execute(insert(), []) inserts a single all-default row rather
+                # than nothing, which would write a junk shot.
+                conn.execute(ShotRecord.__table__.insert(), rows)
 
         self.logger.info("inserted_shots", count=len(rows), season=season)
         return len(rows)
