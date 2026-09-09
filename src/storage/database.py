@@ -430,11 +430,25 @@ class InjuryRecord(Base):
 class Database:
     """SQLite database wrapper for NHL data."""
 
+    #: A long backfill and the nightly cron write to the same file, so a writer can
+    #: be waiting on another writer for a while. pysqlite's 5s default is not
+    #: enough -- reads were refused outright during the play-by-play backfill.
+    BUSY_TIMEOUT_SECONDS = 60
+
     def __init__(self, db_path: str | Path = "data/nhl.db"):
+        # Tolerate the SQLAlchemy URL form: `sqlite:///data/nhl.db` as a filesystem
+        # path would create a database inside a directory named "sqlite:".
+        if isinstance(db_path, str) and db_path.startswith("sqlite:///"):
+            db_path = db_path[len("sqlite:///") :]
+
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
-        self.engine = create_engine(f"sqlite:///{self.db_path}", echo=False)
+        self.engine = create_engine(
+            f"sqlite:///{self.db_path}",
+            echo=False,
+            connect_args={"timeout": self.BUSY_TIMEOUT_SECONDS},
+        )
         Base.metadata.create_all(self.engine)
         apply_migrations(self.engine)
         self.SessionLocal = sessionmaker(bind=self.engine)
@@ -1011,52 +1025,53 @@ class Database:
             return count
 
     def insert_shots(self, shots: list[dict[str, Any]]) -> int:
-        """Insert shot records. Clears existing records for the season before inserting."""
+        """Replace a season's shot records.
+
+        The clear and the insert run in ONE transaction. They used to be separate
+        commits with the inserts batched every 10,000 rows, which meant a failure
+        part-way through -- a duplicate natural key, or a crash -- left the season
+        silently truncated, with every integrity check still green.
+        """
         if not shots:
             return 0
         season = shots[0].get("season")
-        with self.get_session() as session:
+
+        columns = (
+            "season",
+            "game_id",
+            "moneypuck_game_id",
+            "shot_id",
+            "team",
+            "shooter_id",
+            "shooter_name",
+            "goalie_id",
+            "goalie_name",
+            "event",
+            "period",
+            "time",
+            "x_coord",
+            "y_coord",
+            "shot_type",
+            "x_goal",
+            "goal",
+            "shot_angle",
+            "shot_distance",
+            "shot_rebound",
+            "shot_rush",
+            "situation",
+            "is_home",
+        )
+        rows = [{column: s.get(column) for column in columns} for s in shots]
+
+        with self.engine.begin() as conn:
             if season:
-                session.query(ShotRecord).filter(ShotRecord.season == season).delete()
-                session.commit()
-            count = 0
-            for s in shots:
-                session.add(
-                    ShotRecord(
-                        season=s.get("season"),
-                        game_id=s.get("game_id"),
-                        moneypuck_game_id=s.get("moneypuck_game_id"),
-                        shot_id=s.get("shot_id"),
-                        team=s.get("team"),
-                        shooter_id=s.get("shooter_id"),
-                        shooter_name=s.get("shooter_name"),
-                        goalie_id=s.get("goalie_id"),
-                        goalie_name=s.get("goalie_name"),
-                        event=s.get("event"),
-                        period=s.get("period"),
-                        time=s.get("time"),
-                        x_coord=s.get("x_coord"),
-                        y_coord=s.get("y_coord"),
-                        shot_type=s.get("shot_type"),
-                        x_goal=s.get("x_goal"),
-                        goal=s.get("goal"),
-                        shot_angle=s.get("shot_angle"),
-                        shot_distance=s.get("shot_distance"),
-                        shot_rebound=s.get("shot_rebound"),
-                        shot_rush=s.get("shot_rush"),
-                        situation=s.get("situation"),
-                        is_home=s.get("is_home"),
-                    )
+                conn.execute(
+                    ShotRecord.__table__.delete().where(ShotRecord.__table__.c.season == season)
                 )
-                count += 1
+            conn.execute(ShotRecord.__table__.insert(), rows)
 
-                # Batch commit every 10000
-                if count % 10000 == 0:
-                    session.commit()
-
-            session.commit()
-            self.logger.info("inserted_shots", count=count)
-            return count
+        self.logger.info("inserted_shots", count=len(rows), season=season)
+        return len(rows)
 
     def upsert_rosters(self, rosters: list[dict[str, Any]]) -> int:
         """Insert or update roster records from team roster data."""

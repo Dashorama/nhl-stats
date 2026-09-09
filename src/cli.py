@@ -1,6 +1,10 @@
 """Command-line interface for NHL scraper."""
 
 import asyncio
+import fcntl
+from collections.abc import Iterator
+from contextlib import contextmanager
+from pathlib import Path
 
 import click
 from rich.console import Console
@@ -32,6 +36,33 @@ from .utils import setup_logging
 
 console = Console()
 
+#: One writer at a time. SQLite gives concurrent writers "database is locked"
+#: rather than a queue, and a play-by-play backfill can hold the database for
+#: hours -- long enough to swallow a nightly cron run whole.
+WRITE_LOCK_NAME = ".nhl-stats-write.lock"
+
+
+@contextmanager
+def database_write_lock(db_path: str | Path) -> Iterator[bool]:
+    """Try to take the database's write lock; yields whether it was acquired.
+
+    Advisory and non-blocking: callers decide whether being locked out is a
+    routine skip (cron) or an error (an operator running a backfill).
+    """
+    lock_path = Path(db_path).parent / WRITE_LOCK_NAME
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+
+    handle = lock_path.open("w")
+    try:
+        try:
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            yield False
+            return
+        yield True
+    finally:
+        handle.close()
+
 
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Enable debug logging")
@@ -39,8 +70,12 @@ console = Console()
 @click.option(
     "--db",
     "db_path",
-    envvar="NHL_STATS_DB",
-    help="Path to the SQLite database (default: data/nhl.db, or $NHL_STATS_DB)",
+    # Deliberately NOT NHL_STATS_DB: Dockerfile, docker-compose.yml and
+    # .env.example already define that as a SQLAlchemy URL
+    # (sqlite:///data/nhl.db), and reading a URL as a filesystem path would
+    # silently create a database in a directory named "sqlite:".
+    envvar="NHL_STATS_DB_PATH",
+    help="Path to the SQLite database (default: data/nhl.db, or $NHL_STATS_DB_PATH)",
 )
 @click.pass_context
 def main(ctx: click.Context, verbose: bool, json_logs: bool, db_path: str | None) -> None:
@@ -815,7 +850,16 @@ def update(ctx: click.Context, daily: bool) -> None:
         errors.extend(_validate_after_update(db))
         _print_summary(errors)
 
-    asyncio.run(run())
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            # A backfill is running. Skipping is right for cron: the next
+            # scheduled run catches up, and piling up writers only produces
+            # "database is locked".
+            console.print(
+                "[yellow]Another writer holds the database lock - skipping this update.[/yellow]"
+            )
+            return
+        asyncio.run(run())
 
 
 @main.command()
@@ -939,7 +983,14 @@ def backfill_games_cmd(
                 f"  [yellow]{len(report.failures)} seasons failed: {report.failures}[/yellow]"
             )
 
-    asyncio.run(run())
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            raise click.ClickException(
+                "Another writer holds the database lock (a backfill or the nightly "
+                "update is running). Wait for it to finish and re-run - backfills "
+                "are resumable."
+            )
+        asyncio.run(run())
 
 
 @main.command("backfill-shots")
@@ -970,7 +1021,14 @@ def backfill_shots_cmd(ctx: click.Context, start_season: int, end_season: int | 
                 f"  [yellow]{len(report.failures)} seasons failed: {report.failures}[/yellow]"
             )
 
-    asyncio.run(run())
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            raise click.ClickException(
+                "Another writer holds the database lock (a backfill or the nightly "
+                "update is running). Wait for it to finish and re-run - backfills "
+                "are resumable."
+            )
+        asyncio.run(run())
 
 
 @main.command("backfill-pbp")
@@ -1039,7 +1097,14 @@ def backfill_pbp_cmd(
         if report.games_failed:
             console.print(f"  [yellow]{report.games_failed} games failed[/yellow]")
 
-    asyncio.run(run())
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            raise click.ClickException(
+                "Another writer holds the database lock (a backfill or the nightly "
+                "update is running). Wait for it to finish and re-run - backfills "
+                "are resumable."
+            )
+        asyncio.run(run())
 
 
 def _validate_after_update(db: Database) -> list[str]:
