@@ -14,7 +14,7 @@ def test_db_path_can_be_pointed_at_another_database(tmp_path):
 
 def test_db_path_can_come_from_the_environment(tmp_path, monkeypatch):
     target = tmp_path / "env.db"
-    monkeypatch.setenv("NHL_STATS_DB", str(target))
+    monkeypatch.setenv("NHL_STATS_DB_PATH", str(target))
     result = CliRunner().invoke(main, ["stats"])
     assert result.exit_code == 0, result.output
     assert target.exists()
@@ -84,3 +84,27 @@ def test_validate_exits_non_zero_when_a_required_season_is_missing(tmp_path):
 
     assert result.exit_code == 1
     assert "20182019" in result.output
+
+
+def test_the_preexisting_sqlalchemy_url_env_var_is_not_treated_as_a_path(tmp_path, monkeypatch):
+    """Dockerfile, docker-compose and .env.example all set
+    NHL_STATS_DB=sqlite:///data/nhl.db. Consuming that as a filesystem path would
+    silently create a database in a directory literally named "sqlite:"."""
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("NHL_STATS_DB", "sqlite:///data/nhl.db")
+
+    result = CliRunner().invoke(main, ["stats"])
+
+    assert result.exit_code == 0, result.output
+    assert not (tmp_path / "sqlite:").exists()
+    assert (tmp_path / "data" / "nhl.db").exists()
+
+
+def test_db_path_env_var_is_the_path_specific_name(tmp_path, monkeypatch):
+    target = tmp_path / "env.db"
+    monkeypatch.setenv("NHL_STATS_DB_PATH", str(target))
+
+    result = CliRunner().invoke(main, ["stats"])
+
+    assert result.exit_code == 0, result.output
+    assert target.exists()
