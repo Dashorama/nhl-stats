@@ -294,7 +294,7 @@ class TestBackfillGames:
 
         report = await backfill_games(db, ["20182019"], fetch)
 
-        assert report.seasons_repaired_from_ids == 1
+        assert report.games_repaired_from_ids == 1
         with sqlite3.connect(db.db_path) as conn:
             assert conn.execute("SELECT season FROM games").fetchone()[0] == "20152016"
 
