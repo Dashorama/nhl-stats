@@ -1005,7 +1005,9 @@ def backfill_pbp_cmd(
             )
             seasons = [f"{y}{y + 1}" for y in range(start_season, last + 1)]
 
-            game_ids = games_needing_play_by_play(db, seasons, skip_existing=not refetch)
+            game_ids = games_needing_play_by_play(
+                db, seasons, skip_existing=not refetch, require_shifts=with_shifts
+            )
             if limit:
                 game_ids = game_ids[:limit]
 

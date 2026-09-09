@@ -89,12 +89,19 @@ def games_needing_play_by_play(
     db: Database,
     seasons: list[str],
     skip_existing: bool = True,
+    require_shifts: bool = False,
 ) -> list[int]:
     """Finished regular-season and playoff games in ``seasons``, oldest first.
 
     With ``skip_existing`` (the default) games that already have events are left
     out, which is what makes an interrupted backfill resumable and a completed one
     free to re-run.
+
+    ``require_shifts`` also returns games that have events but no shifts. Events
+    and shifts are fetched together but stored separately, so a run interrupted
+    between the two -- or one made before shifts were collected at all -- would
+    otherwise leave those games without shifts permanently. Re-fetching their
+    events costs a request and changes nothing, since storage replaces a game.
     """
     if not seasons:
         return []
@@ -110,7 +117,8 @@ def games_needing_play_by_play(
         f" AND game_state IN ({', '.join(':' + k for k in state_params)})"
     )
     if skip_existing:
-        sql += " AND id NOT IN (SELECT DISTINCT game_id FROM play_by_play)"
+        sql += " AND (id NOT IN (SELECT DISTINCT game_id FROM play_by_play)"
+        sql += " OR id NOT IN (SELECT DISTINCT game_id FROM shifts))" if require_shifts else ")"
     sql += " ORDER BY id"
 
     with db.engine.connect() as conn:
@@ -155,13 +163,14 @@ async def backfill_play_by_play(
         report.games_collected += 1
 
         if fetch_shifts is not None:
+            # Storing shifts is best-effort: the events for this game are already
+            # committed, and one unexpected shift payload must not end the run.
             try:
                 shifts = await fetch_shifts(game_id)
-            except Exception as exc:
-                logger.warning("shift_backfill_game_failed", game_id=game_id, error=str(exc))
-            else:
                 if shifts:
                     report.shifts_written += db.insert_shifts(game_id, shifts)
+            except Exception as exc:
+                logger.warning("shift_backfill_game_failed", game_id=game_id, error=str(exc))
 
         if progress_every and index % progress_every == 0:
             logger.info(
