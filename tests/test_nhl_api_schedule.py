@@ -8,7 +8,7 @@ calendar date lives on the parent ``gameWeek`` entry.
 
 import pytest
 
-from src.scrapers.nhl_api import NHLAPIScraper, season_from_game_id
+from src.scrapers.nhl_api import NHLAPIScraper, season_date_window, season_from_game_id
 
 SCHEDULE_PAYLOAD = {
     "nextStartDate": "2024-10-15",
@@ -128,3 +128,23 @@ class TestSeasonFromGameId:
 
     def test_returns_none_for_an_id_that_is_not_a_game_id(self):
         assert season_from_game_id(12345) is None
+
+
+class TestSeasonDateWindow:
+    """The window has to cover more than October-to-June.
+
+    Preseason games start in late September, and the 2019-20 playoffs were played
+    in an August-September bubble. An Oct 1 - Jul 1 walk missed 852 games.
+    """
+
+    def test_starts_before_the_preseason(self):
+        start, _end = season_date_window("20182019")
+        assert start <= "2018-09-15"
+
+    def test_runs_past_a_playoff_that_finished_in_september(self):
+        _start, end = season_date_window("20192020")
+        assert end > "2020-09-28"
+
+    def test_covers_a_normal_season_end(self):
+        start, end = season_date_window("20242025")
+        assert start < "2024-10-08" < end
