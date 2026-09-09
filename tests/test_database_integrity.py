@@ -6,6 +6,7 @@ play-by-play / shifts all being safe to re-ingest.
 """
 
 import sqlite3
+from pathlib import Path
 
 import pytest
 from sqlalchemy import text
@@ -336,3 +337,32 @@ class TestSeasonReplaceIsAtomic:
                 conn.execute(text("SELECT season, COUNT(*) FROM shots GROUP BY season")).all()
             )
         assert by_season == {"2024": 3, "2023": 7}
+
+
+class TestDatabasePathHandling:
+    def test_a_sqlalchemy_url_is_not_treated_as_a_directory_name(self, tmp_path, monkeypatch):
+        """Guards the same trap as the env var rename: someone passing the URL form
+        should get data/nhl.db, not a directory literally named "sqlite:"."""
+        monkeypatch.chdir(tmp_path)
+
+        db = Database("sqlite:///data/nhl.db")
+
+        assert db.db_path == Path("data/nhl.db")
+        assert not (tmp_path / "sqlite:").exists()
+
+    def test_a_plain_path_is_unchanged(self, tmp_path):
+        db = Database(tmp_path / "plain.db")
+        assert db.db_path == tmp_path / "plain.db"
+
+
+class TestSqliteConcurrency:
+    """The nightly cron and a multi-hour backfill write to the same file.
+
+    pysqlite's default 5s busy timeout is not enough for that; a reader was
+    refused with "database is locked" during the real backfill.
+    """
+
+    def test_the_busy_timeout_is_raised_well_above_the_five_second_default(self, db):
+        with db.engine.connect() as conn:
+            timeout_ms = conn.execute(text("PRAGMA busy_timeout")).scalar()
+        assert timeout_ms >= 30000
