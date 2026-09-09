@@ -163,7 +163,17 @@ async def backfill_play_by_play(
             logger.warning("pbp_backfill_game_empty", game_id=game_id)
             continue
 
-        report.events_written += db.insert_play_by_play(game_id, events)
+        try:
+            report.events_written += db.insert_play_by_play(game_id, events)
+        except Exception as exc:
+            # Storage can fail for reasons that have nothing to do with this game
+            # -- a lock held by another writer, most often. One game must not end
+            # a ten-thousand-game run; the resume query will pick it up again.
+            report.games_failed += 1
+            report.failures.append(game_id)
+            logger.warning("pbp_backfill_store_failed", game_id=game_id, error=str(exc))
+            continue
+
         report.games_collected += 1
 
         if fetch_shifts is not None:

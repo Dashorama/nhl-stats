@@ -44,6 +44,14 @@ HOME_SHOT_SHARE_BAND = (0.45, 0.55)
 #: 53 rows in 905,515). Tolerate that; fail on a wholesale semantic change.
 MAX_IMPLAUSIBLE_SITUATION_RATIO = 0.005
 
+#: A trace of unparseable rows should not fail a nightly run forever; the defect
+#: this guards against affected 100% of rows.
+MAX_MISSING_SITUATION_RATIO = 0.001
+
+#: Fraction of a season's played games allowed to have no shots. MoneyPuck is
+#: missing exactly one game in 2021-22 out of 10,514.
+MAX_MISSING_SHOT_GAMES_RATIO = 0.01
+
 
 @dataclass(frozen=True)
 class CheckResult:
@@ -129,14 +137,17 @@ def run_integrity_checks(db: Database) -> list[CheckResult]:
         )
     )
 
+    all_shots = _scalar(db, "SELECT COUNT(*) FROM shots")
     empty_situations = _scalar(
         db, "SELECT COUNT(*) FROM shots WHERE situation IS NULL OR situation = ''"
     )
+    empty_ratio = empty_situations / all_shots if all_shots else 0.0
     results.append(
         CheckResult(
             "shots_situation_populated",
-            empty_situations == 0,
-            f"{empty_situations} shots with no situation",
+            empty_ratio <= MAX_MISSING_SITUATION_RATIO,
+            f"{empty_situations} of {all_shots} shots with no situation "
+            f"({empty_ratio:.2%}, tolerated up to {MAX_MISSING_SITUATION_RATIO:.1%})",
         )
     )
 
@@ -209,6 +220,35 @@ def run_integrity_checks(db: Database) -> list[CheckResult]:
             ratio <= MAX_IMPLAUSIBLE_SITUATION_RATIO,
             f"{implausible} of {total_shots} shots have impossible skater counts "
             f"({ratio:.2%}, tolerated up to {MAX_IMPLAUSIBLE_SITUATION_RATIO:.1%})",
+        )
+    )
+
+    # Shot rows are written in game order, so a season that lost a batch of rows
+    # loses whole games. Comparing coverage against the schedule catches that,
+    # where a row-count floor would not.
+    with db.engine.connect() as conn:
+        coverage = conn.execute(
+            text(
+                "SELECT substr(CAST(g.id AS TEXT), 1, 4) AS season_start, COUNT(*), "
+                "SUM(CASE WHEN NOT EXISTS "
+                "(SELECT 1 FROM shots s WHERE s.game_id = g.id) THEN 1 ELSE 0 END) "
+                "FROM games g "
+                "WHERE g.game_type IN ('2', '3') AND g.game_state IN ('OFF', 'FINAL') "
+                "AND substr(CAST(g.id AS TEXT), 1, 4) IN (SELECT DISTINCT season FROM shots) "
+                "GROUP BY season_start"
+            )
+        ).all()
+
+    short_seasons = [
+        f"{season}: {missing_games} of {played} played games have no shots"
+        for season, played, missing_games in coverage
+        if played and (missing_games or 0) / played > MAX_MISSING_SHOT_GAMES_RATIO
+    ]
+    results.append(
+        CheckResult(
+            "shots_cover_played_games",
+            not short_seasons,
+            "; ".join(short_seasons) if short_seasons else f"{len(coverage)} seasons fully covered",
         )
     )
 

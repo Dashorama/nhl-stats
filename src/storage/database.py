@@ -613,7 +613,9 @@ class Database:
                             id=game_id,
                             season=g.get("season"),
                             game_date=g.get("date"),
-                            game_type=str(g.get("game_type")),
+                            game_type=(
+                                str(g["game_type"]) if g.get("game_type") is not None else None
+                            ),
                             home_team=g.get("home_team"),
                             away_team=g.get("away_team"),
                             home_score=g.get("home_score"),

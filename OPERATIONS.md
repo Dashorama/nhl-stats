@@ -67,6 +67,14 @@ another writer holds it.
 
 ## Data integrity
 
+**Run the backfills in order, and finish them.** `backfill-games` populates
+`games.season` for every historical season, which is what makes the corpus
+assertion start demanding play-by-play for those seasons. Between that and the
+end of `backfill-pbp`, the nightly `update` will legitimately report
+`pbp_corpus` failures and exit 1 — the corpus really is incomplete. Either
+finish the backfill in one sitting, or pass `--no-corpus` while it is in
+progress.
+
 `python -m src.cli validate` exits non-zero when any of these regress:
 
 | Check | What it catches |
@@ -78,6 +86,7 @@ another writer holds it.
 | `shots_join_play_by_play` | Shots and play-by-play drifting into different id spaces |
 | `shots_home_away_balance` | `is_home` parsing breaking again (a season outside 45-55% home) |
 | `shots_situation_plausible` | Situations becoming semantically wrong rather than empty |
+| `shots_cover_played_games` | A season losing shots wholesale — the truncation a row count would miss |
 | `unique_ingest_keys` | A missing unique index, i.e. ingest is no longer idempotent |
 | `pbp_corpus` | A season missing from play-by-play, or collected below 95% |
 
