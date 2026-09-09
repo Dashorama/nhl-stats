@@ -15,6 +15,7 @@ from src.storage.validation import (
     assert_pbp_corpus,
     expected_pbp_seasons,
     run_integrity_checks,
+    seasons_requiring_pbp,
 )
 
 GAME = {
@@ -186,3 +187,75 @@ class TestMigrationLeavesADatabaseUsableWhenDuplicatesBlockAUniqueIndex:
         result = _check(run_integrity_checks(db), "unique_ingest_keys")
         assert not result.passed
         assert "uq_pbp_game_event" in result.detail
+
+
+class TestSeasonsRequiringPbp:
+    """The required-season list is derived from the schedule, so an in-progress
+    season never trips the floor and a fully-played one can never be skipped."""
+
+    def _load_games(self, db, season, count, state="OFF"):
+        start = int(season[:4])
+        db.upsert_games(
+            [
+                {**GAME, "id": start * 1000000 + 20000 + n, "season": season, "game_state": state}
+                for n in range(1, count + 1)
+            ]
+        )
+
+    def test_lists_seasons_whose_schedule_is_complete(self, db):
+        self._load_games(db, "20232024", 5)
+        self._load_games(db, "20242025", 5)
+
+        seasons = seasons_requiring_pbp(db, earliest_start_year=2023, min_games=5)
+
+        assert seasons == ["20232024", "20242025"]
+
+    def test_excludes_a_season_that_has_not_been_fully_played(self, db):
+        self._load_games(db, "20232024", 5)
+        self._load_games(db, "20242025", 2)
+
+        seasons = seasons_requiring_pbp(db, earliest_start_year=2023, min_games=5)
+
+        assert seasons == ["20232024"]
+
+    def test_excludes_seasons_before_the_backfill_window(self, db):
+        self._load_games(db, "20152016", 5)
+        self._load_games(db, "20232024", 5)
+
+        seasons = seasons_requiring_pbp(db, earliest_start_year=2018, min_games=5)
+
+        assert seasons == ["20232024"]
+
+    def test_ignores_games_that_have_not_been_played(self, db):
+        self._load_games(db, "20242025", 5, state="FUT")
+
+        assert seasons_requiring_pbp(db, earliest_start_year=2018, min_games=5) == []
+
+
+class TestCorpusCoverage:
+    def test_aborts_when_a_season_is_only_partially_collected(self, db):
+        db.upsert_games(
+            [
+                {**GAME, "id": 2024020000 + n, "season": "20242025", "game_state": "OFF"}
+                for n in range(1, 11)
+            ]
+        )
+        for n in range(1, 6):  # events for only half the played games
+            db.insert_play_by_play(2024020000 + n, [EVENT])
+
+        with pytest.raises(CorpusError) as exc:
+            assert_pbp_corpus(db, ["20242025"], min_games_per_season=1, min_coverage=0.95)
+
+        assert "20242025" in str(exc.value)
+
+    def test_accepts_a_season_collected_above_the_coverage_floor(self, db):
+        db.upsert_games(
+            [
+                {**GAME, "id": 2024020000 + n, "season": "20242025", "game_state": "OFF"}
+                for n in range(1, 11)
+            ]
+        )
+        for n in range(1, 11):
+            db.insert_play_by_play(2024020000 + n, [EVENT])
+
+        assert_pbp_corpus(db, ["20242025"], min_games_per_season=1, min_coverage=0.95)
