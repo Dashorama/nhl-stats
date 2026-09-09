@@ -323,3 +323,76 @@ class TestSituationPlausibility:
         self._shots(db, ["6v6"] * 500 + ["7v7"] * 500)
         result = _check(run_integrity_checks(db), "shots_situation_plausible")
         assert not result.passed
+
+
+class TestShotsCoverPlayedGames:
+    """The sharpest guard against a truncated season: shot rows are written in
+    game order, so losing a batch drops whole games. Coverage is exact on the
+    real corpus (7 of 8 seasons match played games precisely)."""
+
+    def _season(self, db, season_start, games, games_with_shots):
+        season = f"{season_start}{int(season_start) + 1}"
+        db.upsert_games(
+            [
+                {**GAME, "id": int(season_start) * 1000000 + 20000 + n, "season": season}
+                for n in range(1, games + 1)
+            ]
+        )
+        db.insert_shots(
+            [
+                {
+                    **SHOT,
+                    "season": season_start,
+                    "game_id": int(season_start) * 1000000 + 20000 + n,
+                    "moneypuck_game_id": 20000 + n,
+                    "shot_id": 0,
+                }
+                for n in range(1, games_with_shots + 1)
+            ]
+        )
+
+    def test_full_coverage_passes(self, db):
+        self._season(db, "2018", games=200, games_with_shots=200)
+        assert _check(run_integrity_checks(db), "shots_cover_played_games").passed
+
+    def test_a_single_game_missing_from_the_source_is_tolerated(self, db):
+        """2021-22 legitimately has one played game with no MoneyPuck shots."""
+        self._season(db, "2018", games=200, games_with_shots=199)
+        assert _check(run_integrity_checks(db), "shots_cover_played_games").passed
+
+    def test_a_truncated_season_fails(self, db):
+        self._season(db, "2018", games=200, games_with_shots=120)
+        result = _check(run_integrity_checks(db), "shots_cover_played_games")
+        assert not result.passed
+        assert "2018" in result.detail
+
+    def test_seasons_with_no_shots_at_all_are_not_demanded(self, db):
+        """Shots only go back to 2018; older games in the table are not a failure."""
+        db.upsert_games([{**GAME, "id": 2015020001, "season": "20152016"}])
+        assert _check(run_integrity_checks(db), "shots_cover_played_games").passed
+
+
+class TestSituationPresenceTolerance:
+    def test_one_unparseable_row_does_not_fail_the_nightly_forever(self, db):
+        db.insert_shots(
+            [
+                {
+                    **SHOT,
+                    "moneypuck_game_id": 20000 + i,
+                    "shot_id": i,
+                    "situation": None if i == 0 else "5v5",
+                }
+                for i in range(2000)
+            ]
+        )
+        assert _check(run_integrity_checks(db), "shots_situation_populated").passed
+
+    def test_the_original_defect_still_fails(self, db):
+        """Every row empty -- the state the audit found."""
+        db.insert_shots(
+            [
+                {**SHOT, "moneypuck_game_id": 20000 + i, "shot_id": i, "situation": ""}
+                for i in range(100)
+            ]
+        )
+        assert not _check(run_integrity_checks(db), "shots_situation_populated").passed

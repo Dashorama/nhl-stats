@@ -405,3 +405,33 @@ class TestShiftCollectionConverges:
         await backfill_play_by_play(db, [2018020001], fetch, fetch_shifts=failing_shifts)
 
         assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
+
+
+class TestBackfillSurvivesEventStorageFailures:
+    async def test_a_failed_event_write_does_not_abort_the_run(self, db, monkeypatch):
+        """This is what actually killed an 8,000-game run: a lock error on the
+        events insert escaped the per-game try and took the whole backfill down."""
+        db.upsert_games(
+            [
+                _game(2018020001, season="20182019"),
+                _game(2018020002, season="20182019"),
+            ]
+        )
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        real_insert = db.insert_play_by_play
+
+        def exploding_insert(game_id, events):
+            if game_id == 2018020001:
+                raise RuntimeError("(sqlite3.OperationalError) database is locked")
+            return real_insert(game_id, events)
+
+        monkeypatch.setattr(db, "insert_play_by_play", exploding_insert)
+
+        report = await backfill_play_by_play(db, [2018020001, 2018020002], fetch)
+
+        assert report.games_collected == 1
+        assert report.games_failed == 1
+        assert 2018020001 in report.failures
