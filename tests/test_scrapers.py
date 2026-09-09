@@ -91,3 +91,16 @@ async def test_scrape_standings():
         assert "wins" in team
         assert "losses" in team
         assert "points" in team
+
+
+@pytest.mark.asyncio
+async def test_scraper_rate_can_be_overridden_for_a_backfill():
+    """A ten-thousand-game backfill needs to run faster than the daily default."""
+    scraper = NHLAPIScraper(requests_per_second=5.0)
+    assert scraper.rate_limiter.rate == 5.0
+
+
+@pytest.mark.asyncio
+async def test_scraper_rate_defaults_to_the_class_setting():
+    scraper = NHLAPIScraper()
+    assert scraper.rate_limiter.rate == NHLAPIScraper.REQUESTS_PER_SECOND
