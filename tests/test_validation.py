@@ -1,0 +1,188 @@
+"""Tests for the data-integrity checks and the corpus assertion.
+
+These are the guards that stop the four audit findings from silently coming back:
+a run must fail if situations go empty, if a season goes NULL, if shots stop
+joining to games, or if a whole season disappears from play-by-play.
+"""
+
+import sqlite3
+
+import pytest
+
+from src.storage.database import Database
+from src.storage.validation import (
+    CorpusError,
+    assert_pbp_corpus,
+    expected_pbp_seasons,
+    run_integrity_checks,
+)
+
+GAME = {
+    "id": 2024020001,
+    "season": "20242025",
+    "date": "2024-10-04",
+    "game_type": 2,
+    "home_team": "BUF",
+    "away_team": "NJD",
+    "home_score": 3,
+    "away_score": 4,
+    "game_state": "OFF",
+}
+
+SHOT = {
+    "season": "2024",
+    "game_id": 2024020001,
+    "moneypuck_game_id": 20001,
+    "shot_id": 0,
+    "team": "NJD",
+    "situation": "5v5",
+    "is_home": False,
+    "goal": 0,
+}
+
+EVENT = {"event_id": 51, "event_type": "faceoff", "period": 1}
+
+
+@pytest.fixture
+def db(tmp_path):
+    return Database(tmp_path / "test.db")
+
+
+@pytest.fixture
+def healthy_db(db):
+    db.upsert_games([GAME])
+    db.insert_shots([SHOT])
+    db.insert_play_by_play(2024020001, [EVENT])
+    return db
+
+
+def _check(results, name):
+    matched = [r for r in results if r.name == name]
+    assert matched, f"no check named {name} in {[r.name for r in results]}"
+    return matched[0]
+
+
+class TestIntegrityChecks:
+    def test_a_healthy_database_passes_every_check(self, healthy_db):
+        results = run_integrity_checks(healthy_db)
+        assert results, "expected at least one check"
+        assert all(r.passed for r in results), [r for r in results if not r.passed]
+
+    def test_a_null_game_season_fails(self, healthy_db):
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("UPDATE games SET season = NULL")
+        assert not _check(run_integrity_checks(healthy_db), "games_season_populated").passed
+
+    def test_a_null_game_date_fails(self, healthy_db):
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("UPDATE games SET game_date = NULL")
+        assert not _check(run_integrity_checks(healthy_db), "games_date_populated").passed
+
+    def test_an_empty_shot_situation_fails(self, healthy_db):
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("UPDATE shots SET situation = ''")
+        assert not _check(run_integrity_checks(healthy_db), "shots_situation_populated").passed
+
+    def test_a_null_shot_situation_fails(self, healthy_db):
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("UPDATE shots SET situation = NULL")
+        assert not _check(run_integrity_checks(healthy_db), "shots_situation_populated").passed
+
+    def test_a_moneypuck_game_id_left_in_the_join_column_fails(self, healthy_db):
+        """The exact broken state the audit found: 5-digit ids that join to nothing."""
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("UPDATE shots SET game_id = 20001")
+        result = _check(run_integrity_checks(healthy_db), "shots_join_games")
+        assert not result.passed
+        assert "1" in result.detail  # reports the orphan count
+
+    def test_shots_with_no_play_by_play_for_the_same_game_fails(self, healthy_db):
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("DELETE FROM play_by_play")
+        assert not _check(run_integrity_checks(healthy_db), "shots_join_play_by_play").passed
+
+    def test_missing_unique_ingest_keys_fail(self, healthy_db):
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("DROP INDEX uq_pbp_game_event")
+        result = _check(run_integrity_checks(healthy_db), "unique_ingest_keys")
+        assert not result.passed
+        assert "uq_pbp_game_event" in result.detail
+
+
+class TestExpectedPbpSeasons:
+    def test_spans_from_the_earliest_backfilled_season_to_the_current_one(self):
+        seasons = expected_pbp_seasons(current_season="20252026", earliest_start_year=2018)
+        assert seasons == [
+            "20182019",
+            "20192020",
+            "20202021",
+            "20212022",
+            "20222023",
+            "20232024",
+            "20242025",
+            "20252026",
+        ]
+
+    def test_a_single_season_range_is_just_that_season(self):
+        assert expected_pbp_seasons("20182019", 2018) == ["20182019"]
+
+
+class TestCorpusAssertion:
+    def _load_pbp(self, db, seasons, games_per_season):
+        for season in seasons:
+            start = int(season[:4])
+            for n in range(1, games_per_season + 1):
+                game_id = start * 1000000 + 20000 + n
+                db.upsert_games([{**GAME, "id": game_id, "season": season}])
+                db.insert_play_by_play(game_id, [EVENT])
+
+    def test_passes_when_every_required_season_is_present(self, db):
+        self._load_pbp(db, ["20232024", "20242025"], games_per_season=3)
+        assert_pbp_corpus(db, ["20232024", "20242025"], min_games_per_season=3)
+
+    def test_aborts_when_a_season_is_missing_entirely(self, db):
+        self._load_pbp(db, ["20242025"], games_per_season=3)
+        with pytest.raises(CorpusError) as exc:
+            assert_pbp_corpus(db, ["20232024", "20242025"], min_games_per_season=3)
+        assert "20232024" in str(exc.value)
+
+    def test_aborts_when_a_season_is_present_but_short(self, db):
+        self._load_pbp(db, ["20232024", "20242025"], games_per_season=3)
+        with pytest.raises(CorpusError) as exc:
+            assert_pbp_corpus(db, ["20232024", "20242025"], min_games_per_season=5)
+        assert "20232024" in str(exc.value)
+        assert "3" in str(exc.value)
+
+    def test_names_every_offending_season_not_just_the_first(self, db):
+        self._load_pbp(db, ["20242025"], games_per_season=3)
+        with pytest.raises(CorpusError) as exc:
+            assert_pbp_corpus(db, ["20212022", "20222023", "20242025"], min_games_per_season=3)
+        message = str(exc.value)
+        assert "20212022" in message
+        assert "20222023" in message
+
+    def test_an_empty_database_aborts(self, db):
+        with pytest.raises(CorpusError):
+            assert_pbp_corpus(db, ["20242025"], min_games_per_season=1)
+
+
+class TestMigrationLeavesADatabaseUsableWhenDuplicatesBlockAUniqueIndex:
+    def test_database_still_opens_and_validation_reports_the_missing_key(self, tmp_path):
+        path = tmp_path / "dupes.db"
+        conn = sqlite3.connect(path)
+        conn.execute(
+            "CREATE TABLE play_by_play ("
+            " id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER, event_id INTEGER)"
+        )
+        conn.executemany(
+            "INSERT INTO play_by_play (game_id, event_id) VALUES (?, ?)",
+            [(2025020001, 51), (2025020001, 51)],
+        )
+        conn.commit()
+        conn.close()
+
+        db = Database(path)  # must not raise
+
+        result = _check(run_integrity_checks(db), "unique_ingest_keys")
+        assert not result.passed
+        assert "uq_pbp_game_event" in result.detail
