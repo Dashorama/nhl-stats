@@ -112,12 +112,18 @@ def run_integrity_checks(db: Database) -> list[CheckResult]:
         )
     )
 
-    null_dates = _scalar(db, "SELECT COUNT(*) FROM games WHERE game_date IS NULL OR game_date = ''")
+    # Scoped to games that were actually played: a conditional playoff game that
+    # was never needed stays in the table without a date, legitimately.
+    null_dates = _scalar(
+        db,
+        "SELECT COUNT(*) FROM games WHERE (game_date IS NULL OR game_date = '') "
+        "AND game_state IN ('OFF', 'FINAL')",
+    )
     results.append(
         CheckResult(
             "games_date_populated",
             null_dates == 0,
-            f"{null_dates} games with no date",
+            f"{null_dates} played games with no date",
         )
     )
 

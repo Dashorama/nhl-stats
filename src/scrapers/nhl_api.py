@@ -24,6 +24,17 @@ def season_from_game_id(game_id: int | str | None) -> str | None:
     return f"{start_year}{start_year + 1}"
 
 
+def season_date_window(season: str) -> tuple[str, str]:
+    """First and last calendar date to walk when scraping a season's schedule.
+
+    Deliberately wider than the regular season: preseason games start in late
+    September, and the 2019-20 playoffs were played in an August-September bubble.
+    A narrower Oct 1 - Jul 1 window left 852 stored games without a date.
+    """
+    start_year, end_year = int(season[:4]), int(season[4:])
+    return f"{start_year}-09-01", f"{end_year}-10-01"
+
+
 class NHLAPIScraper(BaseScraper):
     """Scraper for the official NHL API."""
 
@@ -161,8 +172,7 @@ class NHLAPIScraper(BaseScraper):
             season = await self.get_current_season()
 
         games = []
-        current_date = f"{season[:4]}-10-01"
-        season_end = f"{season[4:]}-07-01"  # Well past any playoff end
+        current_date, season_end = season_date_window(season)
 
         while current_date and current_date < season_end:
             data = await self.get_json(f"/schedule/{current_date}")
