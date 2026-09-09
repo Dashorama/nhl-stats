@@ -367,3 +367,41 @@ class TestGamesNeedingShifts:
         db.insert_play_by_play(2018020001, [EVENT])
 
         assert games_needing_play_by_play(db, ["20182019"]) == []
+
+
+class TestShiftCollectionConverges:
+    """Some games legitimately have no shift chart. Resuming on "has events but
+    no shift rows" would re-download their play-by-play forever and still never
+    record a shift, so the backfill could never report itself done."""
+
+    async def test_a_game_whose_shift_chart_is_empty_is_not_retried_forever(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def no_shifts(game_id):
+            return []
+
+        await backfill_play_by_play(db, [2018020001], fetch, fetch_shifts=no_shifts)
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == []
+
+    async def test_a_game_never_checked_for_shifts_is_still_listed(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
+
+    async def test_a_failed_shift_fetch_leaves_the_game_listed_for_a_retry(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def failing_shifts(game_id):
+            raise RuntimeError("503 from the shift endpoint")
+
+        await backfill_play_by_play(db, [2018020001], fetch, fetch_shifts=failing_shifts)
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
