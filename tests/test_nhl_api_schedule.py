@@ -8,7 +8,12 @@ calendar date lives on the parent ``gameWeek`` entry.
 
 import pytest
 
-from src.scrapers.nhl_api import NHLAPIScraper, season_date_window, season_from_game_id
+from src.scrapers.nhl_api import (
+    NHLAPIScraper,
+    next_schedule_date,
+    season_date_window,
+    season_from_game_id,
+)
 
 SCHEDULE_PAYLOAD = {
     "nextStartDate": "2024-10-15",
@@ -148,3 +153,28 @@ class TestSeasonDateWindow:
     def test_covers_a_normal_season_end(self):
         start, end = season_date_window("20242025")
         assert start < "2024-10-08" < end
+
+
+class TestNextScheduleDate:
+    """The walk advanced solely on nextStartDate. If the API omits it anywhere in
+    the now 13-month window the loop exits early and the rest of the season is
+    never scraped -- structurally the same failure that produced the 852 dateless
+    games. If it ever echoes the current date, the loop spins forever."""
+
+    def test_uses_the_api_cursor_when_it_moves_forward(self):
+        assert next_schedule_date({"nextStartDate": "2024-10-15"}, "2024-10-08") == "2024-10-15"
+
+    def test_falls_back_a_week_when_the_cursor_is_missing(self):
+        assert next_schedule_date({}, "2024-10-08") == "2024-10-15"
+
+    def test_falls_back_a_week_when_the_cursor_is_null(self):
+        assert next_schedule_date({"nextStartDate": None}, "2024-10-08") == "2024-10-15"
+
+    def test_refuses_a_cursor_that_does_not_advance(self):
+        assert next_schedule_date({"nextStartDate": "2024-10-08"}, "2024-10-08") == "2024-10-15"
+
+    def test_refuses_a_cursor_that_goes_backwards(self):
+        assert next_schedule_date({"nextStartDate": "2024-10-01"}, "2024-10-08") == "2024-10-15"
+
+    def test_falls_back_a_week_when_the_cursor_is_malformed(self):
+        assert next_schedule_date({"nextStartDate": "not-a-date"}, "2024-10-08") == "2024-10-15"
