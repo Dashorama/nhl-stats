@@ -92,15 +92,25 @@ def _rush_db(tmp_path):
         " zone_code TEXT, time_in_period TEXT, period INTEGER, player1_id INTEGER)"
     )
     conn.execute("CREATE TABLE games (id INTEGER PRIMARY KEY, season TEXT)")
-    for game_id, season in ((2025020001, "20252026"), (2018020001, "20182019")):
-        conn.execute("INSERT INTO games (id, season) VALUES (?, ?)", (game_id, season))
-        conn.executemany(
-            "INSERT INTO play_by_play VALUES (?, ?, ?, ?, ?, ?, ?)",
-            [
-                (game_id, 1, "takeaway", "D", "01:00", 1, 999),
-                (game_id, 2, "shot-on-goal", "O", "01:02", 1, 8477492),
-            ],
-        )
+    # The 2025-26 shot follows a defensive-zone takeaway two seconds earlier, so it
+    # is a rush. The 2018-19 shot follows a faceoff, so it is not. If both seasons
+    # are read the rate halves to 50%, which is what the assertion pins.
+    conn.execute("INSERT INTO games (id, season) VALUES (?, ?)", (2025020001, "20252026"))
+    conn.executemany(
+        "INSERT INTO play_by_play VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+            (2025020001, 1, "takeaway", "D", "01:00", 1, 999),
+            (2025020001, 2, "shot-on-goal", "O", "01:02", 1, 8477492),
+        ],
+    )
+    conn.execute("INSERT INTO games (id, season) VALUES (?, ?)", (2018020001, "20182019"))
+    conn.executemany(
+        "INSERT INTO play_by_play VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+            (2018020001, 1, "faceoff", "O", "01:00", 1, 999),
+            (2018020001, 2, "shot-on-goal", "O", "01:02", 1, 8477492),
+        ],
+    )
     conn.commit()
     conn.close()
     return db_path
@@ -115,7 +125,7 @@ def test_rush_rates_only_use_the_play_by_play_season(tmp_path):
 
     rates = generator._compute_rush_rates()
 
-    # One shot from the 2025-26 game only; the 2018-19 game must be excluded.
+    # Only the 2025-26 rush shot counts. Reading both seasons would give 50.0.
     assert rates == {8477492: 100.0}
 
 
