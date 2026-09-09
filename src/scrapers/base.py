@@ -49,8 +49,10 @@ class BaseScraper(ABC):
     REQUESTS_PER_SECOND: float = 1.0
     USER_AGENT: str = "NHL-Scraper/0.1.0 (analytics research project)"
 
-    def __init__(self) -> None:
-        self.rate_limiter = RateLimiter(self.REQUESTS_PER_SECOND)
+    def __init__(self, requests_per_second: float | None = None) -> None:
+        # Overridable per instance: the daily update wants a polite default, a
+        # ten-thousand-game backfill needs to go faster than 1 req/s.
+        self.rate_limiter = RateLimiter(requests_per_second or self.REQUESTS_PER_SECOND)
         self.client: httpx.AsyncClient | None = None
         self.logger = logger.bind(source=self.SOURCE_NAME)
 

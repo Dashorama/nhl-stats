@@ -1,14 +1,33 @@
 """Command-line interface for NHL scraper."""
 
 import asyncio
+from typing import Any
 
 import click
 from rich.console import Console
 from rich.table import Table
 
-from .scrapers import MoneyPuckScraper, NHLAPIScraper, NHLRosterScraper, PuckPediaScraper
+from .backfill import (
+    backfill_games,
+    backfill_play_by_play,
+    backfill_shots,
+    games_needing_play_by_play,
+)
+from .scrapers import (
+    MoneyPuckScraper,
+    NHLAPIScraper,
+    NHLRosterScraper,
+    NHLShiftChartScraper,
+    PuckPediaScraper,
+)
 from .scrapers.yahoo_fantasy import YahooFantasyClient
 from .storage import BoxscoreRecord, Database, GameRecord, PlayByPlayRecord, PlayerRecord
+from .storage.validation import (
+    CorpusError,
+    assert_pbp_corpus,
+    run_integrity_checks,
+    seasons_requiring_pbp,
+)
 from .utils import setup_logging
 
 console = Console()
@@ -724,6 +743,7 @@ def update(ctx: click.Context, daily: bool) -> None:
                 console.print(f"  [yellow]⚠ game_logs: {e}[/yellow]")
 
         if daily:
+            errors.extend(_validate_after_update(db))
             _print_summary(errors)
             return
 
@@ -784,6 +804,7 @@ def update(ctx: click.Context, daily: bool) -> None:
                 errors.append(f"shots: {e}")
                 console.print(f"  [yellow]⚠ shots: {e}[/yellow]")
 
+        errors.extend(_validate_after_update(db))
         _print_summary(errors)
 
     asyncio.run(run())
@@ -806,6 +827,237 @@ def injuries(ctx: click.Context) -> None:
     except Exception as e:
         errors.append(f"injuries: {e}")
     _print_summary(errors)
+
+
+# ── Data integrity: validation and backfills ───────────────────────
+
+
+def _print_check_results(results: list[Any]) -> bool:
+    """Render integrity checks. Returns True when every check passed."""
+    table = Table(title="Data integrity")
+    table.add_column("Check")
+    table.add_column("Result")
+    table.add_column("Detail")
+
+    for result in results:
+        # Marker plus colour: status must not depend on colour alone.
+        marker = "[blue]PASS[/blue]" if result.passed else "[bold yellow]FAIL[/bold yellow]"
+        table.add_row(result.name, marker, result.detail)
+
+    console.print(table)
+    return all(r.passed for r in results)
+
+
+@main.command()
+@click.option("--no-corpus", is_flag=True, help="Skip the play-by-play corpus assertion")
+@click.option(
+    "--require-seasons",
+    help="Comma-separated 8-digit seasons play-by-play must cover (default: derived from schedule)",
+)
+@click.pass_context
+def validate(ctx: click.Context, no_corpus: bool, require_seasons: str | None) -> None:
+    """Check stored data for the integrity defects the audit found.
+
+    Exits non-zero when a check fails, so cron and CI can gate on it.
+    """
+    import sys
+
+    db: Database = ctx.obj["db"]
+
+    passed = _print_check_results(run_integrity_checks(db))
+
+    if not no_corpus:
+        seasons = (
+            [s.strip() for s in require_seasons.split(",") if s.strip()]
+            if require_seasons
+            else seasons_requiring_pbp(db)
+        )
+        if not seasons:
+            console.print(
+                "[yellow]No season has a complete enough schedule to require "
+                "play-by-play yet - corpus assertion skipped.[/yellow]"
+            )
+        else:
+            try:
+                counts = assert_pbp_corpus(db, seasons)
+            except CorpusError as exc:
+                console.print(f"[bold yellow]FAIL[/bold yellow] pbp_corpus: {exc}")
+                passed = False
+            else:
+                covered = ", ".join(f"{s}={counts.get(s, 0)}" for s in seasons)
+                console.print(f"[blue]PASS[/blue] pbp_corpus: {covered}")
+
+    if not passed:
+        console.print("\n[bold yellow]Data integrity checks failed.[/bold yellow]")
+        sys.exit(1)
+
+    console.print("\n[bold blue]All data integrity checks passed.[/bold blue]")
+
+
+@main.command("backfill-games")
+@click.option("--start-season", default=2015, type=int, help="First season start year")
+@click.option("--end-season", type=int, help="Last season start year (default: current)")
+@click.option("--rate", default=3.0, type=float, help="Requests per second")
+@click.pass_context
+def backfill_games_cmd(
+    ctx: click.Context, start_season: int, end_season: int | None, rate: float
+) -> None:
+    """Re-scrape schedules so stored games regain their season and date.
+
+    Safe to re-run: existing rows are updated in place, and any season the API
+    could not supply is derived from the game id.
+    """
+    db: Database = ctx.obj["db"]
+
+    async def run() -> None:
+        async with NHLAPIScraper(requests_per_second=rate) as scraper:
+            last = (
+                end_season
+                if end_season is not None
+                else int((await scraper.get_current_season())[:4])
+            )
+            seasons = [f"{y}{y + 1}" for y in range(start_season, last + 1)]
+            console.print(f"[bold]Backfilling games for {len(seasons)} seasons...[/bold]")
+
+            report = await backfill_games(db, seasons, scraper.scrape_games)
+
+        console.print(f"  [blue]{report.games_written} games written[/blue]")
+        console.print(
+            f"  [blue]{report.games_repaired_from_ids} seasons derived from game ids[/blue]"
+        )
+        if report.failures:
+            console.print(
+                f"  [yellow]{len(report.failures)} seasons failed: {report.failures}[/yellow]"
+            )
+
+    asyncio.run(run())
+
+
+@main.command("backfill-shots")
+@click.option("--start-season", default=2018, type=int, help="First MoneyPuck season (start year)")
+@click.option("--end-season", type=int, help="Last MoneyPuck season (default: current)")
+@click.pass_context
+def backfill_shots_cmd(ctx: click.Context, start_season: int, end_season: int | None) -> None:
+    """Re-ingest MoneyPuck shot data so situation, is_home and game_id are correct.
+
+    Each season is replaced wholesale, so this is safe to re-run. Downloads are
+    large (~20MB per season).
+    """
+    db: Database = ctx.obj["db"]
+
+    async def run() -> None:
+        async with MoneyPuckScraper() as scraper:
+            last = end_season if end_season is not None else int(await scraper.get_current_season())
+            seasons = [str(y) for y in range(start_season, last + 1)]
+            console.print(f"[bold]Re-ingesting shots for {len(seasons)} seasons...[/bold]")
+
+            report = await backfill_shots(db, seasons, scraper.scrape_shot_data)
+
+        console.print(
+            f"  [blue]{report.shots_written} shots across {report.seasons_collected} seasons[/blue]"
+        )
+        if report.failures:
+            console.print(
+                f"  [yellow]{len(report.failures)} seasons failed: {report.failures}[/yellow]"
+            )
+
+    asyncio.run(run())
+
+
+@main.command("backfill-pbp")
+@click.option("--start-season", default=2018, type=int, help="First season start year")
+@click.option("--end-season", type=int, help="Last season start year (default: current)")
+@click.option("--with-shifts/--no-shifts", default=True, help="Also collect shift charts")
+@click.option("--refetch", is_flag=True, help="Re-fetch games that already have events")
+@click.option("--limit", type=int, help="Stop after this many games (for testing)")
+@click.option("--rate", default=4.0, type=float, help="Requests per second")
+@click.pass_context
+def backfill_pbp_cmd(
+    ctx: click.Context,
+    start_season: int,
+    end_season: int | None,
+    with_shifts: bool,
+    refetch: bool,
+    limit: int | None,
+    rate: float,
+) -> None:
+    """Backfill play-by-play (and shift charts) for past seasons.
+
+    Resumable and idempotent: games that already have events are skipped unless
+    --refetch is given, and a game's rows are replaced rather than appended.
+    """
+    db: Database = ctx.obj["db"]
+
+    async def run() -> None:
+        async with NHLAPIScraper(requests_per_second=rate) as scraper:
+            last = (
+                end_season
+                if end_season is not None
+                else int((await scraper.get_current_season())[:4])
+            )
+            seasons = [f"{y}{y + 1}" for y in range(start_season, last + 1)]
+
+            game_ids = games_needing_play_by_play(db, seasons, skip_existing=not refetch)
+            if limit:
+                game_ids = game_ids[:limit]
+
+            if not game_ids:
+                console.print("[dim]Every game in range already has play-by-play.[/dim]")
+                return
+
+            console.print(
+                f"[bold]Collecting play-by-play for {len(game_ids)} games "
+                f"across {len(seasons)} seasons...[/bold]"
+            )
+
+            if with_shifts:
+                async with NHLShiftChartScraper(requests_per_second=rate) as shift_scraper:
+                    report = await backfill_play_by_play(
+                        db, game_ids, scraper.scrape_play_by_play, shift_scraper.scrape_shifts
+                    )
+            else:
+                report = await backfill_play_by_play(db, game_ids, scraper.scrape_play_by_play)
+
+        console.print(
+            f"  [blue]{report.events_written} events from {report.games_collected} games[/blue]"
+        )
+        if report.shifts_written:
+            console.print(f"  [blue]{report.shifts_written} shifts[/blue]")
+        if report.games_empty:
+            console.print(f"  [yellow]{report.games_empty} games returned no events[/yellow]")
+        if report.games_failed:
+            console.print(f"  [yellow]{report.games_failed} games failed[/yellow]")
+
+    asyncio.run(run())
+
+
+def _validate_after_update(db: Database) -> list[str]:
+    """Run the integrity checks and corpus assertion at the end of an update.
+
+    Returned as errors rather than raised, so a nightly run still reports what it
+    did collect while exiting non-zero for cron to notice.
+    """
+    console.print("[bold]Validating stored data...[/bold]")
+    problems = []
+
+    for result in run_integrity_checks(db):
+        if not result.passed:
+            problems.append(f"integrity/{result.name}: {result.detail}")
+
+    seasons = seasons_requiring_pbp(db)
+    if seasons:
+        try:
+            assert_pbp_corpus(db, seasons)
+        except CorpusError as exc:
+            problems.append(f"pbp_corpus: {exc}")
+
+    if problems:
+        for problem in problems:
+            console.print(f"  [yellow]⚠ {problem}[/yellow]")
+    else:
+        console.print("  [blue]✓ all integrity checks passed[/blue]")
+
+    return problems
 
 
 def _print_summary(errors: list[str]) -> None:
