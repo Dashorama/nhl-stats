@@ -20,6 +20,10 @@ class NHLShiftChartScraper(BaseScraper):
     BASE_URL = "https://api.nhle.com/stats/rest/en"
     REQUESTS_PER_SECOND = 2.0
 
+    #: The endpoint returns goal markers (typeCode 505, shiftNumber 0, no duration)
+    #: alongside the shifts themselves. Only 517 rows are shifts.
+    SHIFT_TYPE_CODE = 517
+
     async def scrape_shifts(self, game_id: int) -> list[dict[str, Any]]:
         """Fetch every player shift for a single game."""
         data = await self.get_json(
@@ -34,12 +38,18 @@ class NHLShiftChartScraper(BaseScraper):
     def parse_shifts(payload: dict[str, Any]) -> list[dict[str, Any]]:
         """Parse a shiftcharts payload into ``shifts`` table records.
 
-        Rows missing any part of the natural key (game, player, period, shift
-        number) are dropped -- they cannot be stored idempotently.
+        Only actual shifts are kept. The endpoint also returns goal markers, which
+        share a player, period and a shiftNumber of 0, so storing them would
+        collide on the shifts natural key and they are not shifts anyway.
+
+        Rows missing any part of that key are dropped for the same reason.
         """
         shifts: list[dict[str, Any]] = []
 
         for row in payload.get("data") or []:
+            if row.get("typeCode") != NHLShiftChartScraper.SHIFT_TYPE_CODE:
+                continue
+
             game_id = row.get("gameId")
             player_id = row.get("playerId")
             period = row.get("period")

@@ -342,3 +342,28 @@ class TestBackfillSurvivesShiftFailures:
 
         assert report.games_collected == 2
         assert report.shifts_written == 1
+
+
+class TestGamesNeedingShifts:
+    """Play-by-play and shifts are collected together but stored separately, so a
+    game can have events and no shifts -- an interrupted run, or a run made before
+    shifts existed. Resuming has to pick those up."""
+
+    def test_a_game_with_events_but_no_shifts_is_returned(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
+
+    def test_a_game_with_both_is_skipped(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+        db.insert_shifts(2018020001, [{**SHIFT, "game_id": 2018020001}])
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == []
+
+    def test_shifts_are_not_required_by_default(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == []
