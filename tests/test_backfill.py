@@ -309,3 +309,36 @@ class TestBackfillGames:
 
         with sqlite3.connect(db.db_path) as conn:
             assert conn.execute("SELECT COUNT(*) FROM games").fetchone()[0] == 1
+
+
+class TestBackfillSurvivesShiftFailures:
+    async def test_a_shift_storage_failure_does_not_abort_the_run(self, db, monkeypatch):
+        """A bad shift payload for one game must not cost the other 9,202."""
+        db.upsert_games(
+            [
+                _game(2018020001, season="20182019"),
+                _game(2018020002, season="20182019"),
+            ]
+        )
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def fetch_shifts(game_id):
+            return [{**SHIFT, "game_id": game_id}]
+
+        real_insert = db.insert_shifts
+
+        def exploding_insert(game_id, shifts):
+            if game_id == 2018020001:
+                raise RuntimeError("UNIQUE constraint failed: shifts.game_id, ...")
+            return real_insert(game_id, shifts)
+
+        monkeypatch.setattr(db, "insert_shifts", exploding_insert)
+
+        report = await backfill_play_by_play(
+            db, [2018020001, 2018020002], fetch, fetch_shifts=fetch_shifts
+        )
+
+        assert report.games_collected == 2
+        assert report.shifts_written == 1

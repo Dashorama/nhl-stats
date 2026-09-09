@@ -79,3 +79,42 @@ class TestShiftChartScraper:
     def test_handles_an_empty_payload(self):
         assert NHLShiftChartScraper.parse_shifts({"data": []}) == []
         assert NHLShiftChartScraper.parse_shifts({}) == []
+
+
+class TestNonShiftRows:
+    """The endpoint mixes goal markers in with the shifts.
+
+    A goal marker is typeCode 505 with shiftNumber 0, no duration and an
+    eventDescription like "EVG". Two of them for the same player in the same
+    period collide on (game, player, period, shift number), which is the natural
+    key the shifts table is stored under.
+    """
+
+    GOAL_MARKER = {
+        "gameId": 2018020007,
+        "playerId": 8471698,
+        "period": 3,
+        "shiftNumber": 0,
+        "startTime": "13:22",
+        "endTime": "13:22",
+        "duration": None,
+        "eventDescription": "EVG",
+        "typeCode": 505,
+        "detailCode": 805,
+        "firstName": "T.J.",
+        "lastName": "Oshie",
+    }
+
+    def test_goal_markers_are_not_stored_as_shifts(self):
+        payload = {"data": [self.GOAL_MARKER, SHIFT_PAYLOAD["data"][0]]}
+        shifts = NHLShiftChartScraper.parse_shifts(payload)
+        assert [s["player_id"] for s in shifts] == [8466139]
+
+    def test_two_goal_markers_for_one_player_do_not_collide(self):
+        payload = {
+            "data": [
+                self.GOAL_MARKER,
+                {**self.GOAL_MARKER, "detailCode": 801, "startTime": "05:01"},
+            ]
+        }
+        assert NHLShiftChartScraper.parse_shifts(payload) == []
