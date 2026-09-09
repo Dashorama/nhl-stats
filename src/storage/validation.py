@@ -29,6 +29,10 @@ EARLIEST_PBP_START_YEAR = 2018
 #: short (1,082 and 868), so the floor sits below those.
 MIN_GAMES_PER_PBP_SEASON = 800
 
+#: Fraction of a season's played games that must have play-by-play. A handful of
+#: games legitimately fail to fetch; half a season is a broken backfill.
+MIN_PBP_COVERAGE = 0.95
+
 
 @dataclass(frozen=True)
 class CheckResult:
@@ -50,6 +54,34 @@ def expected_pbp_seasons(
     """Every 8-digit season id from ``earliest_start_year`` through ``current_season``."""
     last_start_year = int(current_season[:4])
     return [f"{year}{year + 1}" for year in range(earliest_start_year, last_start_year + 1)]
+
+
+def seasons_requiring_pbp(
+    db: Database,
+    earliest_start_year: int = EARLIEST_PBP_START_YEAR,
+    min_games: int = MIN_GAMES_PER_PBP_SEASON,
+) -> list[str]:
+    """Seasons whose schedule is complete enough to demand full play-by-play.
+
+    Derived from the stored schedule rather than the calendar: a season still
+    being played simply has too few finished games to appear here yet, so the
+    October season boundary cannot make the nightly run abort.
+    """
+    with db.engine.connect() as conn:
+        rows = conn.execute(
+            text(
+                "SELECT season, COUNT(*) FROM games "
+                "WHERE game_type IN ('2', '3') AND game_state IN ('OFF', 'FINAL') "
+                "AND season IS NOT NULL AND season != '' "
+                "GROUP BY season"
+            )
+        ).fetchall()
+
+    return sorted(
+        str(season)
+        for season, played in rows
+        if played >= min_games and int(str(season)[:4]) >= earliest_start_year
+    )
 
 
 def _scalar(db: Database, sql: str) -> int:
@@ -142,6 +174,7 @@ def assert_pbp_corpus(
     db: Database,
     required_seasons: list[str],
     min_games_per_season: int = MIN_GAMES_PER_PBP_SEASON,
+    min_coverage: float = MIN_PBP_COVERAGE,
 ) -> dict[str, int]:
     """Abort the run unless every required season is present in play-by-play.
 
@@ -160,14 +193,30 @@ def assert_pbp_corpus(
                 )
             )
         }
+        played = {
+            str(row[0]): int(row[1])
+            for row in conn.execute(
+                text(
+                    "SELECT season, COUNT(*) FROM games "
+                    "WHERE game_type IN ('2', '3') AND game_state IN ('OFF', 'FINAL') "
+                    "GROUP BY season"
+                )
+            )
+        }
 
     problems = []
     for season in required_seasons:
         found = counts.get(season, 0)
+        scheduled = played.get(season, 0)
         if found == 0:
             problems.append(f"{season}: missing")
         elif found < min_games_per_season:
             problems.append(f"{season}: only {found} games (expected >= {min_games_per_season})")
+        elif scheduled and found / scheduled < min_coverage:
+            problems.append(
+                f"{season}: covers {found} of {scheduled} played games "
+                f"({found / scheduled:.0%}, expected >= {min_coverage:.0%})"
+            )
 
     if problems:
         raise CorpusError("play-by-play corpus is incomplete -- " + "; ".join(problems))
