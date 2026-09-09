@@ -1,7 +1,6 @@
 """Command-line interface for NHL scraper."""
 
 import asyncio
-from typing import Any
 
 import click
 from rich.console import Console
@@ -23,6 +22,7 @@ from .scrapers import (
 from .scrapers.yahoo_fantasy import YahooFantasyClient
 from .storage import BoxscoreRecord, Database, GameRecord, PlayerRecord
 from .storage.validation import (
+    CheckResult,
     CorpusError,
     assert_pbp_corpus,
     run_integrity_checks,
@@ -840,7 +840,7 @@ def injuries(ctx: click.Context) -> None:
 # ── Data integrity: validation and backfills ───────────────────────
 
 
-def _print_check_results(results: list[Any]) -> bool:
+def _print_check_results(results: list[CheckResult]) -> bool:
     """Render integrity checks. Returns True when every check passed."""
     table = Table(title="Data integrity")
     table.add_column("Check")
@@ -931,7 +931,8 @@ def backfill_games_cmd(
 
         console.print(f"  [blue]{report.games_written} games written[/blue]")
         console.print(
-            f"  [blue]{report.games_repaired_from_ids} seasons derived from game ids[/blue]"
+            f"  [blue]{report.games_repaired_from_ids} games had a season "
+            f"derived from their id[/blue]"
         )
         if report.failures:
             console.print(
