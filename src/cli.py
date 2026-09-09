@@ -36,12 +36,18 @@ console = Console()
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Enable debug logging")
 @click.option("--json-logs", is_flag=True, help="Output logs as JSON")
+@click.option(
+    "--db",
+    "db_path",
+    envvar="NHL_STATS_DB",
+    help="Path to the SQLite database (default: data/nhl.db, or $NHL_STATS_DB)",
+)
 @click.pass_context
-def main(ctx: click.Context, verbose: bool, json_logs: bool) -> None:
+def main(ctx: click.Context, verbose: bool, json_logs: bool, db_path: str | None) -> None:
     """NHL Stats - Collect hockey data from multiple sources."""
     ctx.ensure_object(dict)
     setup_logging(level="DEBUG" if verbose else "INFO", json_output=json_logs)
-    ctx.obj["db"] = Database()
+    ctx.obj["db"] = Database(db_path) if db_path else Database()
 
 
 @main.command()
