@@ -34,6 +34,7 @@ def gen(tmp_path):
             player2_id  INTEGER
         )
     """)
+    conn.execute("CREATE TABLE games (id INTEGER PRIMARY KEY, season TEXT)")
     conn.execute("CREATE TABLE players (id INTEGER, first_name TEXT, last_name TEXT)")
     conn.commit()
     conn.close()
