@@ -741,7 +741,7 @@ def update(ctx: click.Context, daily: bool) -> None:
             console.print("[bold]Updating play-by-play...[/bold]")
             try:
                 current_season = await scraper.get_current_season()
-                new_pbp_ids = games_needing_play_by_play(db, [current_season])
+                new_pbp_ids = games_needing_play_by_play(db, [current_season], require_shifts=True)
 
                 if new_pbp_ids:
                     async with NHLShiftChartScraper() as shift_scraper:

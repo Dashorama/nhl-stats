@@ -117,8 +117,12 @@ def games_needing_play_by_play(
         f" AND game_state IN ({', '.join(':' + k for k in state_params)})"
     )
     if skip_existing:
-        sql += " AND (id NOT IN (SELECT DISTINCT game_id FROM play_by_play)"
-        sql += " OR id NOT IN (SELECT DISTINCT game_id FROM shifts))" if require_shifts else ")"
+        predicates = ["id NOT IN (SELECT DISTINCT game_id FROM play_by_play)"]
+        if require_shifts:
+            # shifts_checked_at, not the presence of shift rows: some games have
+            # no shift chart at all, and those must not be retried forever.
+            predicates.append("shifts_checked_at IS NULL")
+        sql += " AND (" + " OR ".join(predicates) + ")"
     sql += " ORDER BY id"
 
     with db.engine.connect() as conn:
@@ -167,8 +171,9 @@ async def backfill_play_by_play(
             # committed, and one unexpected shift payload must not end the run.
             try:
                 shifts = await fetch_shifts(game_id)
-                if shifts:
-                    report.shifts_written += db.insert_shifts(game_id, shifts)
+                # Stored even when empty: that records the attempt, so a game with
+                # no shift chart is not re-fetched on every future run.
+                report.shifts_written += db.insert_shifts(game_id, shifts)
             except Exception as exc:
                 logger.warning("shift_backfill_game_failed", game_id=game_id, error=str(exc))
 

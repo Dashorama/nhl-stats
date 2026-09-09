@@ -33,6 +33,17 @@ MIN_GAMES_PER_PBP_SEASON = 800
 #: games legitimately fail to fetch; half a season is a broken backfill.
 MIN_PBP_COVERAGE = 0.95
 
+#: A season needs this many shots before its home/away split means anything.
+MIN_SHOTS_FOR_HOME_AWAY_CHECK = 500
+
+#: Home teams take slightly more shots than away teams (~51%). Anything outside
+#: this band is a parser regression, not hockey.
+HOME_SHOT_SHARE_BAND = (0.45, 0.55)
+
+#: MoneyPuck itself ships a trace of impossible skater counts (7v5, 5v9, 2v3 --
+#: 53 rows in 905,515). Tolerate that; fail on a wholesale semantic change.
+MAX_IMPLAUSIBLE_SITUATION_RATIO = 0.005
+
 
 @dataclass(frozen=True)
 class CheckResult:
@@ -45,15 +56,6 @@ class CheckResult:
 
 class CorpusError(RuntimeError):
     """Raised when the stored corpus is missing seasons it is required to have."""
-
-
-def expected_pbp_seasons(
-    current_season: str,
-    earliest_start_year: int = EARLIEST_PBP_START_YEAR,
-) -> list[str]:
-    """Every 8-digit season id from ``earliest_start_year`` through ``current_season``."""
-    last_start_year = int(current_season[:4])
-    return [f"{year}{year + 1}" for year in range(earliest_start_year, last_start_year + 1)]
 
 
 def seasons_requiring_pbp(
@@ -150,17 +152,63 @@ def run_integrity_checks(db: Database) -> list[CheckResult]:
         )
     )
 
+    # Deduplicate the game ids before joining. Joining shots to play_by_play row
+    # by row materialises one row per shot per event in that game -- 37.8 million
+    # intermediate rows for the 2018 season alone, and this runs every nightly.
     joined_games = _scalar(
         db,
-        "SELECT COUNT(DISTINCT s.game_id) FROM shots s "
+        "SELECT COUNT(*) FROM (SELECT DISTINCT game_id FROM shots) s "
         "JOIN games g ON g.id = s.game_id "
-        "JOIN play_by_play p ON p.game_id = s.game_id",
+        "WHERE EXISTS (SELECT 1 FROM play_by_play p WHERE p.game_id = s.game_id)",
     )
     results.append(
         CheckResult(
             "shots_join_play_by_play",
             joined_games > 0,
             f"{joined_games} games join across shots, games and play_by_play",
+        )
+    )
+
+    with db.engine.connect() as conn:
+        splits = conn.execute(
+            text(
+                "SELECT season, COUNT(*), SUM(CASE WHEN is_home THEN 1 ELSE 0 END) "
+                "FROM shots GROUP BY season"
+            )
+        ).all()
+
+    low, high = HOME_SHOT_SHARE_BAND
+    lopsided = []
+    for season, total, home in splits:
+        if total < MIN_SHOTS_FOR_HOME_AWAY_CHECK:
+            continue  # too few shots for the split to mean anything
+        share = (home or 0) / total
+        if not low <= share <= high:
+            lopsided.append(f"{season}: {share:.0%} home")
+
+    results.append(
+        CheckResult(
+            "shots_home_away_balance",
+            not lopsided,
+            "; ".join(lopsided) if lopsided else "every season within 45-55% home",
+        )
+    )
+
+    # Presence is not enough: a season that silently became all "6v6" would pass
+    # shots_situation_populated while every downstream situation query is wrong.
+    total_shots = _scalar(db, "SELECT COUNT(*) FROM shots WHERE situation IS NOT NULL")
+    implausible = _scalar(
+        db,
+        "SELECT COUNT(*) FROM shots WHERE situation IS NOT NULL AND situation != '' "
+        "AND situation NOT GLOB '[3-6]v[3-6]'",
+    )
+    ratio = implausible / total_shots if total_shots else 0.0
+    results.append(
+        CheckResult(
+            "shots_situation_plausible",
+            ratio <= MAX_IMPLAUSIBLE_SITUATION_RATIO,
+            f"{implausible} of {total_shots} shots have impossible skater counts "
+            f"({ratio:.2%}, tolerated up to {MAX_IMPLAUSIBLE_SITUATION_RATIO:.1%})",
         )
     )
 

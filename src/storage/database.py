@@ -93,6 +93,9 @@ class GameRecord(Base):
     home_score = Column(Integer)
     away_score = Column(Integer)
     game_state = Column(String(20))
+    # When the shift chart was last fetched for this game. Recorded even when the
+    # chart came back empty, so a game with no shifts is not retried forever.
+    shifts_checked_at = Column(DateTime)
     raw_data = Column(Text)
     updated_at = Column(DateTime, default=datetime.utcnow)
 
@@ -581,9 +584,13 @@ class Database:
 
                 existing = session.get(GameRecord, game_id)
                 if existing:
-                    existing.home_score = g.get("home_score", existing.home_score)
-                    existing.away_score = g.get("away_score", existing.away_score)
-                    existing.game_state = g.get("game_state", existing.game_state)
+                    # dict.get's default never fires here: parse_schedule_games always
+                    # emits these keys, so an unplayed game's None would overwrite a
+                    # real score. Match the fields below and only write real values.
+                    for score_field in ("home_score", "away_score", "game_state"):
+                        score_value = g.get(score_field)
+                        if score_value is not None:
+                            setattr(existing, score_field, score_value)
                     # These were previously only written on insert, which is why the
                     # live database had a NULL season and date on every row: once a
                     # game existed, no re-scrape could ever repair it. Only overwrite
@@ -993,7 +1000,12 @@ class Database:
             return count
 
     def insert_shifts(self, game_id: int, shifts: list[dict[str, Any]]) -> int:
-        """Insert shift-chart rows for a game. Replaces any existing rows for it."""
+        """Insert shift-chart rows for a game. Replaces any existing rows for it.
+
+        Also stamps ``games.shifts_checked_at``, which is what lets a resumable
+        backfill tell "not collected yet" apart from "collected, and this game
+        genuinely has no shift chart".
+        """
         with self.get_session() as session:
             # Full replace keeps the ingest idempotent: re-running a backfill for a
             # game that was already collected leaves exactly one row per shift.
@@ -1019,6 +1031,10 @@ class Database:
                     )
                 )
                 count += 1
+
+            game = session.get(GameRecord, game_id)
+            if game is not None:
+                game.shifts_checked_at = datetime.utcnow()
 
             session.commit()
             self.logger.info("inserted_shifts", game_id=game_id, count=count)

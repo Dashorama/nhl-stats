@@ -13,7 +13,6 @@ from src.storage.database import Database
 from src.storage.validation import (
     CorpusError,
     assert_pbp_corpus,
-    expected_pbp_seasons,
     run_integrity_checks,
     seasons_requiring_pbp,
 )
@@ -123,24 +122,6 @@ class TestIntegrityChecks:
         result = _check(run_integrity_checks(healthy_db), "unique_ingest_keys")
         assert not result.passed
         assert "uq_pbp_game_event" in result.detail
-
-
-class TestExpectedPbpSeasons:
-    def test_spans_from_the_earliest_backfilled_season_to_the_current_one(self):
-        seasons = expected_pbp_seasons(current_season="20252026", earliest_start_year=2018)
-        assert seasons == [
-            "20182019",
-            "20192020",
-            "20202021",
-            "20212022",
-            "20222023",
-            "20232024",
-            "20242025",
-            "20252026",
-        ]
-
-    def test_a_single_season_range_is_just_that_season(self):
-        assert expected_pbp_seasons("20182019", 2018) == ["20182019"]
 
 
 class TestCorpusAssertion:

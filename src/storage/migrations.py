@@ -7,8 +7,6 @@ existed) needs a small, idempotent migration step when it is opened.
 Every step here is safe to run repeatedly and never rewrites row data.
 """
 
-from typing import Any
-
 import structlog
 from sqlalchemy import Connection, Engine, text
 
@@ -20,6 +18,9 @@ ADDED_COLUMNS: dict[str, dict[str, str]] = {
     "shots": {
         "moneypuck_game_id": "INTEGER",
         "shot_id": "INTEGER",
+    },
+    "games": {
+        "shifts_checked_at": "DATETIME",
     },
 }
 
@@ -50,8 +51,8 @@ def _index_exists(conn: Connection, name: str) -> bool:
     return row is not None
 
 
-def _existing_columns(conn: Connection, table: str) -> set[Any]:
-    return {row[1] for row in conn.execute(text(f"PRAGMA table_info({table})"))}
+def _existing_columns(conn: Connection, table: str) -> set[str]:
+    return {str(row[1]) for row in conn.execute(text(f"PRAGMA table_info({table})"))}
 
 
 def apply_migrations(engine: Engine) -> list[str]:

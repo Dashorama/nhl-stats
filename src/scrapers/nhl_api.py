@@ -1,6 +1,6 @@
 """NHL Official API scraper using the new api-web.nhle.com endpoint."""
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from .base import BaseScraper
@@ -22,6 +22,30 @@ def season_from_game_id(game_id: int | str | None) -> str | None:
         return None
     start_year = numeric // 1000000
     return f"{start_year}{start_year + 1}"
+
+
+#: How far to step when the API gives no usable cursor. The schedule endpoint
+#: returns a week at a time, so a week is the natural stride.
+SCHEDULE_STRIDE_DAYS = 7
+
+
+def next_schedule_date(payload: dict[str, Any], current_date: str) -> str:
+    """The next date to request when walking a season's schedule.
+
+    Uses the API's own ``nextStartDate`` cursor, but only when it actually moves
+    forward. A missing cursor would end the walk early and silently truncate the
+    season; a cursor that repeats the current date would loop forever.
+    """
+    cursor = payload.get("nextStartDate")
+    if isinstance(cursor, str):
+        try:
+            if date.fromisoformat(cursor) > date.fromisoformat(current_date):
+                return cursor
+        except ValueError:
+            pass  # malformed cursor; fall through to the fixed stride
+
+    stepped = date.fromisoformat(current_date) + timedelta(days=SCHEDULE_STRIDE_DAYS)
+    return stepped.isoformat()
 
 
 def season_date_window(season: str) -> tuple[str, str]:
@@ -177,7 +201,7 @@ class NHLAPIScraper(BaseScraper):
         while current_date and current_date < season_end:
             data = await self.get_json(f"/schedule/{current_date}")
             games.extend(self.parse_schedule_games(data))
-            current_date = data.get("nextStartDate")
+            current_date = next_schedule_date(data, current_date)
 
         self.logger.info("scraped_games", count=len(games))
         return games
