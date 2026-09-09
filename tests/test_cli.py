@@ -108,3 +108,57 @@ def test_db_path_env_var_is_the_path_specific_name(tmp_path, monkeypatch):
 
     assert result.exit_code == 0, result.output
     assert target.exists()
+
+
+def test_a_backfill_refuses_to_run_while_another_writer_holds_the_lock(tmp_path):
+    """A multi-hour backfill and the nightly cron on one SQLite file means
+    "database is locked", not a queue. Only one writer runs at a time."""
+    import fcntl
+
+    from src.cli import database_write_lock
+
+    db_path = tmp_path / "locked.db"
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    lock_file = tmp_path / ".nhl-stats-write.lock"
+
+    holder = open(lock_file, "w")
+    fcntl.flock(holder, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    try:
+        with database_write_lock(db_path) as acquired:
+            assert acquired is False
+    finally:
+        holder.close()
+
+
+def test_the_lock_is_available_when_nothing_else_holds_it(tmp_path):
+    from src.cli import database_write_lock
+
+    with database_write_lock(tmp_path / "free.db") as acquired:
+        assert acquired is True
+
+
+def test_update_skips_rather_than_failing_when_the_lock_is_held(tmp_path, monkeypatch):
+    """cron must not pile up or alarm: the next scheduled run catches up.
+
+    The scraper is stubbed to blow up, so if the lock is not checked first this
+    fails fast instead of making real network calls.
+    """
+    import fcntl
+
+    import src.cli as cli_module
+
+    def exploding_scraper(*args, **kwargs):
+        raise AssertionError("update did work before checking the lock")
+
+    monkeypatch.setattr(cli_module, "NHLAPIScraper", exploding_scraper)
+
+    db_path = tmp_path / "busy.db"
+    _seed(db_path)
+    holder = open(tmp_path / ".nhl-stats-write.lock", "w")
+    fcntl.flock(holder, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    try:
+        result = CliRunner().invoke(main, ["--db", str(db_path), "update", "--daily"])
+        assert result.exit_code == 0, result.output
+        assert "lock" in result.output.lower()
+    finally:
+        holder.close()
