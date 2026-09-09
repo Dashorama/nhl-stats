@@ -6,6 +6,24 @@ from typing import Any
 from .base import BaseScraper
 
 
+def season_from_game_id(game_id: int | str | None) -> str | None:
+    """Derive the 8-digit season from an NHL 10-digit game id.
+
+    NHL game ids are ``SSSSTTNNNN`` -- the season's start year, the game type and
+    the game number -- so ``2024020001`` belongs to season ``20242025``.
+    """
+    if game_id is None:
+        return None
+    try:
+        numeric = int(game_id)
+    except (TypeError, ValueError):
+        return None
+    if not 1000000000 <= numeric <= 9999999999:
+        return None
+    start_year = numeric // 1000000
+    return f"{start_year}{start_year + 1}"
+
+
 class NHLAPIScraper(BaseScraper):
     """Scraper for the official NHL API."""
 
@@ -148,26 +166,48 @@ class NHLAPIScraper(BaseScraper):
 
         while current_date and current_date < season_end:
             data = await self.get_json(f"/schedule/{current_date}")
-
-            for week in data.get("gameWeek", []):
-                for game in week.get("games", []):
-                    games.append(
-                        {
-                            "id": game.get("id"),
-                            "date": game.get("gameDate"),
-                            "game_type": game.get("gameType"),
-                            "home_team": game.get("homeTeam", {}).get("abbrev"),
-                            "away_team": game.get("awayTeam", {}).get("abbrev"),
-                            "home_score": game.get("homeTeam", {}).get("score"),
-                            "away_score": game.get("awayTeam", {}).get("score"),
-                            "game_state": game.get("gameState"),
-                            "venue": game.get("venue", {}).get("default"),
-                        }
-                    )
-
+            games.extend(self.parse_schedule_games(data))
             current_date = data.get("nextStartDate")
 
         self.logger.info("scraped_games", count=len(games))
+        return games
+
+    @staticmethod
+    def parse_schedule_games(payload: dict[str, Any]) -> list[dict[str, Any]]:
+        """Parse a ``/schedule/{date}`` payload into game records.
+
+        Two fields the previous version dropped:
+
+        * ``season`` -- present on each game as an int (``20242025``); without it
+          every stored game had a NULL season.
+        * the calendar date -- the game object has no ``gameDate``; the date lives
+          on the parent ``gameWeek`` entry, with ``startTimeUTC`` as a fallback.
+        """
+        games: list[dict[str, Any]] = []
+
+        for week in payload.get("gameWeek", []):
+            week_date = week.get("date")
+
+            for game in week.get("games", []):
+                game_id = game.get("id")
+                season = game.get("season")
+                start_time = game.get("startTimeUTC") or ""
+
+                games.append(
+                    {
+                        "id": game_id,
+                        "season": str(season) if season else season_from_game_id(game_id),
+                        "date": week_date or (start_time[:10] or None),
+                        "game_type": game.get("gameType"),
+                        "home_team": game.get("homeTeam", {}).get("abbrev"),
+                        "away_team": game.get("awayTeam", {}).get("abbrev"),
+                        "home_score": game.get("homeTeam", {}).get("score"),
+                        "away_score": game.get("awayTeam", {}).get("score"),
+                        "game_state": game.get("gameState"),
+                        "venue": game.get("venue", {}).get("default"),
+                    }
+                )
+
         return games
 
     async def scrape_player_details(self, player_id: int) -> dict[str, Any]:
