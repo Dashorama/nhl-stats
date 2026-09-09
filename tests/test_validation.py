@@ -74,6 +74,21 @@ class TestIntegrityChecks:
             conn.execute("UPDATE games SET season = NULL")
         assert not _check(run_integrity_checks(healthy_db), "games_season_populated").passed
 
+    def test_a_game_that_was_never_played_needs_no_date(self, healthy_db):
+        """Conditional playoff games (a game 7 that was not needed) have no date."""
+        healthy_db.upsert_games(
+            [{**GAME, "id": 2025030117, "season": "20252026", "game_state": "FUT", "date": None}]
+        )
+        assert _check(run_integrity_checks(healthy_db), "games_date_populated").passed
+
+    def test_a_played_game_with_no_date_fails(self, healthy_db):
+        healthy_db.upsert_games(
+            [{**GAME, "id": 2025020117, "season": "20252026", "game_state": "OFF"}]
+        )
+        with sqlite3.connect(healthy_db.db_path) as conn:
+            conn.execute("UPDATE games SET game_date = NULL WHERE id = 2025020117")
+        assert not _check(run_integrity_checks(healthy_db), "games_date_populated").passed
+
     def test_a_null_game_date_fails(self, healthy_db):
         with sqlite3.connect(healthy_db.db_path) as conn:
             conn.execute("UPDATE games SET game_date = NULL")
