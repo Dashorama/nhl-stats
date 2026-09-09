@@ -1,0 +1,437 @@
+"""Tests for the idempotent backfills.
+
+Every backfill here runs against data that already exists, so being safe to
+re-run is the whole point: a second run must repair nothing new, duplicate
+nothing, and cost no requests it does not need.
+"""
+
+import sqlite3
+
+import pytest
+
+from src.backfill import (
+    backfill_games,
+    backfill_play_by_play,
+    backfill_shots,
+    games_needing_play_by_play,
+    repair_game_seasons_from_ids,
+)
+from src.storage.database import Database
+
+
+@pytest.fixture
+def db(tmp_path):
+    return Database(tmp_path / "test.db")
+
+
+def _game(game_id, **overrides):
+    game = {
+        "id": game_id,
+        "season": None,
+        "date": None,
+        "game_type": 2,
+        "home_team": "BUF",
+        "away_team": "NJD",
+        "home_score": 3,
+        "away_score": 4,
+        "game_state": "OFF",
+    }
+    game.update(overrides)
+    return game
+
+
+def _shot(season, mp_game_id, shot_id, **overrides):
+    shot = {
+        "season": season,
+        "game_id": int(season) * 1000000 + mp_game_id,
+        "moneypuck_game_id": mp_game_id,
+        "shot_id": shot_id,
+        "team": "NJD",
+        "situation": "5v5",
+        "is_home": False,
+        "goal": 0,
+    }
+    shot.update(overrides)
+    return shot
+
+
+EVENT = {"event_id": 51, "event_type": "faceoff", "period": 1}
+SHIFT = {
+    "player_id": 8483495,
+    "player_name": "Simon Nemec",
+    "period": 1,
+    "shift_number": 1,
+    "start_time": "00:00",
+    "end_time": "00:42",
+}
+
+
+class TestRepairGameSeasonsFromIds:
+    def test_derives_the_season_for_rows_that_have_none(self, db):
+        db.upsert_games([_game(2018020001), _game(2024030412)])
+
+        assert repair_game_seasons_from_ids(db) == 2
+
+        with sqlite3.connect(db.db_path) as conn:
+            rows = dict(conn.execute("SELECT id, season FROM games").fetchall())
+        assert rows == {2018020001: "20182019", 2024030412: "20242025"}
+
+    def test_leaves_a_season_that_is_already_set_alone(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        assert repair_game_seasons_from_ids(db) == 0
+
+    def test_repairs_empty_strings_as_well_as_nulls(self, db):
+        db.upsert_games([_game(2018020001)])
+        with sqlite3.connect(db.db_path) as conn:
+            conn.execute("UPDATE games SET season = ''")
+
+        assert repair_game_seasons_from_ids(db) == 1
+
+    def test_a_second_run_repairs_nothing(self, db):
+        db.upsert_games([_game(2018020001)])
+        repair_game_seasons_from_ids(db)
+
+        assert repair_game_seasons_from_ids(db) == 0
+
+
+class TestGamesNeedingPlayByPlay:
+    def test_lists_finished_games_with_no_events(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == [2018020001]
+
+    def test_skips_games_that_already_have_events(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == []
+
+    def test_includes_already_collected_games_when_asked_to_refetch(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"], skip_existing=False) == [2018020001]
+
+    def test_skips_games_that_have_not_been_played(self, db):
+        db.upsert_games([_game(2018020001, season="20182019", game_state="FUT")])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == []
+
+    def test_skips_preseason_games(self, db):
+        db.upsert_games([_game(2018010001, season="20182019", game_type=1)])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == []
+
+    def test_includes_playoff_games(self, db):
+        db.upsert_games([_game(2018030411, season="20182019", game_type=3)])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == [2018030411]
+
+    def test_only_returns_games_from_the_requested_seasons(self, db):
+        db.upsert_games(
+            [
+                _game(2018020001, season="20182019"),
+                _game(2024020001, season="20242025"),
+            ]
+        )
+
+        assert games_needing_play_by_play(db, ["20242025"]) == [2024020001]
+
+
+class TestBackfillPlayByPlay:
+    async def test_stores_events_for_each_game(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        report = await backfill_play_by_play(db, [2018020001], fetch)
+
+        assert report.games_collected == 1
+        assert report.events_written == 1
+
+    async def test_a_second_run_fetches_nothing(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        calls = []
+
+        async def fetch(game_id):
+            calls.append(game_id)
+            return [EVENT]
+
+        await backfill_play_by_play(db, [2018020001], fetch)
+        await backfill_play_by_play(db, games_needing_play_by_play(db, ["20182019"]), fetch)
+
+        assert calls == [2018020001]
+
+    async def test_refetching_the_same_game_does_not_duplicate_events(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        await backfill_play_by_play(db, [2018020001], fetch)
+        await backfill_play_by_play(db, [2018020001], fetch)
+
+        with sqlite3.connect(db.db_path) as conn:
+            assert conn.execute("SELECT COUNT(*) FROM play_by_play").fetchone()[0] == 1
+
+    async def test_collects_shifts_when_a_shift_fetcher_is_given(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def fetch_shifts(game_id):
+            return [{**SHIFT, "game_id": game_id}]
+
+        report = await backfill_play_by_play(db, [2018020001], fetch, fetch_shifts=fetch_shifts)
+
+        assert report.shifts_written == 1
+
+    async def test_one_failing_game_does_not_stop_the_rest(self, db):
+        db.upsert_games(
+            [
+                _game(2018020001, season="20182019"),
+                _game(2018020002, season="20182019"),
+            ]
+        )
+
+        async def fetch(game_id):
+            if game_id == 2018020001:
+                raise RuntimeError("404 from the API")
+            return [EVENT]
+
+        report = await backfill_play_by_play(db, [2018020001, 2018020002], fetch)
+
+        assert report.games_collected == 1
+        assert report.games_failed == 1
+
+    async def test_a_game_that_returns_no_events_is_not_counted_as_collected(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return []
+
+        report = await backfill_play_by_play(db, [2018020001], fetch)
+
+        assert report.games_collected == 0
+        assert report.games_empty == 1
+
+
+class TestBackfillShots:
+    async def test_reingests_each_requested_season(self, db):
+        async def fetch(season):
+            return [_shot(season, 20001, 0)]
+
+        report = await backfill_shots(db, ["2018", "2019"], fetch)
+
+        assert report.seasons_collected == 2
+        with sqlite3.connect(db.db_path) as conn:
+            assert conn.execute("SELECT COUNT(*) FROM shots").fetchone()[0] == 2
+
+    async def test_a_second_run_replaces_rather_than_duplicates(self, db):
+        async def fetch(season):
+            return [_shot(season, 20001, 0), _shot(season, 20001, 1)]
+
+        await backfill_shots(db, ["2018"], fetch)
+        await backfill_shots(db, ["2018"], fetch)
+
+        with sqlite3.connect(db.db_path) as conn:
+            assert conn.execute("SELECT COUNT(*) FROM shots").fetchone()[0] == 2
+
+    async def test_repairs_the_broken_rows_the_audit_found(self, db):
+        """A season stored with the old parser is fully replaced by the fixed one."""
+        with sqlite3.connect(db.db_path) as conn:
+            conn.execute(
+                "INSERT INTO shots (season, game_id, situation, is_home) "
+                "VALUES ('2018', 20001, '', 0)"
+            )
+
+        async def fetch(season):
+            return [_shot(season, 20001, 0)]
+
+        await backfill_shots(db, ["2018"], fetch)
+
+        with sqlite3.connect(db.db_path) as conn:
+            rows = conn.execute("SELECT game_id, situation FROM shots").fetchall()
+        assert rows == [(2018020001, "5v5")]
+
+    async def test_a_season_that_returns_nothing_leaves_stored_shots_alone(self, db):
+        async def good(season):
+            return [_shot(season, 20001, 0)]
+
+        async def empty(season):
+            return []
+
+        await backfill_shots(db, ["2018"], good)
+        report = await backfill_shots(db, ["2018"], empty)
+
+        assert report.seasons_failed == 1
+        with sqlite3.connect(db.db_path) as conn:
+            assert conn.execute("SELECT COUNT(*) FROM shots").fetchone()[0] == 1
+
+
+class TestBackfillGames:
+    async def test_repairs_season_and_date_on_existing_rows(self, db):
+        db.upsert_games([_game(2018020001)])
+
+        async def fetch(season):
+            return [_game(2018020001, season="20182019", date="2018-10-03")]
+
+        report = await backfill_games(db, ["20182019"], fetch)
+
+        assert report.games_written == 1
+        with sqlite3.connect(db.db_path) as conn:
+            row = conn.execute("SELECT season, game_date FROM games").fetchone()
+        assert row == ("20182019", "2018-10-03")
+
+    async def test_falls_back_to_the_game_id_for_seasons_the_api_did_not_return(self, db):
+        db.upsert_games([_game(2015010082)])
+
+        async def fetch(season):
+            return []
+
+        report = await backfill_games(db, ["20182019"], fetch)
+
+        assert report.games_repaired_from_ids == 1
+        with sqlite3.connect(db.db_path) as conn:
+            assert conn.execute("SELECT season FROM games").fetchone()[0] == "20152016"
+
+    async def test_a_second_run_is_a_no_op(self, db):
+        db.upsert_games([_game(2018020001)])
+
+        async def fetch(season):
+            return [_game(2018020001, season="20182019", date="2018-10-03")]
+
+        await backfill_games(db, ["20182019"], fetch)
+        await backfill_games(db, ["20182019"], fetch)
+
+        with sqlite3.connect(db.db_path) as conn:
+            assert conn.execute("SELECT COUNT(*) FROM games").fetchone()[0] == 1
+
+
+class TestBackfillSurvivesShiftFailures:
+    async def test_a_shift_storage_failure_does_not_abort_the_run(self, db, monkeypatch):
+        """A bad shift payload for one game must not cost the other 9,202."""
+        db.upsert_games(
+            [
+                _game(2018020001, season="20182019"),
+                _game(2018020002, season="20182019"),
+            ]
+        )
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def fetch_shifts(game_id):
+            return [{**SHIFT, "game_id": game_id}]
+
+        real_insert = db.insert_shifts
+
+        def exploding_insert(game_id, shifts):
+            if game_id == 2018020001:
+                raise RuntimeError("UNIQUE constraint failed: shifts.game_id, ...")
+            return real_insert(game_id, shifts)
+
+        monkeypatch.setattr(db, "insert_shifts", exploding_insert)
+
+        report = await backfill_play_by_play(
+            db, [2018020001, 2018020002], fetch, fetch_shifts=fetch_shifts
+        )
+
+        assert report.games_collected == 2
+        assert report.shifts_written == 1
+
+
+class TestGamesNeedingShifts:
+    """Play-by-play and shifts are collected together but stored separately, so a
+    game can have events and no shifts -- an interrupted run, or a run made before
+    shifts existed. Resuming has to pick those up."""
+
+    def test_a_game_with_events_but_no_shifts_is_returned(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
+
+    def test_a_game_with_both_is_skipped(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+        db.insert_shifts(2018020001, [{**SHIFT, "game_id": 2018020001}])
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == []
+
+    def test_shifts_are_not_required_by_default(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"]) == []
+
+
+class TestShiftCollectionConverges:
+    """Some games legitimately have no shift chart. Resuming on "has events but
+    no shift rows" would re-download their play-by-play forever and still never
+    record a shift, so the backfill could never report itself done."""
+
+    async def test_a_game_whose_shift_chart_is_empty_is_not_retried_forever(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def no_shifts(game_id):
+            return []
+
+        await backfill_play_by_play(db, [2018020001], fetch, fetch_shifts=no_shifts)
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == []
+
+    async def test_a_game_never_checked_for_shifts_is_still_listed(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+        db.insert_play_by_play(2018020001, [EVENT])
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
+
+    async def test_a_failed_shift_fetch_leaves_the_game_listed_for_a_retry(self, db):
+        db.upsert_games([_game(2018020001, season="20182019")])
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        async def failing_shifts(game_id):
+            raise RuntimeError("503 from the shift endpoint")
+
+        await backfill_play_by_play(db, [2018020001], fetch, fetch_shifts=failing_shifts)
+
+        assert games_needing_play_by_play(db, ["20182019"], require_shifts=True) == [2018020001]
+
+
+class TestBackfillSurvivesEventStorageFailures:
+    async def test_a_failed_event_write_does_not_abort_the_run(self, db, monkeypatch):
+        """This is what actually killed an 8,000-game run: a lock error on the
+        events insert escaped the per-game try and took the whole backfill down."""
+        db.upsert_games(
+            [
+                _game(2018020001, season="20182019"),
+                _game(2018020002, season="20182019"),
+            ]
+        )
+
+        async def fetch(game_id):
+            return [EVENT]
+
+        real_insert = db.insert_play_by_play
+
+        def exploding_insert(game_id, events):
+            if game_id == 2018020001:
+                raise RuntimeError("(sqlite3.OperationalError) database is locked")
+            return real_insert(game_id, events)
+
+        monkeypatch.setattr(db, "insert_play_by_play", exploding_insert)
+
+        report = await backfill_play_by_play(db, [2018020001, 2018020002], fetch)
+
+        assert report.games_collected == 1
+        assert report.games_failed == 1
+        assert 2018020001 in report.failures

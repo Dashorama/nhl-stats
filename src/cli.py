@@ -1,28 +1,88 @@
 """Command-line interface for NHL scraper."""
 
 import asyncio
+import fcntl
+from collections.abc import Iterator
+from contextlib import contextmanager
+from pathlib import Path
 
 import click
 from rich.console import Console
 from rich.table import Table
 
-from .scrapers import MoneyPuckScraper, NHLAPIScraper, NHLRosterScraper, PuckPediaScraper
+from .backfill import (
+    backfill_games,
+    backfill_play_by_play,
+    backfill_shots,
+    games_needing_play_by_play,
+)
+from .scrapers import (
+    MoneyPuckScraper,
+    NHLAPIScraper,
+    NHLRosterScraper,
+    NHLShiftChartScraper,
+    PuckPediaScraper,
+)
 from .scrapers.yahoo_fantasy import YahooFantasyClient
-from .storage import BoxscoreRecord, Database, GameRecord, PlayByPlayRecord, PlayerRecord
+from .storage import BoxscoreRecord, Database, GameRecord, PlayerRecord
+from .storage.validation import (
+    CheckResult,
+    CorpusError,
+    assert_pbp_corpus,
+    run_integrity_checks,
+    seasons_requiring_pbp,
+)
 from .utils import setup_logging
 
 console = Console()
+
+#: One writer at a time. SQLite gives concurrent writers "database is locked"
+#: rather than a queue, and a play-by-play backfill can hold the database for
+#: hours -- long enough to swallow a nightly cron run whole.
+WRITE_LOCK_NAME = ".nhl-stats-write.lock"
+
+
+@contextmanager
+def database_write_lock(db_path: str | Path) -> Iterator[bool]:
+    """Try to take the database's write lock; yields whether it was acquired.
+
+    Advisory and non-blocking: callers decide whether being locked out is a
+    routine skip (cron) or an error (an operator running a backfill).
+    """
+    lock_path = Path(db_path).parent / WRITE_LOCK_NAME
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+
+    handle = lock_path.open("w")
+    try:
+        try:
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            yield False
+            return
+        yield True
+    finally:
+        handle.close()
 
 
 @click.group()
 @click.option("--verbose", "-v", is_flag=True, help="Enable debug logging")
 @click.option("--json-logs", is_flag=True, help="Output logs as JSON")
+@click.option(
+    "--db",
+    "db_path",
+    # Deliberately NOT NHL_STATS_DB: Dockerfile, docker-compose.yml and
+    # .env.example already define that as a SQLAlchemy URL
+    # (sqlite:///data/nhl.db), and reading a URL as a filesystem path would
+    # silently create a database in a directory named "sqlite:".
+    envvar="NHL_STATS_DB_PATH",
+    help="Path to the SQLite database (default: data/nhl.db, or $NHL_STATS_DB_PATH)",
+)
 @click.pass_context
-def main(ctx: click.Context, verbose: bool, json_logs: bool) -> None:
+def main(ctx: click.Context, verbose: bool, json_logs: bool, db_path: str | None) -> None:
     """NHL Stats - Collect hockey data from multiple sources."""
     ctx.ensure_object(dict)
     setup_logging(level="DEBUG" if verbose else "INFO", json_output=json_logs)
-    ctx.obj["db"] = Database()
+    ctx.obj["db"] = Database(db_path) if db_path else Database()
 
 
 @main.command()
@@ -675,27 +735,29 @@ def update(ctx: click.Context, daily: bool) -> None:
                 errors.append(f"boxscores: {e}")
                 console.print(f"  [yellow]⚠ boxscores: {e}[/yellow]")
 
-            # Play-by-play for new games
+            # Play-by-play and shifts for new games in the current season.
+            # Scoped to the current season on purpose: history is collected by
+            # `nhl-stats backfill-pbp`, so a nightly run stays a few minutes long.
             console.print("[bold]Updating play-by-play...[/bold]")
             try:
-                with db.get_session() as session:
-                    already_pbp = set(
-                        r[0] for r in session.query(PlayByPlayRecord.game_id).distinct().all()
-                    )
-                    new_pbp_ids = sorted(all_finished - already_pbp)
+                current_season = await scraper.get_current_season()
+                new_pbp_ids = games_needing_play_by_play(db, [current_season], require_shifts=True)
 
                 if new_pbp_ids:
-                    scraped = 0
-                    total_events = 0
-                    for gid in new_pbp_ids:
-                        try:
-                            events = await scraper.scrape_play_by_play(gid)
-                            db.insert_play_by_play(gid, events)
-                            scraped += 1
-                            total_events += len(events)
-                        except Exception:
-                            pass
-                    console.print(f"  [green]✓ {total_events} events from {scraped} games[/green]")
+                    async with NHLShiftChartScraper() as shift_scraper:
+                        report = await backfill_play_by_play(
+                            db,
+                            new_pbp_ids,
+                            scraper.scrape_play_by_play,
+                            shift_scraper.scrape_shifts,
+                        )
+                    console.print(
+                        f"  [green]✓ {report.events_written} events and "
+                        f"{report.shifts_written} shifts from "
+                        f"{report.games_collected} games[/green]"
+                    )
+                    if report.games_failed:
+                        errors.append(f"pbp: {report.games_failed} games failed")
                 else:
                     console.print("  [dim]No new PBP to scrape[/dim]")
             except Exception as e:
@@ -724,6 +786,7 @@ def update(ctx: click.Context, daily: bool) -> None:
                 console.print(f"  [yellow]⚠ game_logs: {e}[/yellow]")
 
         if daily:
+            errors.extend(_validate_after_update(db))
             _print_summary(errors)
             return
 
@@ -784,9 +847,19 @@ def update(ctx: click.Context, daily: bool) -> None:
                 errors.append(f"shots: {e}")
                 console.print(f"  [yellow]⚠ shots: {e}[/yellow]")
 
+        errors.extend(_validate_after_update(db))
         _print_summary(errors)
 
-    asyncio.run(run())
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            # A backfill is running. Skipping is right for cron: the next
+            # scheduled run catches up, and piling up writers only produces
+            # "database is locked".
+            console.print(
+                "[yellow]Another writer holds the database lock - skipping this update.[/yellow]"
+            )
+            return
+        asyncio.run(run())
 
 
 @main.command()
@@ -806,6 +879,261 @@ def injuries(ctx: click.Context) -> None:
     except Exception as e:
         errors.append(f"injuries: {e}")
     _print_summary(errors)
+
+
+# ── Data integrity: validation and backfills ───────────────────────
+
+
+def _print_check_results(results: list[CheckResult]) -> bool:
+    """Render integrity checks. Returns True when every check passed."""
+    table = Table(title="Data integrity")
+    table.add_column("Check")
+    table.add_column("Result")
+    table.add_column("Detail")
+
+    for result in results:
+        # Marker plus colour: status must not depend on colour alone.
+        marker = "[blue]PASS[/blue]" if result.passed else "[bold yellow]FAIL[/bold yellow]"
+        table.add_row(result.name, marker, result.detail)
+
+    console.print(table)
+    return all(r.passed for r in results)
+
+
+@main.command()
+@click.option("--no-corpus", is_flag=True, help="Skip the play-by-play corpus assertion")
+@click.option(
+    "--require-seasons",
+    help="Comma-separated 8-digit seasons play-by-play must cover (default: derived from schedule)",
+)
+@click.pass_context
+def validate(ctx: click.Context, no_corpus: bool, require_seasons: str | None) -> None:
+    """Check stored data for the integrity defects the audit found.
+
+    Exits non-zero when a check fails, so cron and CI can gate on it.
+    """
+    import sys
+
+    db: Database = ctx.obj["db"]
+
+    passed = _print_check_results(run_integrity_checks(db))
+
+    if not no_corpus:
+        seasons = (
+            [s.strip() for s in require_seasons.split(",") if s.strip()]
+            if require_seasons
+            else seasons_requiring_pbp(db)
+        )
+        if not seasons:
+            console.print(
+                "[yellow]No season has a complete enough schedule to require "
+                "play-by-play yet - corpus assertion skipped.[/yellow]"
+            )
+        else:
+            try:
+                counts = assert_pbp_corpus(db, seasons)
+            except CorpusError as exc:
+                console.print(f"[bold yellow]FAIL[/bold yellow] pbp_corpus: {exc}")
+                passed = False
+            else:
+                covered = ", ".join(f"{s}={counts.get(s, 0)}" for s in seasons)
+                console.print(f"[blue]PASS[/blue] pbp_corpus: {covered}")
+
+    if not passed:
+        console.print("\n[bold yellow]Data integrity checks failed.[/bold yellow]")
+        sys.exit(1)
+
+    console.print("\n[bold blue]All data integrity checks passed.[/bold blue]")
+
+
+@main.command("backfill-games")
+@click.option("--start-season", default=2015, type=int, help="First season start year")
+@click.option("--end-season", type=int, help="Last season start year (default: current)")
+@click.option("--rate", default=3.0, type=float, help="Requests per second")
+@click.pass_context
+def backfill_games_cmd(
+    ctx: click.Context, start_season: int, end_season: int | None, rate: float
+) -> None:
+    """Re-scrape schedules so stored games regain their season and date.
+
+    Safe to re-run: existing rows are updated in place, and any season the API
+    could not supply is derived from the game id.
+    """
+    db: Database = ctx.obj["db"]
+
+    async def run() -> None:
+        async with NHLAPIScraper(requests_per_second=rate) as scraper:
+            last = (
+                end_season
+                if end_season is not None
+                else int((await scraper.get_current_season())[:4])
+            )
+            seasons = [f"{y}{y + 1}" for y in range(start_season, last + 1)]
+            console.print(f"[bold]Backfilling games for {len(seasons)} seasons...[/bold]")
+
+            report = await backfill_games(db, seasons, scraper.scrape_games)
+
+        console.print(f"  [blue]{report.games_written} games written[/blue]")
+        console.print(
+            f"  [blue]{report.games_repaired_from_ids} games had a season "
+            f"derived from their id[/blue]"
+        )
+        if report.failures:
+            console.print(
+                f"  [yellow]{len(report.failures)} seasons failed: {report.failures}[/yellow]"
+            )
+
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            raise click.ClickException(
+                "Another writer holds the database lock (a backfill or the nightly "
+                "update is running). Wait for it to finish and re-run - backfills "
+                "are resumable."
+            )
+        asyncio.run(run())
+
+
+@main.command("backfill-shots")
+@click.option("--start-season", default=2018, type=int, help="First MoneyPuck season (start year)")
+@click.option("--end-season", type=int, help="Last MoneyPuck season (default: current)")
+@click.pass_context
+def backfill_shots_cmd(ctx: click.Context, start_season: int, end_season: int | None) -> None:
+    """Re-ingest MoneyPuck shot data so situation, is_home and game_id are correct.
+
+    Each season is replaced wholesale, so this is safe to re-run. Downloads are
+    large (~20MB per season).
+    """
+    db: Database = ctx.obj["db"]
+
+    async def run() -> None:
+        async with MoneyPuckScraper() as scraper:
+            last = end_season if end_season is not None else int(await scraper.get_current_season())
+            seasons = [str(y) for y in range(start_season, last + 1)]
+            console.print(f"[bold]Re-ingesting shots for {len(seasons)} seasons...[/bold]")
+
+            report = await backfill_shots(db, seasons, scraper.scrape_shot_data)
+
+        console.print(
+            f"  [blue]{report.shots_written} shots across {report.seasons_collected} seasons[/blue]"
+        )
+        if report.failures:
+            console.print(
+                f"  [yellow]{len(report.failures)} seasons failed: {report.failures}[/yellow]"
+            )
+
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            raise click.ClickException(
+                "Another writer holds the database lock (a backfill or the nightly "
+                "update is running). Wait for it to finish and re-run - backfills "
+                "are resumable."
+            )
+        asyncio.run(run())
+
+
+@main.command("backfill-pbp")
+@click.option("--start-season", default=2018, type=int, help="First season start year")
+@click.option("--end-season", type=int, help="Last season start year (default: current)")
+@click.option("--with-shifts/--no-shifts", default=True, help="Also collect shift charts")
+@click.option("--refetch", is_flag=True, help="Re-fetch games that already have events")
+@click.option("--limit", type=int, help="Stop after this many games (for testing)")
+@click.option("--rate", default=4.0, type=float, help="Requests per second")
+@click.pass_context
+def backfill_pbp_cmd(
+    ctx: click.Context,
+    start_season: int,
+    end_season: int | None,
+    with_shifts: bool,
+    refetch: bool,
+    limit: int | None,
+    rate: float,
+) -> None:
+    """Backfill play-by-play (and shift charts) for past seasons.
+
+    Resumable and idempotent: games that already have events are skipped unless
+    --refetch is given, and a game's rows are replaced rather than appended.
+    """
+    db: Database = ctx.obj["db"]
+
+    async def run() -> None:
+        async with NHLAPIScraper(requests_per_second=rate) as scraper:
+            last = (
+                end_season
+                if end_season is not None
+                else int((await scraper.get_current_season())[:4])
+            )
+            seasons = [f"{y}{y + 1}" for y in range(start_season, last + 1)]
+
+            game_ids = games_needing_play_by_play(
+                db, seasons, skip_existing=not refetch, require_shifts=with_shifts
+            )
+            if limit:
+                game_ids = game_ids[:limit]
+
+            if not game_ids:
+                console.print("[dim]Every game in range already has play-by-play.[/dim]")
+                return
+
+            console.print(
+                f"[bold]Collecting play-by-play for {len(game_ids)} games "
+                f"across {len(seasons)} seasons...[/bold]"
+            )
+
+            if with_shifts:
+                async with NHLShiftChartScraper(requests_per_second=rate) as shift_scraper:
+                    report = await backfill_play_by_play(
+                        db, game_ids, scraper.scrape_play_by_play, shift_scraper.scrape_shifts
+                    )
+            else:
+                report = await backfill_play_by_play(db, game_ids, scraper.scrape_play_by_play)
+
+        console.print(
+            f"  [blue]{report.events_written} events from {report.games_collected} games[/blue]"
+        )
+        if report.shifts_written:
+            console.print(f"  [blue]{report.shifts_written} shifts[/blue]")
+        if report.games_empty:
+            console.print(f"  [yellow]{report.games_empty} games returned no events[/yellow]")
+        if report.games_failed:
+            console.print(f"  [yellow]{report.games_failed} games failed[/yellow]")
+
+    with database_write_lock(db.db_path) as acquired:
+        if not acquired:
+            raise click.ClickException(
+                "Another writer holds the database lock (a backfill or the nightly "
+                "update is running). Wait for it to finish and re-run - backfills "
+                "are resumable."
+            )
+        asyncio.run(run())
+
+
+def _validate_after_update(db: Database) -> list[str]:
+    """Run the integrity checks and corpus assertion at the end of an update.
+
+    Returned as errors rather than raised, so a nightly run still reports what it
+    did collect while exiting non-zero for cron to notice.
+    """
+    console.print("[bold]Validating stored data...[/bold]")
+    problems = []
+
+    for result in run_integrity_checks(db):
+        if not result.passed:
+            problems.append(f"integrity/{result.name}: {result.detail}")
+
+    seasons = seasons_requiring_pbp(db)
+    if seasons:
+        try:
+            assert_pbp_corpus(db, seasons)
+        except CorpusError as exc:
+            problems.append(f"pbp_corpus: {exc}")
+
+    if problems:
+        for problem in problems:
+            console.print(f"  [yellow]⚠ {problem}[/yellow]")
+    else:
+        console.print("  [blue]✓ all integrity checks passed[/blue]")
+
+    return problems
 
 
 def _print_summary(errors: list[str]) -> None:

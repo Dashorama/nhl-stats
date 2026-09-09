@@ -12,7 +12,9 @@ This project scrapes NHL data from multiple sources and stores it in a local SQL
 |--------|---------|-----------|---------|-------------|
 | NHL API — games | `update --daily` | Daily | ~30s | Fetches game schedule and scores for current season |
 | NHL API — boxscores | `update --daily` | Daily | ~2min for new games | Per-player stats for completed games not yet in DB |
-| NHL API — play-by-play | `update --daily` | Daily | ~3min for new games | Every event (shot, hit, faceoff) with coordinates |
+| NHL API — play-by-play | `update --daily` | Daily | ~3min for new games | Every event (shot, hit, faceoff) with coordinates, current season only |
+| NHL API — shift charts | `update --daily` | Daily | ~2min for new games | Per-player shifts for the same new games |
+| Data integrity checks | `update`, `validate` | Every run | a few seconds | Fails the run if the corpus or the joins regress |
 | NHL API — game logs | `update --daily` | Daily | ~15min (all players) | Per-game stats for each player |
 | NHL API — teams | `update` | Weekly | ~5s | Team standings and metadata |
 | NHL API — players | `update` | Weekly | ~10s | Player list from leaders endpoint |
@@ -28,6 +30,68 @@ This project scrapes NHL data from multiple sources and stores it in a local SQL
 | Full update | `0 12 * * 0` | 12:00 UTC / 8:00am ET Sunday | Everything including MoneyPuck data |
 
 **Why these times:** NHL games end by ~midnight ET. By 6am ET all scores are final and the NHL API has updated. Sunday full update catches weekly MoneyPuck data refreshes.
+
+**There is no scheduled scrape in GitHub Actions.** A `scheduled-scrape.yml` workflow
+used to exist but could never have worked — it invoked a command (`nhl-scraper`) that
+this project does not install, against a runner with no database to write to. It was
+removed; cron on the WSL2 host is the only scheduler.
+
+## Backfills
+
+Historical collection is separate from the nightly run, so a nightly stays a few
+minutes long. Every backfill is idempotent and safe to re-run:
+
+```bash
+# Repair games.season / games.game_date on stored rows (re-scrapes schedules)
+python -m src.cli backfill-games
+
+# Re-ingest MoneyPuck shot data so situation, is_home and game_id are correct
+python -m src.cli backfill-shots --start-season 2018
+
+# Collect play-by-play and shift charts for past seasons (resumable)
+python -m src.cli backfill-pbp --start-season 2018 --rate 4
+
+# Check the result
+python -m src.cli validate
+```
+
+`backfill-pbp` skips games it has already collected, so an interrupted run
+resumes simply by running it again — that is how a run killed by a lock or a
+dropped connection is meant to be recovered. Measured on the real corpus:
+roughly 10,500 games for 2018-2025 at about 125 games/minute (`--rate 5`), so
+around 90 minutes, and the database grows from ~380MB to roughly 2.5GB.
+
+Only one of these writes at a time. `update` skips quietly when a backfill holds
+the lock (the next scheduled run catches up); a backfill refuses to start while
+another writer holds it.
+
+## Data integrity
+
+**Run the backfills in order, and finish them.** `backfill-games` populates
+`games.season` for every historical season, which is what makes the corpus
+assertion start demanding play-by-play for those seasons. Between that and the
+end of `backfill-pbp`, the nightly `update` will legitimately report
+`pbp_corpus` failures and exit 1 — the corpus really is incomplete. Either
+finish the backfill in one sitting, or pass `--no-corpus` while it is in
+progress.
+
+`python -m src.cli validate` exits non-zero when any of these regress:
+
+| Check | What it catches |
+|-------|-----------------|
+| `games_season_populated` | `games.season` going NULL again |
+| `games_date_populated` | `games.game_date` going NULL again |
+| `shots_situation_populated` | MoneyPuck renaming or dropping the fields situation is derived from |
+| `shots_join_games` | A shot id that joins to no game (the MoneyPuck 5-digit id leaking back in) |
+| `shots_join_play_by_play` | Shots and play-by-play drifting into different id spaces |
+| `shots_home_away_balance` | `is_home` parsing breaking again (a season outside 45-55% home) |
+| `shots_situation_plausible` | Situations becoming semantically wrong rather than empty |
+| `shots_cover_played_games` | A season losing shots wholesale — the truncation a row count would miss |
+| `unique_ingest_keys` | A missing unique index, i.e. ingest is no longer idempotent |
+| `pbp_corpus` | A season missing from play-by-play, or collected below 95% |
+
+The corpus assertion only requires seasons whose stored schedule is complete, so
+a season still being played never trips it.
 
 ## File Layout
 
@@ -74,8 +138,8 @@ When moving to containerized job management:
 2. **Replicate these two jobs:**
    - Daily at 10:00 UTC: `cd /home/david/nhl-stats && ./scripts/update.sh --daily`
    - Weekly Sunday at 12:00 UTC: `cd /home/david/nhl-stats && ./scripts/update.sh`
-3. **Requirements:** Python 3.10+, venv at `.venv/`, ~300MB disk for SQLite DB
-4. **Health check:** `python -m src.cli stats` returns table counts > 0
+3. **Requirements:** Python 3.10+, venv at `.venv/`, ~2.5GB disk for the SQLite DB once play-by-play and shifts are backfilled
+4. **Health check:** `python -m src.cli validate` exits 0 (and `stats` returns table counts > 0)
 5. **Log location:** `data/logs/update-YYYY-MM-DD.log`
 6. **Exit codes:** 0 = success, 1 = partial failure (some sources errored), 2 = total failure
 
@@ -87,3 +151,20 @@ The wrapper script (`scripts/update.sh`) is the only entry point — the schedul
 - **MoneyPuck timeout**: Their ZIP files are large. The scraper has 120s timeout. Retry on next scheduled run.
 - **NHL API 404**: Happens occasionally during API maintenance. Errors are logged but don't block other sources.
 - **DB locked**: Only one update should run at a time. Cron schedule ensures no overlap (daily at 10:00, weekly at 12:00 Sunday only).
+
+## Pointing a command at another database
+
+`--db PATH`, or `NHL_STATS_DB_PATH`. Note this is deliberately *not*
+`NHL_STATS_DB`, which `Dockerfile`, `docker-compose.yml` and `.env.example`
+already define as a SQLAlchemy URL (`sqlite:///data/nhl.db`) — reading a URL as a
+filesystem path would silently create a database in a directory named `sqlite:`.
+
+## Known follow-ups
+
+- The database still runs in rollback-journal mode, where a reader blocks a
+  writer's commit. `PRAGMA journal_mode=WAL` would remove most remaining lock
+  contention; it changes the on-disk journal mode, so it is a deliberate
+  decision rather than something a backfill should do on its own.
+- `scripts/generate.py` carries three hand-maintained season constants
+  (`MONEYPUCK_SEASON`, `NHL_API_SEASON`, `PBP_SEASON`) that are already a season
+  apart from each other. They should be derived from one place.

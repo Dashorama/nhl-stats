@@ -1,0 +1,319 @@
+"""Data-integrity checks and the play-by-play corpus assertion.
+
+The 2026-08-17 audit found four defects that had been silently true for the whole
+life of the database -- every shot had an empty situation, every game had a NULL
+season, no shot joined to a game, and play-by-play held a single season. None of
+them raised anything, because nothing ever checked.
+
+``run_integrity_checks`` turns each of those into a check that fails loudly, and
+``assert_pbp_corpus`` aborts a run outright when a season the corpus is supposed
+to contain is missing or truncated.
+"""
+
+from dataclasses import dataclass
+
+import structlog
+from sqlalchemy import text
+
+from .database import Database
+from .migrations import INDEXES
+
+logger = structlog.get_logger()
+
+#: First season backfilled from the NHL api-web play-by-play endpoint. Coordinates
+#: exist from 2010-11, but MoneyPuck shot data (what play-by-play is joined
+#: against) starts at 2018-19, so that is where the corpus begins.
+EARLIEST_PBP_START_YEAR = 2018
+
+#: A full NHL regular season is 1,271-1,312 games. 2019-20 and 2020-21 were cut
+#: short (1,082 and 868), so the floor sits below those.
+MIN_GAMES_PER_PBP_SEASON = 800
+
+#: Fraction of a season's played games that must have play-by-play. A handful of
+#: games legitimately fail to fetch; half a season is a broken backfill.
+MIN_PBP_COVERAGE = 0.95
+
+#: A season needs this many shots before its home/away split means anything.
+MIN_SHOTS_FOR_HOME_AWAY_CHECK = 500
+
+#: Home teams take slightly more shots than away teams (~51%). Anything outside
+#: this band is a parser regression, not hockey.
+HOME_SHOT_SHARE_BAND = (0.45, 0.55)
+
+#: MoneyPuck itself ships a trace of impossible skater counts (7v5, 5v9, 2v3 --
+#: 53 rows in 905,515). Tolerate that; fail on a wholesale semantic change.
+MAX_IMPLAUSIBLE_SITUATION_RATIO = 0.005
+
+#: A trace of unparseable rows should not fail a nightly run forever; the defect
+#: this guards against affected 100% of rows.
+MAX_MISSING_SITUATION_RATIO = 0.001
+
+#: Fraction of a season's played games allowed to have no shots. MoneyPuck is
+#: missing exactly one game in 2021-22 out of 10,514.
+MAX_MISSING_SHOT_GAMES_RATIO = 0.01
+
+
+@dataclass(frozen=True)
+class CheckResult:
+    """Outcome of a single integrity check."""
+
+    name: str
+    passed: bool
+    detail: str
+
+
+class CorpusError(RuntimeError):
+    """Raised when the stored corpus is missing seasons it is required to have."""
+
+
+def seasons_requiring_pbp(
+    db: Database,
+    earliest_start_year: int = EARLIEST_PBP_START_YEAR,
+    min_games: int = MIN_GAMES_PER_PBP_SEASON,
+) -> list[str]:
+    """Seasons whose schedule is complete enough to demand full play-by-play.
+
+    Derived from the stored schedule rather than the calendar: a season still
+    being played simply has too few finished games to appear here yet, so the
+    October season boundary cannot make the nightly run abort.
+    """
+    with db.engine.connect() as conn:
+        rows = conn.execute(
+            text(
+                "SELECT season, COUNT(*) FROM games "
+                "WHERE game_type IN ('2', '3') AND game_state IN ('OFF', 'FINAL') "
+                "AND season IS NOT NULL AND season != '' "
+                "GROUP BY season"
+            )
+        ).fetchall()
+
+    return sorted(
+        str(season)
+        for season, played in rows
+        if played >= min_games and int(str(season)[:4]) >= earliest_start_year
+    )
+
+
+def _scalar(db: Database, sql: str) -> int:
+    with db.engine.connect() as conn:
+        return int(conn.execute(text(sql)).scalar() or 0)
+
+
+def _missing_indexes(db: Database) -> list[str]:
+    expected = {name for name, _table, _cols, unique in INDEXES if unique}
+    with db.engine.connect() as conn:
+        present = {
+            row[0]
+            for row in conn.execute(text("SELECT name FROM sqlite_master WHERE type='index'"))
+        }
+    return sorted(expected - present)
+
+
+def run_integrity_checks(db: Database) -> list[CheckResult]:
+    """Run every data-integrity check and return one result per check."""
+    results: list[CheckResult] = []
+
+    null_seasons = _scalar(db, "SELECT COUNT(*) FROM games WHERE season IS NULL OR season = ''")
+    results.append(
+        CheckResult(
+            "games_season_populated",
+            null_seasons == 0,
+            f"{null_seasons} games with no season",
+        )
+    )
+
+    # Scoped to games that were actually played: a conditional playoff game that
+    # was never needed stays in the table without a date, legitimately.
+    null_dates = _scalar(
+        db,
+        "SELECT COUNT(*) FROM games WHERE (game_date IS NULL OR game_date = '') "
+        "AND game_state IN ('OFF', 'FINAL')",
+    )
+    results.append(
+        CheckResult(
+            "games_date_populated",
+            null_dates == 0,
+            f"{null_dates} played games with no date",
+        )
+    )
+
+    all_shots = _scalar(db, "SELECT COUNT(*) FROM shots")
+    empty_situations = _scalar(
+        db, "SELECT COUNT(*) FROM shots WHERE situation IS NULL OR situation = ''"
+    )
+    empty_ratio = empty_situations / all_shots if all_shots else 0.0
+    results.append(
+        CheckResult(
+            "shots_situation_populated",
+            empty_ratio <= MAX_MISSING_SITUATION_RATIO,
+            f"{empty_situations} of {all_shots} shots with no situation "
+            f"({empty_ratio:.2%}, tolerated up to {MAX_MISSING_SITUATION_RATIO:.1%})",
+        )
+    )
+
+    orphan_shots = _scalar(
+        db,
+        "SELECT COUNT(*) FROM shots s LEFT JOIN games g ON g.id = s.game_id WHERE g.id IS NULL",
+    )
+    results.append(
+        CheckResult(
+            "shots_join_games",
+            orphan_shots == 0,
+            f"{orphan_shots} shots whose game_id matches no game",
+        )
+    )
+
+    # Deduplicate the game ids before joining. Joining shots to play_by_play row
+    # by row materialises one row per shot per event in that game -- 37.8 million
+    # intermediate rows for the 2018 season alone, and this runs every nightly.
+    joined_games = _scalar(
+        db,
+        "SELECT COUNT(*) FROM (SELECT DISTINCT game_id FROM shots) s "
+        "JOIN games g ON g.id = s.game_id "
+        "WHERE EXISTS (SELECT 1 FROM play_by_play p WHERE p.game_id = s.game_id)",
+    )
+    results.append(
+        CheckResult(
+            "shots_join_play_by_play",
+            joined_games > 0,
+            f"{joined_games} games join across shots, games and play_by_play",
+        )
+    )
+
+    with db.engine.connect() as conn:
+        splits = conn.execute(
+            text(
+                "SELECT season, COUNT(*), SUM(CASE WHEN is_home THEN 1 ELSE 0 END) "
+                "FROM shots GROUP BY season"
+            )
+        ).all()
+
+    low, high = HOME_SHOT_SHARE_BAND
+    lopsided = []
+    for season, total, home in splits:
+        if total < MIN_SHOTS_FOR_HOME_AWAY_CHECK:
+            continue  # too few shots for the split to mean anything
+        share = (home or 0) / total
+        if not low <= share <= high:
+            lopsided.append(f"{season}: {share:.0%} home")
+
+    results.append(
+        CheckResult(
+            "shots_home_away_balance",
+            not lopsided,
+            "; ".join(lopsided) if lopsided else "every season within 45-55% home",
+        )
+    )
+
+    # Presence is not enough: a season that silently became all "6v6" would pass
+    # shots_situation_populated while every downstream situation query is wrong.
+    total_shots = _scalar(db, "SELECT COUNT(*) FROM shots WHERE situation IS NOT NULL")
+    implausible = _scalar(
+        db,
+        "SELECT COUNT(*) FROM shots WHERE situation IS NOT NULL AND situation != '' "
+        "AND situation NOT GLOB '[3-6]v[3-6]'",
+    )
+    ratio = implausible / total_shots if total_shots else 0.0
+    results.append(
+        CheckResult(
+            "shots_situation_plausible",
+            ratio <= MAX_IMPLAUSIBLE_SITUATION_RATIO,
+            f"{implausible} of {total_shots} shots have impossible skater counts "
+            f"({ratio:.2%}, tolerated up to {MAX_IMPLAUSIBLE_SITUATION_RATIO:.1%})",
+        )
+    )
+
+    # Shot rows are written in game order, so a season that lost a batch of rows
+    # loses whole games. Comparing coverage against the schedule catches that,
+    # where a row-count floor would not.
+    with db.engine.connect() as conn:
+        coverage = conn.execute(
+            text(
+                "SELECT substr(CAST(g.id AS TEXT), 1, 4) AS season_start, COUNT(*), "
+                "SUM(CASE WHEN NOT EXISTS "
+                "(SELECT 1 FROM shots s WHERE s.game_id = g.id) THEN 1 ELSE 0 END) "
+                "FROM games g "
+                "WHERE g.game_type IN ('2', '3') AND g.game_state IN ('OFF', 'FINAL') "
+                "AND substr(CAST(g.id AS TEXT), 1, 4) IN (SELECT DISTINCT season FROM shots) "
+                "GROUP BY season_start"
+            )
+        ).all()
+
+    short_seasons = [
+        f"{season}: {missing_games} of {played} played games have no shots"
+        for season, played, missing_games in coverage
+        if played and (missing_games or 0) / played > MAX_MISSING_SHOT_GAMES_RATIO
+    ]
+    results.append(
+        CheckResult(
+            "shots_cover_played_games",
+            not short_seasons,
+            "; ".join(short_seasons) if short_seasons else f"{len(coverage)} seasons fully covered",
+        )
+    )
+
+    missing = _missing_indexes(db)
+    results.append(
+        CheckResult(
+            "unique_ingest_keys",
+            not missing,
+            f"missing unique indexes: {', '.join(missing)}" if missing else "all present",
+        )
+    )
+
+    return results
+
+
+def assert_pbp_corpus(
+    db: Database,
+    required_seasons: list[str],
+    min_games_per_season: int = MIN_GAMES_PER_PBP_SEASON,
+    min_coverage: float = MIN_PBP_COVERAGE,
+) -> dict[str, int]:
+    """Abort the run unless every required season is present in play-by-play.
+
+    A partially-collected corpus is worse than an obviously empty one: analysis
+    silently reads whatever happens to be there. Raises ``CorpusError`` naming
+    every offending season, and returns the per-season game counts on success.
+    """
+    with db.engine.connect() as conn:
+        counts = {
+            str(row[0]): int(row[1])
+            for row in conn.execute(
+                text(
+                    "SELECT g.season, COUNT(DISTINCT p.game_id) "
+                    "FROM play_by_play p JOIN games g ON g.id = p.game_id "
+                    "GROUP BY g.season"
+                )
+            )
+        }
+        played = {
+            str(row[0]): int(row[1])
+            for row in conn.execute(
+                text(
+                    "SELECT season, COUNT(*) FROM games "
+                    "WHERE game_type IN ('2', '3') AND game_state IN ('OFF', 'FINAL') "
+                    "GROUP BY season"
+                )
+            )
+        }
+
+    problems = []
+    for season in required_seasons:
+        found = counts.get(season, 0)
+        scheduled = played.get(season, 0)
+        if found == 0:
+            problems.append(f"{season}: missing")
+        elif found < min_games_per_season:
+            problems.append(f"{season}: only {found} games (expected >= {min_games_per_season})")
+        elif scheduled and found / scheduled < min_coverage:
+            problems.append(
+                f"{season}: covers {found} of {scheduled} played games "
+                f"({found / scheduled:.0%}, expected >= {min_coverage:.0%})"
+            )
+
+    if problems:
+        raise CorpusError("play-by-play corpus is incomplete -- " + "; ".join(problems))
+
+    logger.info("pbp_corpus_ok", seasons=len(required_seasons))
+    return counts

@@ -22,7 +22,9 @@ EDGE_STATS_PATH = PROJECT_DIR / "data/edge_stats.json"
 
 # Season format constants — see plan docs
 MONEYPUCK_SEASON = "2024"     # shots table: "2024" = 2024-25 season
-NHL_API_SEASON   = "20242025"  # NOTE: games.season is NULL in DB; constant kept for future use
+NHL_API_SEASON   = "20242025"  # games.season is populated as of the integrity fixes
+PBP_SEASON       = "20252026"  # season the rush-rate calc reads; play_by_play now spans 2018-
+PBP_SEASON_SHORT = PBP_SEASON[:4]  # "2025", the shots/career-row form of the same season
 
 
 class Generator:
@@ -355,8 +357,9 @@ class Generator:
             if s["player_id"] in rush_rates:
                 player_data["rush_rate"] = rush_rates[s["player_id"]]
                 for season in career:
-                    # Apply season-level rush rate only to current season (PBP is current only)
-                    if season["season"] == "2025":
+                    # Rush rate is computed from one season of play-by-play, so it
+                    # only belongs on that season's row.
+                    if season["season"] == PBP_SEASON_SHORT:
                         season["rush_rate"] = rush_rates[s["player_id"]]
             edge = edge_stats.get(s["player_id"])
             faceoffs = faceoff_stats.get(s["player_id"])
@@ -378,18 +381,21 @@ class Generator:
         with no stoppage in between. Returns {player_id: rush_rate_pct}.
         """
         with self._db() as conn:
-            # Pull all events for the current season's games, ordered for processing
+            # Restricted to one season: play_by_play now spans 2018- onwards, and
+            # blending eight seasons into a "current season" rate would be wrong.
             rows = conn.execute("""
                 SELECT p.game_id, p.event_id, p.event_type, p.zone_code,
                        p.time_in_period, p.period, p.player1_id
                 FROM play_by_play p
-                WHERE p.event_type IN (
+                JOIN games g ON g.id = p.game_id
+                WHERE g.season = ?
+                  AND p.event_type IN (
                     'shot-on-goal','missed-shot','goal',
                     'faceoff','hit','giveaway','takeaway','stoppage',
                     'blocked-shot','penalty'
                 )
                 ORDER BY p.game_id, p.period, p.event_id
-            """).fetchall()
+            """, (PBP_SEASON,)).fetchall()
 
         def to_seconds(t: str | None) -> int:
             if not t:

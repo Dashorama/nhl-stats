@@ -19,6 +19,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
+from .migrations import apply_migrations
+
 logger = structlog.get_logger()
 Base = declarative_base()
 
@@ -91,6 +93,9 @@ class GameRecord(Base):
     home_score = Column(Integer)
     away_score = Column(Integer)
     game_state = Column(String(20))
+    # When the shift chart was last fetched for this game. Recorded even when the
+    # chart came back empty, so a game with no shifts is not retried forever.
+    shifts_checked_at = Column(DateTime)
     raw_data = Column(Text)
     updated_at = Column(DateTime, default=datetime.utcnow)
 
@@ -286,7 +291,10 @@ class PlayByPlayRecord(Base):
 
     raw_data = Column(Text)
 
-    __table_args__ = (Index("ix_pbp_game_event", "game_id", "event_id"),)
+    __table_args__ = (
+        Index("ix_pbp_game_event", "game_id", "event_id"),
+        Index("uq_pbp_game_event", "game_id", "event_id", unique=True),
+    )
 
 
 class GameLogRecord(Base):
@@ -330,7 +338,11 @@ class ShotRecord(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     season = Column(String(8), index=True)
+    # NHL api-web 10-digit id, so shots join to games.id and play_by_play.game_id.
     game_id = Column(Integer, index=True)
+    # MoneyPuck's own 5-digit id, kept for provenance and as part of the natural key.
+    moneypuck_game_id = Column(Integer, index=True)
+    shot_id = Column(Integer)  # MoneyPuck shotID, unique within a game
 
     team = Column(String(3))
     shooter_id = Column(Integer, index=True)
@@ -357,7 +369,52 @@ class ShotRecord(Base):
     situation = Column(String(10))  # 5v5, 5v4, etc.
     is_home = Column(Boolean)
 
-    __table_args__ = (Index("ix_shot_game_shooter", "game_id", "shooter_id"),)
+    __table_args__ = (
+        Index("ix_shot_game_shooter", "game_id", "shooter_id"),
+        Index(
+            "uq_shots_season_game_shot",
+            "season",
+            "moneypuck_game_id",
+            "shot_id",
+            unique=True,
+        ),
+    )
+
+
+class ShiftRecord(Base):
+    """Per-player shifts from the NHL shift charts endpoint."""
+
+    __tablename__ = "shifts"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    game_id = Column(Integer, index=True)
+    player_id = Column(Integer, index=True)
+    player_name = Column(String(100))
+    team_abbrev = Column(String(3))
+    team_id = Column(Integer)
+
+    period = Column(Integer)
+    shift_number = Column(Integer)
+    start_time = Column(String(8))
+    end_time = Column(String(8))
+    duration = Column(String(8))
+
+    type_code = Column(Integer)
+    detail_code = Column(Integer)
+    event_number = Column(Integer)
+
+    updated_at = Column(DateTime, default=datetime.utcnow)
+
+    __table_args__ = (
+        Index(
+            "uq_shifts_game_player_shift",
+            "game_id",
+            "player_id",
+            "period",
+            "shift_number",
+            unique=True,
+        ),
+    )
 
 
 class InjuryRecord(Base):
@@ -376,12 +433,27 @@ class InjuryRecord(Base):
 class Database:
     """SQLite database wrapper for NHL data."""
 
+    #: A long backfill and the nightly cron write to the same file, so a writer can
+    #: be waiting on another writer for a while. pysqlite's 5s default is not
+    #: enough -- reads were refused outright during the play-by-play backfill.
+    BUSY_TIMEOUT_SECONDS = 60
+
     def __init__(self, db_path: str | Path = "data/nhl.db"):
+        # Tolerate the SQLAlchemy URL form: `sqlite:///data/nhl.db` as a filesystem
+        # path would create a database inside a directory named "sqlite:".
+        if isinstance(db_path, str) and db_path.startswith("sqlite:///"):
+            db_path = db_path[len("sqlite:///") :]
+
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
 
-        self.engine = create_engine(f"sqlite:///{self.db_path}", echo=False)
+        self.engine = create_engine(
+            f"sqlite:///{self.db_path}",
+            echo=False,
+            connect_args={"timeout": self.BUSY_TIMEOUT_SECONDS},
+        )
         Base.metadata.create_all(self.engine)
+        apply_migrations(self.engine)
         self.SessionLocal = sessionmaker(bind=self.engine)
         self.logger = logger.bind(component="database")
 
@@ -512,9 +584,27 @@ class Database:
 
                 existing = session.get(GameRecord, game_id)
                 if existing:
-                    existing.home_score = g.get("home_score", existing.home_score)
-                    existing.away_score = g.get("away_score", existing.away_score)
-                    existing.game_state = g.get("game_state", existing.game_state)
+                    # dict.get's default never fires here: parse_schedule_games always
+                    # emits these keys, so an unplayed game's None would overwrite a
+                    # real score. Match the fields below and only write real values.
+                    for score_field in ("home_score", "away_score", "game_state"):
+                        score_value = g.get(score_field)
+                        if score_value is not None:
+                            setattr(existing, score_field, score_value)
+                    # These were previously only written on insert, which is why the
+                    # live database had a NULL season and date on every row: once a
+                    # game existed, no re-scrape could ever repair it. Only overwrite
+                    # when the scrape actually supplied a value.
+                    for field, key in (
+                        ("season", "season"),
+                        ("game_date", "date"),
+                        ("game_type", "game_type"),
+                        ("home_team", "home_team"),
+                        ("away_team", "away_team"),
+                    ):
+                        value = g.get(key)
+                        if value is not None:
+                            setattr(existing, field, str(value) if key == "game_type" else value)
                     existing.raw_data = json.dumps(g)
                     existing.updated_at = datetime.utcnow()
                 else:
@@ -523,7 +613,9 @@ class Database:
                             id=game_id,
                             season=g.get("season"),
                             game_date=g.get("date"),
-                            game_type=str(g.get("game_type")),
+                            game_type=(
+                                str(g["game_type"]) if g.get("game_type") is not None else None
+                            ),
                             home_team=g.get("home_team"),
                             away_team=g.get("away_team"),
                             home_score=g.get("home_score"),
@@ -553,6 +645,7 @@ class Database:
                 "play_by_play": session.query(PlayByPlayRecord).count(),
                 "game_logs": session.query(GameLogRecord).count(),
                 "shots": session.query(ShotRecord).count(),
+                "shifts": session.query(ShiftRecord).count(),
             }
 
     def upsert_contracts(self, contracts: list[dict[str, Any]]) -> int:
@@ -815,6 +908,12 @@ class Database:
 
             count = 0
             for e in events:
+                if e.get("event_id") is None:
+                    # NULLs are distinct in a SQLite unique index, so a keyless
+                    # event would slip past uq_pbp_game_event and duplicate on
+                    # every re-ingest.
+                    self.logger.warning("skipped_event_without_id", game_id=game_id)
+                    continue
                 session.add(
                     PlayByPlayRecord(
                         game_id=game_id,
@@ -908,51 +1007,106 @@ class Database:
             session.commit()
             return count
 
-    def insert_shots(self, shots: list[dict[str, Any]]) -> int:
-        """Insert shot records. Clears existing records for the season before inserting."""
-        if not shots:
-            return 0
-        season = shots[0].get("season")
+    def insert_shifts(self, game_id: int, shifts: list[dict[str, Any]]) -> int:
+        """Insert shift-chart rows for a game. Replaces any existing rows for it.
+
+        Also stamps ``games.shifts_checked_at``, which is what lets a resumable
+        backfill tell "not collected yet" apart from "collected, and this game
+        genuinely has no shift chart".
+        """
         with self.get_session() as session:
-            if season:
-                session.query(ShotRecord).filter(ShotRecord.season == season).delete()
-                session.commit()
+            # Full replace keeps the ingest idempotent: re-running a backfill for a
+            # game that was already collected leaves exactly one row per shift.
+            session.query(ShiftRecord).filter_by(game_id=game_id).delete()
+
             count = 0
-            for s in shots:
+            for s in shifts:
                 session.add(
-                    ShotRecord(
-                        season=s.get("season"),
-                        game_id=s.get("game_id"),
-                        team=s.get("team"),
-                        shooter_id=s.get("shooter_id"),
-                        shooter_name=s.get("shooter_name"),
-                        goalie_id=s.get("goalie_id"),
-                        goalie_name=s.get("goalie_name"),
-                        event=s.get("event"),
+                    ShiftRecord(
+                        game_id=game_id,
+                        player_id=s.get("player_id"),
+                        player_name=s.get("player_name"),
+                        team_abbrev=s.get("team_abbrev"),
+                        team_id=s.get("team_id"),
                         period=s.get("period"),
-                        time=s.get("time"),
-                        x_coord=s.get("x_coord"),
-                        y_coord=s.get("y_coord"),
-                        shot_type=s.get("shot_type"),
-                        x_goal=s.get("x_goal"),
-                        goal=s.get("goal"),
-                        shot_angle=s.get("shot_angle"),
-                        shot_distance=s.get("shot_distance"),
-                        shot_rebound=s.get("shot_rebound"),
-                        shot_rush=s.get("shot_rush"),
-                        situation=s.get("situation"),
-                        is_home=s.get("is_home"),
+                        shift_number=s.get("shift_number"),
+                        start_time=s.get("start_time"),
+                        end_time=s.get("end_time"),
+                        duration=s.get("duration"),
+                        type_code=s.get("type_code"),
+                        detail_code=s.get("detail_code"),
+                        event_number=s.get("event_number"),
                     )
                 )
                 count += 1
 
-                # Batch commit every 10000
-                if count % 10000 == 0:
-                    session.commit()
+            game = session.get(GameRecord, game_id)
+            if game is not None:
+                game.shifts_checked_at = datetime.utcnow()
 
             session.commit()
-            self.logger.info("inserted_shots", count=count)
+            self.logger.info("inserted_shifts", game_id=game_id, count=count)
             return count
+
+    def insert_shots(self, shots: list[dict[str, Any]]) -> int:
+        """Replace a season's shot records.
+
+        The clear and the insert run in ONE transaction. They used to be separate
+        commits with the inserts batched every 10,000 rows, which meant a failure
+        part-way through -- a duplicate natural key, or a crash -- left the season
+        silently truncated, with every integrity check still green.
+        """
+        if not shots:
+            return 0
+        season = shots[0].get("season")
+
+        columns = (
+            "season",
+            "game_id",
+            "moneypuck_game_id",
+            "shot_id",
+            "team",
+            "shooter_id",
+            "shooter_name",
+            "goalie_id",
+            "goalie_name",
+            "event",
+            "period",
+            "time",
+            "x_coord",
+            "y_coord",
+            "shot_type",
+            "x_goal",
+            "goal",
+            "shot_angle",
+            "shot_distance",
+            "shot_rebound",
+            "shot_rush",
+            "situation",
+            "is_home",
+        )
+        # A shot with no shot_id cannot be deduplicated: NULLs are distinct in a
+        # SQLite unique index, so it would evade uq_shots_season_game_shot.
+        keyed = [s for s in shots if s.get("shot_id") is not None]
+        if len(keyed) != len(shots):
+            self.logger.warning(
+                "skipped_shots_without_id", season=season, count=len(shots) - len(keyed)
+            )
+
+        rows = [{column: s.get(column) for column in columns} for s in keyed]
+
+        with self.engine.begin() as conn:
+            if season:
+                conn.execute(
+                    ShotRecord.__table__.delete().where(ShotRecord.__table__.c.season == season)
+                )
+            if rows:
+                # execute(insert(), []) inserts a single all-default row rather
+                # than nothing, which would write a junk shot.
+                conn.execute(ShotRecord.__table__.insert(), rows)
+
+        self.logger.info("inserted_shots", count=len(rows), season=season)
+        return len(rows)
 
     def upsert_rosters(self, rosters: list[dict[str, Any]]) -> int:
         """Insert or update roster records from team roster data."""

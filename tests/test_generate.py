@@ -34,6 +34,7 @@ def gen(tmp_path):
             player2_id  INTEGER
         )
     """)
+    conn.execute("CREATE TABLE games (id INTEGER PRIMARY KEY, season TEXT)")
     conn.execute("CREATE TABLE players (id INTEGER, first_name TEXT, last_name TEXT)")
     conn.commit()
     conn.close()
@@ -80,3 +81,73 @@ def test_history_written_after_run(gen):
     with p1, p2, p3:
         gen.run(injuries_available=False, headlines=[])
     assert Path(gen.history_path).exists()
+
+
+def _rush_db(tmp_path):
+    """A database with play-by-play for two seasons, one rush shot in each."""
+    db_path = str(tmp_path / "rush.db")
+    conn = sqlite3.connect(db_path)
+    conn.execute(
+        "CREATE TABLE play_by_play (game_id INTEGER, event_id INTEGER, event_type TEXT,"
+        " zone_code TEXT, time_in_period TEXT, period INTEGER, player1_id INTEGER)"
+    )
+    conn.execute("CREATE TABLE games (id INTEGER PRIMARY KEY, season TEXT)")
+    # The 2025-26 shot follows a defensive-zone takeaway two seconds earlier, so it
+    # is a rush. The 2018-19 shot follows a faceoff, so it is not. If both seasons
+    # are read the rate halves to 50%, which is what the assertion pins.
+    conn.execute("INSERT INTO games (id, season) VALUES (?, ?)", (2025020001, "20252026"))
+    conn.executemany(
+        "INSERT INTO play_by_play VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+            (2025020001, 1, "takeaway", "D", "01:00", 1, 999),
+            (2025020001, 2, "shot-on-goal", "O", "01:02", 1, 8477492),
+        ],
+    )
+    conn.execute("INSERT INTO games (id, season) VALUES (?, ?)", (2018020001, "20182019"))
+    conn.executemany(
+        "INSERT INTO play_by_play VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+            (2018020001, 1, "faceoff", "O", "01:00", 1, 999),
+            (2018020001, 2, "shot-on-goal", "O", "01:02", 1, 8477492),
+        ],
+    )
+    conn.commit()
+    conn.close()
+    return db_path
+
+
+def test_rush_rates_only_use_the_play_by_play_season(tmp_path):
+    """Backfilled seasons must not leak into the current-season rush rate."""
+    from scripts.generate import PBP_SEASON, Generator
+
+    assert PBP_SEASON == "20252026"
+    generator = Generator(db_path=_rush_db(tmp_path))
+
+    rates = generator._compute_rush_rates()
+
+    # Only the 2025-26 rush shot counts. Reading both seasons would give 50.0.
+    assert rates == {8477492: 100.0}
+
+
+def test_rush_rates_are_empty_when_the_season_has_no_play_by_play(tmp_path):
+    from scripts.generate import Generator
+
+    db_path = str(tmp_path / "empty.db")
+    conn = sqlite3.connect(db_path)
+    conn.execute(
+        "CREATE TABLE play_by_play (game_id INTEGER, event_id INTEGER, event_type TEXT,"
+        " zone_code TEXT, time_in_period TEXT, period INTEGER, player1_id INTEGER)"
+    )
+    conn.execute("CREATE TABLE games (id INTEGER PRIMARY KEY, season TEXT)")
+    conn.execute("INSERT INTO games (id, season) VALUES (2018020001, '20182019')")
+    conn.executemany(
+        "INSERT INTO play_by_play VALUES (?, ?, ?, ?, ?, ?, ?)",
+        [
+            (2018020001, 1, "takeaway", "D", "01:00", 1, 999),
+            (2018020001, 2, "shot-on-goal", "O", "01:02", 1, 8477492),
+        ],
+    )
+    conn.commit()
+    conn.close()
+
+    assert Generator(db_path=db_path)._compute_rush_rates() == {}

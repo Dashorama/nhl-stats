@@ -5,6 +5,7 @@ from .moneypuck import MoneyPuckScraper
 from .nhl_api import NHLAPIScraper
 from .nhl_injuries import NHLInjuriesScraper
 from .nhl_roster import NHLRosterScraper
+from .nhl_shifts import NHLShiftChartScraper
 from .puckpedia import PuckPediaScraper
 from .yahoo_fantasy import YahooFantasyClient
 
@@ -12,6 +13,7 @@ __all__ = [
     "BaseScraper",
     "NHLAPIScraper",
     "NHLRosterScraper",
+    "NHLShiftChartScraper",
     "MoneyPuckScraper",
     "PuckPediaScraper",
     "NHLInjuriesScraper",

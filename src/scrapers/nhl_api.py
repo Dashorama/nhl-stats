@@ -1,9 +1,62 @@
 """NHL Official API scraper using the new api-web.nhle.com endpoint."""
 
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from .base import BaseScraper
+
+
+def season_from_game_id(game_id: int | str | None) -> str | None:
+    """Derive the 8-digit season from an NHL 10-digit game id.
+
+    NHL game ids are ``SSSSTTNNNN`` -- the season's start year, the game type and
+    the game number -- so ``2024020001`` belongs to season ``20242025``.
+    """
+    if game_id is None:
+        return None
+    try:
+        numeric = int(game_id)
+    except (TypeError, ValueError):
+        return None
+    if not 1000000000 <= numeric <= 9999999999:
+        return None
+    start_year = numeric // 1000000
+    return f"{start_year}{start_year + 1}"
+
+
+#: How far to step when the API gives no usable cursor. The schedule endpoint
+#: returns a week at a time, so a week is the natural stride.
+SCHEDULE_STRIDE_DAYS = 7
+
+
+def next_schedule_date(payload: dict[str, Any], current_date: str) -> str:
+    """The next date to request when walking a season's schedule.
+
+    Uses the API's own ``nextStartDate`` cursor, but only when it actually moves
+    forward. A missing cursor would end the walk early and silently truncate the
+    season; a cursor that repeats the current date would loop forever.
+    """
+    cursor = payload.get("nextStartDate")
+    if isinstance(cursor, str):
+        try:
+            if date.fromisoformat(cursor) > date.fromisoformat(current_date):
+                return cursor
+        except ValueError:
+            pass  # malformed cursor; fall through to the fixed stride
+
+    stepped = date.fromisoformat(current_date) + timedelta(days=SCHEDULE_STRIDE_DAYS)
+    return stepped.isoformat()
+
+
+def season_date_window(season: str) -> tuple[str, str]:
+    """First and last calendar date to walk when scraping a season's schedule.
+
+    Deliberately wider than the regular season: preseason games start in late
+    September, and the 2019-20 playoffs were played in an August-September bubble.
+    A narrower Oct 1 - Jul 1 window left 852 stored games without a date.
+    """
+    start_year, end_year = int(season[:4]), int(season[4:])
+    return f"{start_year}-09-01", f"{end_year}-10-01"
 
 
 class NHLAPIScraper(BaseScraper):
@@ -143,31 +196,52 @@ class NHLAPIScraper(BaseScraper):
             season = await self.get_current_season()
 
         games = []
-        current_date = f"{season[:4]}-10-01"
-        season_end = f"{season[4:]}-07-01"  # Well past any playoff end
+        current_date, season_end = season_date_window(season)
 
         while current_date and current_date < season_end:
             data = await self.get_json(f"/schedule/{current_date}")
-
-            for week in data.get("gameWeek", []):
-                for game in week.get("games", []):
-                    games.append(
-                        {
-                            "id": game.get("id"),
-                            "date": game.get("gameDate"),
-                            "game_type": game.get("gameType"),
-                            "home_team": game.get("homeTeam", {}).get("abbrev"),
-                            "away_team": game.get("awayTeam", {}).get("abbrev"),
-                            "home_score": game.get("homeTeam", {}).get("score"),
-                            "away_score": game.get("awayTeam", {}).get("score"),
-                            "game_state": game.get("gameState"),
-                            "venue": game.get("venue", {}).get("default"),
-                        }
-                    )
-
-            current_date = data.get("nextStartDate")
+            games.extend(self.parse_schedule_games(data))
+            current_date = next_schedule_date(data, current_date)
 
         self.logger.info("scraped_games", count=len(games))
+        return games
+
+    @staticmethod
+    def parse_schedule_games(payload: dict[str, Any]) -> list[dict[str, Any]]:
+        """Parse a ``/schedule/{date}`` payload into game records.
+
+        Two fields the previous version dropped:
+
+        * ``season`` -- present on each game as an int (``20242025``); without it
+          every stored game had a NULL season.
+        * the calendar date -- the game object has no ``gameDate``; the date lives
+          on the parent ``gameWeek`` entry, with ``startTimeUTC`` as a fallback.
+        """
+        games: list[dict[str, Any]] = []
+
+        for week in payload.get("gameWeek", []):
+            week_date = week.get("date")
+
+            for game in week.get("games", []):
+                game_id = game.get("id")
+                season = game.get("season")
+                start_time = game.get("startTimeUTC") or ""
+
+                games.append(
+                    {
+                        "id": game_id,
+                        "season": str(season) if season else season_from_game_id(game_id),
+                        "date": week_date or (start_time[:10] or None),
+                        "game_type": game.get("gameType"),
+                        "home_team": game.get("homeTeam", {}).get("abbrev"),
+                        "away_team": game.get("awayTeam", {}).get("abbrev"),
+                        "home_score": game.get("homeTeam", {}).get("score"),
+                        "away_score": game.get("awayTeam", {}).get("score"),
+                        "game_state": game.get("gameState"),
+                        "venue": game.get("venue", {}).get("default"),
+                    }
+                )
+
         return games
 
     async def scrape_player_details(self, player_id: int) -> dict[str, Any]:

@@ -12,10 +12,78 @@ Data URL: https://moneypuck.com/moneypuck/playerData/seasonSummary/
 
 import csv
 import io
+from collections.abc import Mapping
 from datetime import datetime
 from typing import Any
 
 from .base import BaseScraper
+
+#: MoneyPuck numbers games within a season (``20001`` = regular-season game 1,
+#: ``30417`` = playoff round 4 game 7).  The NHL api-web id for the same game is
+#: the season's start year followed by those five digits, e.g. ``2024020001``.
+NHL_GAME_ID_SEASON_MULTIPLIER = 1_000_000
+
+
+def safe_int(val: Any) -> int | None:
+    """Parse an int from a CSV string, tolerating float formatting like '8478178.0'."""
+    if val is None or val == "":
+        return None
+    try:
+        return int(float(val))
+    except (ValueError, TypeError):
+        return None
+
+
+def to_nhl_game_id(season: str | int | None, moneypuck_game_id: int | None) -> int | None:
+    """Map MoneyPuck's 5-digit game id onto the NHL api-web 10-digit game id.
+
+    MoneyPuck's ``game_id`` is only unique within a season, which is why ``shots``
+    could not be joined to ``games`` or ``play_by_play`` -- both of those use the
+    NHL id.  Verified against the live database: every distinct mapped id for
+    seasons 2018-2025 exists in ``games``.
+    """
+    if season is None or moneypuck_game_id is None:
+        return None
+    try:
+        return int(season) * NHL_GAME_ID_SEASON_MULTIPLIER + int(moneypuck_game_id)
+    except (ValueError, TypeError):
+        return None
+
+
+def parse_moneypuck_flag(value: Any) -> bool:
+    """Parse a MoneyPuck boolean column.
+
+    MoneyPuck writes these as float-formatted strings (``"1.0"`` / ``"0.0"``), so a
+    plain ``== "1"`` comparison silently reads every row as false.
+    """
+    if value is None or value == "":
+        return False
+    try:
+        return float(value) != 0.0
+    except (ValueError, TypeError):
+        return False
+
+
+def derive_shot_situation(row: Mapping[str, Any]) -> str | None:
+    """Derive the on-ice situation for a shot, from the shooter's point of view.
+
+    MoneyPuck's shot files have no ``situation`` column -- that only exists in the
+    seasonSummary skater/goalie files.  The skater counts are the real source, and
+    they already include the extra attacker when a goalie is pulled, so an empty-net
+    shot reads as e.g. ``"5v6"``.
+
+    Returns ``None`` when the skater counts are missing or unparseable.
+    """
+    home_skaters = safe_int(row.get("homeSkatersOnIce"))
+    away_skaters = safe_int(row.get("awaySkatersOnIce"))
+    if home_skaters is None or away_skaters is None:
+        return None
+
+    if parse_moneypuck_flag(row.get("isHomeTeam")):
+        shooting, defending = home_skaters, away_skaters
+    else:
+        shooting, defending = away_skaters, home_skaters
+    return f"{shooting}v{defending}"
 
 
 class MoneyPuckScraper(BaseScraper):
@@ -293,56 +361,56 @@ class MoneyPuckScraper(BaseScraper):
         csv_content = zf.read(csv_names[0]).decode("utf-8")
         reader = csv.DictReader(io.StringIO(csv_content))
 
-        def safe_int(val: str | None) -> int | None:
-            """Parse int from string, handling float-formatted values like '8478178.0'."""
-            if not val:
-                return None
-            try:
-                return int(float(val))
-            except (ValueError, TypeError):
-                return None
-
         shots = []
         for row in reader:
             try:
-                shots.append(
-                    {
-                        "season": season,
-                        "game_id": safe_int(row.get("game_id")),
-                        "team": row.get("teamCode", ""),
-                        "shooter_id": safe_int(row.get("shooterPlayerId")),
-                        "shooter_name": row.get("shooterName", ""),
-                        "goalie_id": safe_int(row.get("goalieIdForShot")),
-                        "goalie_name": row.get("goalieNameForShot", ""),
-                        "event": row.get("event", ""),
-                        "period": safe_int(row.get("period")),
-                        "time": safe_int(row.get("time")),
-                        "x_coord": float(row.get("xCordAdjusted", 0))
-                        if row.get("xCordAdjusted")
-                        else None,
-                        "y_coord": float(row.get("yCordAdjusted", 0))
-                        if row.get("yCordAdjusted")
-                        else None,
-                        "shot_type": row.get("shotType", ""),
-                        "x_goal": float(row.get("xGoal", 0)) if row.get("xGoal") else None,
-                        "goal": safe_int(row.get("goal")) or 0,
-                        "shot_angle": float(row.get("shotAngleAdjusted", 0))
-                        if row.get("shotAngleAdjusted")
-                        else None,
-                        "shot_distance": float(row.get("shotDistance", 0))
-                        if row.get("shotDistance")
-                        else None,
-                        "shot_rebound": safe_int(row.get("shotRebound")) or 0,
-                        "shot_rush": safe_int(row.get("shotRush")) or 0,
-                        "situation": row.get("situation", ""),
-                        "is_home": row.get("isHomeTeam") == "1",
-                    }
-                )
+                shots.append(self.parse_shot_row(row, season))
             except (ValueError, TypeError):
                 continue
 
         self.logger.info("scraped_shot_data", season=season, count=len(shots))
         return shots
+
+    @staticmethod
+    def parse_shot_row(row: Mapping[str, Any], season: str) -> dict[str, Any]:
+        """Parse one row of MoneyPuck's shots CSV into a ``shots`` table record."""
+
+        def safe_float(val: Any) -> float | None:
+            if val is None or val == "":
+                return None
+            try:
+                return float(val)
+            except (ValueError, TypeError):
+                return None
+
+        moneypuck_game_id = safe_int(row.get("game_id"))
+
+        return {
+            "season": season,
+            # The joinable NHL id; the MoneyPuck id is kept alongside for provenance.
+            "game_id": to_nhl_game_id(season, moneypuck_game_id),
+            "moneypuck_game_id": moneypuck_game_id,
+            "shot_id": safe_int(row.get("shotID")),
+            "team": row.get("teamCode", ""),
+            "shooter_id": safe_int(row.get("shooterPlayerId")),
+            "shooter_name": row.get("shooterName", ""),
+            "goalie_id": safe_int(row.get("goalieIdForShot")),
+            "goalie_name": row.get("goalieNameForShot", ""),
+            "event": row.get("event", ""),
+            "period": safe_int(row.get("period")),
+            "time": safe_int(row.get("time")),
+            "x_coord": safe_float(row.get("xCordAdjusted")),
+            "y_coord": safe_float(row.get("yCordAdjusted")),
+            "shot_type": row.get("shotType", ""),
+            "x_goal": safe_float(row.get("xGoal")),
+            "goal": safe_int(row.get("goal")) or 0,
+            "shot_angle": safe_float(row.get("shotAngleAdjusted")),
+            "shot_distance": safe_float(row.get("shotDistance")),
+            "shot_rebound": safe_int(row.get("shotRebound")) or 0,
+            "shot_rush": safe_int(row.get("shotRush")) or 0,
+            "situation": derive_shot_situation(row),
+            "is_home": parse_moneypuck_flag(row.get("isHomeTeam")),
+        }
 
     # Abstract method implementations required by BaseScraper
     async def scrape_players(self, season: str | None = None) -> list[dict[str, Any]]:

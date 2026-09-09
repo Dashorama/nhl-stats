@@ -51,6 +51,7 @@ data/*.csv
 *.log
 logs/
 data/logs/
+data/.nhl-stats-write.lock
 
 # Next.js
 site/.next/
