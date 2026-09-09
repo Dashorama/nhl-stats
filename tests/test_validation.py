@@ -274,3 +274,71 @@ class TestCorpusCoverage:
             db.insert_play_by_play(2024020000 + n, [EVENT])
 
         assert_pbp_corpus(db, ["20242025"], min_games_per_season=1, min_coverage=0.95)
+
+
+class TestHomeAwayBalance:
+    """The is_home defect (every 2018-2024 shot stored as away) had no guard.
+
+    parse_moneypuck_flag returns False for anything it cannot parse, so if
+    MoneyPuck switched isHomeTeam to "True"/"False" every shot would silently
+    become an away shot again and every other check would stay green.
+    """
+
+    def _shots(self, db, season, home, away):
+        rows = [
+            {
+                **SHOT,
+                "season": season,
+                "moneypuck_game_id": 20000 + i,
+                "shot_id": i,
+                "is_home": i < home,
+            }
+            for i in range(home + away)
+        ]
+        db.insert_shots(rows)
+
+    def test_a_realistic_split_passes(self, db):
+        self._shots(db, "2024", home=306, away=294)  # 51% home
+        assert _check(run_integrity_checks(db), "shots_home_away_balance").passed
+
+    def test_every_shot_stored_as_away_fails(self, db):
+        self._shots(db, "2024", home=0, away=600)
+        result = _check(run_integrity_checks(db), "shots_home_away_balance")
+        assert not result.passed
+        assert "2024" in result.detail
+
+    def test_every_shot_stored_as_home_fails(self, db):
+        self._shots(db, "2024", home=600, away=0)
+        assert not _check(run_integrity_checks(db), "shots_home_away_balance").passed
+
+    def test_a_season_too_small_to_judge_is_not_flagged(self, db):
+        self._shots(db, "2024", home=0, away=5)
+        assert _check(run_integrity_checks(db), "shots_home_away_balance").passed
+
+
+class TestSituationPlausibility:
+    """Non-empty is not enough: a semantic regression (say MoneyPuck starts
+    counting the goalie, making everything 6v6) would leave the presence check
+    green while every downstream situation query is wrong."""
+
+    def _shots(self, db, situations):
+        db.insert_shots(
+            [
+                {**SHOT, "moneypuck_game_id": 20000 + i, "shot_id": i, "situation": s}
+                for i, s in enumerate(situations)
+            ]
+        )
+
+    def test_real_situations_pass(self, db):
+        self._shots(db, ["5v5"] * 900 + ["5v4"] * 60 + ["6v5"] * 40)
+        assert _check(run_integrity_checks(db), "shots_situation_plausible").passed
+
+    def test_a_trace_of_upstream_garbage_is_tolerated(self, db):
+        """MoneyPuck itself ships a handful of impossible rows (7v5, 5v9)."""
+        self._shots(db, ["5v5"] * 999 + ["7v5"])
+        assert _check(run_integrity_checks(db), "shots_situation_plausible").passed
+
+    def test_a_wholesale_semantic_regression_fails(self, db):
+        self._shots(db, ["6v6"] * 500 + ["7v7"] * 500)
+        result = _check(run_integrity_checks(db), "shots_situation_plausible")
+        assert not result.passed
