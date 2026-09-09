@@ -21,7 +21,7 @@ from .scrapers import (
     PuckPediaScraper,
 )
 from .scrapers.yahoo_fantasy import YahooFantasyClient
-from .storage import BoxscoreRecord, Database, GameRecord, PlayByPlayRecord, PlayerRecord
+from .storage import BoxscoreRecord, Database, GameRecord, PlayerRecord
 from .storage.validation import (
     CorpusError,
     assert_pbp_corpus,
@@ -694,27 +694,29 @@ def update(ctx: click.Context, daily: bool) -> None:
                 errors.append(f"boxscores: {e}")
                 console.print(f"  [yellow]⚠ boxscores: {e}[/yellow]")
 
-            # Play-by-play for new games
+            # Play-by-play and shifts for new games in the current season.
+            # Scoped to the current season on purpose: history is collected by
+            # `nhl-stats backfill-pbp`, so a nightly run stays a few minutes long.
             console.print("[bold]Updating play-by-play...[/bold]")
             try:
-                with db.get_session() as session:
-                    already_pbp = set(
-                        r[0] for r in session.query(PlayByPlayRecord.game_id).distinct().all()
-                    )
-                    new_pbp_ids = sorted(all_finished - already_pbp)
+                current_season = await scraper.get_current_season()
+                new_pbp_ids = games_needing_play_by_play(db, [current_season])
 
                 if new_pbp_ids:
-                    scraped = 0
-                    total_events = 0
-                    for gid in new_pbp_ids:
-                        try:
-                            events = await scraper.scrape_play_by_play(gid)
-                            db.insert_play_by_play(gid, events)
-                            scraped += 1
-                            total_events += len(events)
-                        except Exception:
-                            pass
-                    console.print(f"  [green]✓ {total_events} events from {scraped} games[/green]")
+                    async with NHLShiftChartScraper() as shift_scraper:
+                        report = await backfill_play_by_play(
+                            db,
+                            new_pbp_ids,
+                            scraper.scrape_play_by_play,
+                            shift_scraper.scrape_shifts,
+                        )
+                    console.print(
+                        f"  [green]✓ {report.events_written} events and "
+                        f"{report.shifts_written} shifts from "
+                        f"{report.games_collected} games[/green]"
+                    )
+                    if report.games_failed:
+                        errors.append(f"pbp: {report.games_failed} games failed")
                 else:
                     console.print("  [dim]No new PBP to scrape[/dim]")
             except Exception as e:

@@ -50,6 +50,14 @@ nhl-stats scrape-contracts [--team TOR]   # Contract data from PuckPedia
 nhl-stats scrape-full                     # ALL data from ALL sources
 ```
 
+### Backfills & Validation
+```bash
+nhl-stats backfill-games                      # Repair games.season / game_date
+nhl-stats backfill-shots --start-season 2018  # Re-ingest MoneyPuck shots (fixes situation, game_id)
+nhl-stats backfill-pbp --start-season 2018    # Play-by-play + shift charts, resumable
+nhl-stats validate                            # Integrity checks; exits non-zero on failure
+```
+
 ### Display Commands
 ```bash
 nhl-stats standings              # Current NHL standings
