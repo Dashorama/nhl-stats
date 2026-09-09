@@ -290,3 +290,49 @@ class TestMigrationOfAnExistingDatabase:
         db = Database(path)
 
         assert {"moneypuck_game_id", "shot_id"} <= _columns(db, "shots")
+
+
+class TestSeasonReplaceIsAtomic:
+    """insert_shots clears a season before inserting it.
+
+    With a unique key on the season, a duplicate row part-way through the batch
+    raises after earlier rows have been written. If the clear is not in the same
+    transaction, the season is left truncated -- and every integrity check still
+    passes, because nothing counts shots per season.
+    """
+
+    def _season(self, n, start=0):
+        return [
+            {**SHOT, "moneypuck_game_id": 20000 + i, "shot_id": i} for i in range(start, start + n)
+        ]
+
+    def test_a_failed_replace_leaves_the_stored_season_intact(self, db):
+        db.insert_shots(self._season(30))
+
+        # A batch containing a duplicate natural key: the write must fail whole.
+        poisoned = self._season(20)
+        poisoned.append(dict(poisoned[0]))
+        with pytest.raises(Exception):
+            db.insert_shots(poisoned)
+
+        with db.engine.connect() as conn:
+            assert conn.execute(text("SELECT COUNT(*) FROM shots")).scalar() == 30
+
+    def test_a_successful_replace_still_swaps_the_season(self, db):
+        db.insert_shots(self._season(30))
+        db.insert_shots(self._season(12))
+
+        with db.engine.connect() as conn:
+            assert conn.execute(text("SELECT COUNT(*) FROM shots")).scalar() == 12
+
+    def test_a_replace_does_not_touch_other_seasons(self, db):
+        db.insert_shots(self._season(5))
+        db.insert_shots([{**s, "season": "2023"} for s in self._season(7)])
+
+        db.insert_shots(self._season(3))
+
+        with db.engine.connect() as conn:
+            by_season = dict(
+                conn.execute(text("SELECT season, COUNT(*) FROM shots GROUP BY season")).all()
+            )
+        assert by_season == {"2024": 3, "2023": 7}
