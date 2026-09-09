@@ -366,3 +366,45 @@ class TestSqliteConcurrency:
         with db.engine.connect() as conn:
             timeout_ms = conn.execute(text("PRAGMA busy_timeout")).scalar()
         assert timeout_ms >= 30000
+
+
+class TestMigrationsStayInSyncWithTheModels:
+    """A column added to a model and forgotten in ADDED_COLUMNS breaks the live
+    database with no test failure -- create_all never alters an existing table."""
+
+    def test_a_migrated_legacy_database_has_every_column_the_model_declares(self, tmp_path):
+        from src.storage.database import GameRecord, ShotRecord
+
+        path = tmp_path / "legacy.db"
+        TestMigrationOfAnExistingDatabase()._legacy_db(path)
+
+        db = Database(path)
+
+        for model in (ShotRecord, GameRecord):
+            declared = {c.name for c in model.__table__.columns}
+            stored = _columns(db, model.__tablename__)
+            assert declared <= stored, (
+                f"{model.__tablename__} is missing {sorted(declared - stored)} after "
+                "migration - add them to migrations.ADDED_COLUMNS"
+            )
+
+
+class TestKeylessRowsAreNotStored:
+    """SQLite treats NULLs as distinct in a unique index, so a row with a NULL
+    key part slips past the guarantee the index is supposed to give."""
+
+    def test_events_without_an_event_id_are_dropped(self, db):
+        db.insert_play_by_play(2024020001, [{"event_type": "faceoff", "period": 1}])
+
+        with db.engine.connect() as conn:
+            assert conn.execute(text("SELECT COUNT(*) FROM play_by_play")).scalar() == 0
+
+    def test_shots_without_a_shot_id_are_dropped(self, db):
+        db.insert_shots([{**SHOT, "shot_id": None}])
+
+        with db.engine.connect() as conn:
+            assert conn.execute(text("SELECT COUNT(*) FROM shots")).scalar() == 0
+
+    def test_valid_rows_are_unaffected(self, db):
+        assert db.insert_play_by_play(2024020001, PBP_EVENTS) == 2
+        assert db.insert_shots([SHOT]) == 1
